@@ -1,0 +1,19 @@
+Element selector
+
+Class selector
+
+ID selector
+
+Universal selector
+
+Group selector
+
+Descendant selector
+
+Child selector
+
+Attribute selector
+
+Pseudo-class selector
+
+Pseudo-element selector

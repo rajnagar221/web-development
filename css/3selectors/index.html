@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>selectors</title>
+    <style>
+      /* element selector normal jitne bhi div h sbka color chnge  */
+      /* div{
+        /* background-color: rebeccapurple ;
+       }*/
+      /* class selector jo class  dene ka kam krta h isme .css use hota h */
+      .css {
+        background-color: rgb(255, 0, 0);
+      }
+      /* id selector isme bs class k under id  dena orr color green */
+      #green {
+        background-color: green;
+      }
+      /* child selector div ka child hna chahiye  direct  koi bhi dusra element k under p nhi hona chahiye */
+      div > p1 {
+        color: aquamarine;
+        background-color: black;
+      }
+      /* descendant selector div  k under kitne bhi  tag ho uske p hona chahiye bs toh yeh selector color kr dega*/
+      div p1 {
+        color: burlywood;
+        background-color: bisque;
+      }
+      /* pseudo selector  */
+      /* selector visit krner k baad color chnge link ka  */
+      a:visited {
+        color: rgb(243, 0, 0);
+      }
+      /* slector h jo button pr mouse ko leke jayenge toh color change hoga */
+      button:hover {
+        color: rgb(243, 0, 0);
+      }
+
+      a:link {
+        color: rgb(243, 0, 0);
+      }
+      /* yeh wala selector link ko color krta h jb apn usko visit nhi krte h  */
+      a:link {
+        color: rgb(11, 11, 11);
+      }
+      /* yeh wla  selector bg color ko show krta h click krne pr */
+      a:active {
+        background-color: rgb(11, 11, 11);
+      }
+      /* universal  selector */
+      * {
+        margin: 0%;
+        padding: 0;
+      }
+      /* yeh wlaa selector div k first child ka color change  krta h  */
+      p:first-child {
+        color: aqua;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="one">
+      <p>i am first child</p>
+      <p>i am second child</p>
+    </div>
+
+    <div class="css">
+      i am good
+      <article>
+        <p1>i am para</p1>
+      </article>
+    </div>
+    <div id="green">i am also good</div>
+
+    <button>link</button>
+    <a href="https://www.google.com/">go to google</a>
+
+    <a href="https://www.facebook.com/">go to facebook</a>
+  </body>
+</html>

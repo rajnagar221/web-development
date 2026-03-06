@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>box model</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .box {
+        background-color: aqua;
+      }
+      .box1 {
+        color: rgb(4, 254, 0);
+        padding: 10px;
+        margin: 25px;
+        border: 2px solid blueviolet;
+        height: 200px;
+        box-sizing: border-box;
+      }
+      /* abb jo yha p marzin voh same h margin overhit hogi jisse  dono box k bich m ak hi margin dikhegi 
+      jo biggest hogi 25 25 h toh 25 dikhegi agr 25 35 h toh 35 dikhegi yha hoga margin collaps*/
+      .box2 {
+        color: red;
+        padding: 10px;
+        margin: 25px;
+        border: 2px solid rgb(0, 0, 0);
+        height: 200px;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box box1">i am a box</div>
+
+    <div class="box box2">i am a box</div>
+  </body>
+</html>

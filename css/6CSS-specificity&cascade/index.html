@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>specificity</title>
+    <style>
+      /* the speciificity of this selector is 1 */
+      h1 {
+        color: blueviolet;
+      }
+      /* the speciificity of this selector is 1+10=11 */
+      h1.yellow {
+        color: rgb(242, 255, 2);
+      }
+      /* the speciificity of this selector is 10 */
+      .cred {
+        color: rgb(255, 0, 0);
+      }
+      /* the speciificity of this selector is 10 */
+      .cpurple {
+        color: rgb(248, 0, 165);
+      } 
+      /* this is an example of attributes : selctor the speciificity of this selector is 10 */
+      [data-x=a]{
+        color: maroon;
+      }
+      /* the speciificity of this selector is 1+10+10+10+10 = 41 specificity jiski 
+      specificity jyada hogi voh color priview show hoga jyada specificity k sth utna hi jyada specific hoga   */
+      a.harryclass.rohan-class[herf]:hover{
+        color: brown;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1 class="yellow cred cpurple">css specificity</h1>
+    </div>
+  </body>
+</html>

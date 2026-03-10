@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test nav baar</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      :root {
+        --color: rgb(40, 22, 22);
+        --seccolor: aqua;
+      }
+      body {
+        background-color: rgb(193, 7, 165);
+      }
+      /* 
+        @media only screen and (max-width: 455px) {
+           body{
+            background: var(--color);
+           }
+        } */
+      ul {
+        display: flex;
+      }
+      ul li {
+        list-style: none;
+        margin: 4px;
+        padding: 34px;
+        background-color: var(--seccolor);
+        border: 2px solid black;
+        /* height: 23px;
+            width: 32px; */
+      }
+
+      ul li:first-child {
+        --color: rgb(200, 160, 167);
+        background-color: var(--color);
+      }
+
+      ul li:first-child {
+        --color: rgb(200, 160, 167);
+        background-color: rebeccapurple;
+      }
+
+      ul li:first-child {
+        --color: rgb(200, 160, 167);
+        background-color: var(--color);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <ul>
+        <li>home</li>
+        <li>about</li>
+        <li>contact</li>
+      </ul>
+    </div>
+  </body>
+</html>

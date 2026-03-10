@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>css outlines</title>
+    <style>
+      .box {
+        border: 2px solid black;
+        padding: 34px;
+        box-shadow: inset 5px 5px 15px rgb(0, 0, 0);
+      }
+      .text-elements{
+        /* text k shadow ko create krne k liye text shadow  */
+      text-shadow: 3px 2px 2px  rgb(253, 3, 253);
+      border: 2px solid rgb(0, 0, 0);
+      /* border ki radius ko shi krne k liye  */
+      border-radius: 13px;  
+      /* outline ko shi krne k liye */
+      outline-offset: 19px;
+     }
+
+    </style>
+  </head>
+  <body>
+    <div class="box">ia am a box</div>
+    <p class="text-elements">
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus
+      consequuntur voluptatem rem tempore, voluptate amet laborum quia eum enim.
+      Possimus odit exercitationem eaque quisquam repellat quod nemo laudantium
+      dolorum consequuntur!
+    </p>
+  </body>
+</html>

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>more selector</title>
+    <style>
+      /* .box:first-child {
+        background-color: red;
+      } */
+      /* 
+      first line ka color change krne k liye  
+
+      .box::first-line {
+        color: yellow; 
+      }
+
+      /* .boxes {
+        color: blue;
+        border: 2px solid black;
+      } */
+
+      /*
+      attributes 3no k dat ka primary color change ho jayenge
+      p,
+      a,
+      .box,
+      [data-color="primary"] {
+        margin-top: 45px;
+      } */
+
+
+      /* 
+      agr nth child odd h toh bg color  blue hoga  
+      .box:nth-child(odd) {
+        background-color: blue;
+      } */
+
+      /*
+      2nd last child  ka color change hoga 
+      .box:last-child(2) {
+        background-color: rgb(211, 91, 0);
+      } */
+
+      /* before m i am raj nagar add ho jayega  */
+      .boxes::before {
+        content: "i am a raj nagar";
+        color: aqua;
+      }
+
+      /* after m process to the development add  hoga  */
+      .boxes::after {
+        content: "process to the development";
+        color: brown;
+      }
+
+      /* user agr kisi word lk0o select kraga toh vha bg black orr font color aqa ho jayega  */
+      ::selection {
+        background-color: black;
+        color: aquamarine;
+      }
+      /* first letter m color chochllate hoga font sixe badi hogi  */
+      .box::first-letter {
+        color: chocolate;
+        font-size: 45px;
+      }
+
+      /* input lene k liye  */
+      input::placeholder {
+        color: rgb(0, 0, 0);
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="boxes">
+      <div class="box">
+        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta numquam
+        dolorem harum fugit ea ratione necessitatibus praesentium delectus
+        quasi, odit nisi facilis repudiandae id maiores temporibus, amet
+        veritatis. Autem, neque.
+      </div>
+      <div class="box">hey i am a box</div>
+      <div class="box">hey i am a box</div>
+      <div class="box">hey i am a box</div>
+      <input type="text" placeholder="type your name here" />
+    </div>
+  </body>
+</html>

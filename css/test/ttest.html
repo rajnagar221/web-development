@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website Structure Demo</title>
+
+<style>
+
+/* Basic Reset */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+/* Container ka kaam hota hai content ko center aur fixed width dena */
+.container{
+    width:90%;
+    max-width:1100px;
+    margin:auto;
+}
+
+/* Header Section */
+header{
+    background:#2c3e50;
+    color:white;
+    padding:20px 0;
+}
+
+/* Navigation */
+nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+}
+
+nav ul li{
+    margin-left:20px;
+}
+
+nav a{
+    text-decoration:none;
+    color:white;
+}
+
+/* Hero Section */
+.hero{
+    background:#3498db;
+    color:white;
+    padding:80px 0;
+    text-align:center;
+}
+
+/* Generic Section */
+.section{
+    padding:60px 0;
+}
+
+/* Cards Layout */
+.cards{
+    display:flex;
+    gap:20px;
+}
+
+.card{
+    flex:1;
+    background:#ecf0f1;
+    padding:20px;
+    border-radius:8px;
+}
+
+/* Footer */
+footer{
+    background:#2c3e50;
+    color:white;
+    text-align:center;
+    padding:20px 0;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER: Website ka top part (logo + navigation) -->
+<header>
+    <div class="container">
+        <nav>
+            <h2>MyWebsite</h2>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+<!-- HERO SECTION: Landing page ka main highlight area -->
+<section class="hero">
+    <div class="container">
+        <h1>Welcome to Our Website</h1>
+        <p>This section is called HERO section of a landing page</p>
+    </div>
+</section>
+
+
+<!-- ABOUT SECTION -->
+<section class="section">
+    <div class="container">
+        <h2>About Section</h2>
+        <p>
+        Section tag page ko logical parts me divide karta hai.
+        Container content ko center aur limited width me rakhta hai.
+        </p>
+    </div>
+</section>
+
+
+<!-- SERVICES SECTION -->
+<section class="section" style="background:#f4f4f4;">
+    <div class="container">
+        <h2>Services Section</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Service 1</h3>
+                <p>This is a card inside a container.</p>
+            </div>
+
+            <div class="card">
+                <h3>Service 2</h3>
+                <p>Cards usually used for features or services.</p>
+            </div>
+
+            <div class="card">
+                <h3>Service 3</h3>
+                <p>Flexbox is used here to align cards.</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- CONTACT SECTION -->
+<section class="section">
+    <div class="container">
+        <h2>Contact Section</h2>
+        <p>Email: example@email.com</p>
+    </div>
+</section>
+
+
+<!-- FOOTER: Website ka last part -->
+<footer>
+    <div class="container">
+        <p>© 2026 MyWebsite | This is the Footer Section</p>
+    </div>
+</footer>
+
+</body>
+</html>

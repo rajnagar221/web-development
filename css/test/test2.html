@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sigma Web Development</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      nav {
+        background: rgb(113, 189, 189);
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: bold;
+      }
+
+      main {
+        background: black;
+        color: white;
+        padding: 30px;
+        min-height: 100vh;
+      }
+
+      /* container */
+
+      .container {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        background: green;
+        border-radius: 10px;
+      }
+
+      /* boxes */
+
+      .box1,
+      .box2 {
+        height: 60vh;
+        width: 50%;
+        border-radius: 10px;
+        transition: 0.4s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+
+      .box1 {
+        background: blanchedalmond;
+        color: black;
+      }
+
+      .box2 {
+        background: rgb(117, 78, 20);
+      }
+
+      /* hover animation */
+
+      .box1:hover,
+      .box2:hover {
+        transform: scale(1.05);
+        cursor: pointer;
+      }
+
+      /* text box */
+
+      .test-box {
+        padding: 30px;
+        border: 3px solid rgb(195, 162, 162);
+        margin: 40px auto;
+        font-size: 1.8em;
+        border-radius: 12px;
+        max-width: 600px;
+        text-align: center;
+      }
+
+      button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background: rgb(113, 189, 189);
+      }
+
+      /* footer */
+
+      footer {
+        height: 100px;
+        background: rgb(243, 203, 203);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
+
+      /* Responsive */
+
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+        }
+
+        .box1,
+        .box2 {
+          width: 100%;
+          height: 200px;
+        }
+
+        .test-box {
+          font-size: 1.3em;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>Sigma Web Development</nav>
+
+    <main>
+      <div class="container">
+        <div class="box1">Box 1</div>
+
+        <div class="box2">Box 2</div>
+      </div>
+
+      <div class="test-box">
+        <p id="text">Welcome to Sigma Web Development Express</p>
+
+        <button onclick="changeText()">Click Me</button>
+      </div>
+    </main>
+
+    <footer>© 2026 Sigma Web Development</footer>
+
+    <script>
+      function changeText() {
+        document.getElementById("text").innerText =
+          "🔥 You just made the page dynamic with JavaScript!";
+      }
+    </script>
+  </body>
+</html>

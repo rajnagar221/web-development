@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>transform CSS</title>
+    <style>
+      .box {
+        height: 50px;
+        width: 50px;
+        background-color: rgb(209, 209, 18);
+        border: 2ppx solid black;
+        transform: rotate(0.125turn);
+
+        /* rotate z ki side ko rotate krnne k liye  */
+        /* transform: rotatez(9deg); */
+
+        /* scale size vox ki size ko big krne k liye  */
+        /* transform: scale(1.6); */
+
+        /* skew box ko tedha krne k liye use  hita h  */
+        /* transform: skew(35deg); */
+
+        /* left siide se width chhnge hogi */
+        transform: translatey(100px) skewX(40deg) translatex(45%);
+
+        /* display flex akk line m lane k liye content ko  */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .container {
+        height: 80vh;
+        width: 100vw;
+        border: 2px solid brown;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box">box</div>
+    </div>
+  </body>
+</html>

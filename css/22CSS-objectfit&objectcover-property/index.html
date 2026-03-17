@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>objfit & ibjcover</title>
+    <style>
+      .container {
+        height: 466px;
+        width: 488px;
+        border: 2px solid black;
+        background-color: rgb(175, 183, 183);
+        /* object-position: center center; */
+        /* background-clip: border-box; */
+        background-image: url("https://images.all-free-download.com/images/thumbjpg/goa_small_bird_202958.jpg");
+        /* isse background repeat mhi hoga  */
+         background-repeat: repeat-X;
+              }
+      img {
+        height: 466px;
+        width: 488px;
+        /* h w ko cover kregi img ko shi  settle kregi */
+        /* object-fit: cover; */
+        /* isme img ko cut kr dega top bottom se  */
+        object-fit: contain;
+        /* img ka bottom pura dikhega orr top cut hoga position dene k liye h apne hisab se maintain kr skte h size ko */
+        object-fit: fill;
+        /* object-position: bottom; */
+        object-position: 10px 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- <img
+        src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
+        alt=""
+      /> -->
+    </div>
+  </body>
+</html>

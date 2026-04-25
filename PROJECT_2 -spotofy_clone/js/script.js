@@ -17,7 +17,7 @@ function secondsToMinutesSeconds(seconds) {
 // get songs
 async function getSongs(folder) {
   currFolder = folder;
-  let a = await fetch(`/${songs}/`);
+  let a = await fetch(`/${folder}/`);
   let response = await a.text();
 
   let div = document.createElement("div");
@@ -60,8 +60,8 @@ async function getSongs(folder) {
   return songs;
 }
 
-// play music
 const playMusic = (track, pause = false) => {
+
   currentSong.src = `/${currFolder}/` + track;
 
   if (!pause) {
@@ -70,7 +70,11 @@ const playMusic = (track, pause = false) => {
   }
 
   document.querySelector(".songinfo").innerHTML = decodeURI(track);
-  document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
+
+  currentSong.addEventListener("loadedmetadata", () => {
+    document.querySelector(".songtime").innerHTML =
+      `00:00 / ${secondsToMinutesSeconds(currentSong.duration)}`;
+  });
 };
 
 // display albums
@@ -89,7 +93,7 @@ async function displayAlbums() {
 
       let folder = e.href.split("/").slice(-2)[0];
 
-      let res = await fetch(`/songs/${songs}/info.json`);
+      let res = await fetch(`/songs/${folder}/info.json`);
       let data = await res.json();
 
       cardContainer.innerHTML += `
@@ -114,12 +118,13 @@ async function displayAlbums() {
 // MAIN FUNCTION
 async function main() {
 
+  let play = document.getElementById("play");
+  let previous = document.getElementById("previous");
+  let next = document.getElementById("next");
+
   await getSongs("songs/ncs");
   playMusic(songs[0], true);
 
-  await displayAlbums();
-
-  // play/pause
   play.addEventListener("click", () => {
     if (currentSong.paused) {
       currentSong.play();
@@ -130,23 +135,27 @@ async function main() {
     }
   });
 
-  // time update
-  currentSong.addEventListener("timeupdate", () => {
+
+currentSong.addEventListener("timeupdate", () => {
+
+  if (!isNaN(currentSong.duration)) {
+
     document.querySelector(".songtime").innerHTML =
       `${secondsToMinutesSeconds(currentSong.currentTime)} / ${secondsToMinutesSeconds(currentSong.duration)}`;
 
     document.querySelector(".circle").style.left =
       (currentSong.currentTime / currentSong.duration) * 100 + "%";
-  });
+  }
 
-  // seekbar
+});
+
   document.querySelector(".seekbar").addEventListener("click", (e) => {
     let percent = (e.offsetX / e.target.clientWidth) * 100;
     document.querySelector(".circle").style.left = percent + "%";
     currentSong.currentTime = (currentSong.duration * percent) / 100;
   });
 
-  // 🔥 HAMBURGER FIX (MAIN PART)
+
   const hamburger = document.querySelector(".hamburger");
   const closeBtn = document.querySelector(".close");
   const sidebar = document.querySelector(".left");
@@ -161,20 +170,20 @@ async function main() {
     });
   }
 
-  // previous
+
   previous.addEventListener("click", () => {
     let index = songs.indexOf(currentSong.src.split("/").pop());
     if (index > 0) playMusic(songs[index - 1]);
   });
 
 
-  // next
+
   next.addEventListener("click", () => {
     let index = songs.indexOf(currentSong.src.split("/").pop());
     if (index < songs.length - 1) playMusic(songs[index + 1]);
   });
 
-  // volume
+  
   document.querySelector(".range input").addEventListener("input", (e) => {
     currentSong.volume = e.target.value / 100;
   });

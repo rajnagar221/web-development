@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/utility.css" />
-    <title>Spotify - Web Player: Music for everyone</title>
+    <title>musify - Web Player: Music for everyone</title>
   </head>
 
   <body>
@@ -38,30 +38,30 @@
 
           <div class="footer">
             <div>
-              <a href="https://www.spotify.com/jp/legal/"><span>Legal</span></a>
+              <a href="https://www.musify.com/jp/legal/"><span>Legal</span></a>
             </div>
             <div>
-              <a href="https://www.spotify.com/jp/privacy/"
+              <a href="https://www.musify.com/jp/privacy/"
                 ><span>Privacy Center</span></a
               >
             </div>
             <div>
-              <a href="https://www.spotify.com/jp/legal/privacy-policy/"
+              <a href="https://www.musify.com/jp/legal/privacy-policy/"
                 ><span>Privacy Policy</span></a
               >
             </div>
             <div>
-              <a href="https://www.spotify.com/jp/legal/cookies-policy/"
+              <a href="https://www.musify.com/jp/legal/cookies-policy/"
                 ><span>Cookies</span></a
               >
             </div>
             <div>
-              <a href="https://www.spotify.com/jp/legal/privacy-policy/#s3"
+              <a href="https://www.musify.com/jp/legal/privacy-policy/#s3"
                 ><span>About Ads</span></a
               >
             </div>
             <div>
-              <a href="https://www.spotify.com/jp/accessibility/"
+              <a href="https://www.musify.com/jp/accessibility/"
                 ><span>Accessibility</span></a
               >
             </div>
@@ -73,7 +73,7 @@
           <div class="nav">
             <div class="hamburgerContainer">
               <img
-                width="40"
+                width="40"0
                 class="invert hamburger"
                 src="img/hamburger.svg"
                 alt=""
@@ -111,12 +111,23 @@
             </div>
           </div>
           <div class="buttons">
-            <button class="signupbtn">Sign up</button>
-            <button class="loginbtn">Log in</button>
-          </div>
+  <button class="signupbtn" onclick="goToSignup()">Sign up</button>
+  <script>
+function goToSignup() {
+  window.location.href = "signup.html";
+}
+</script>
+  <button class="loginbtn" onclick="goToLogin()">Log in</button>
+</div>
+
+<script>
+function goToLogin() {
+  window.location.href = "login.html";
+}
+</script>
         </div>
-        <div class="spotifyPlaylists">
-          <h2>Spotify Playlists</h2>
+        <div class="musifyPlaylists">
+          <h2>musify Playlists</h2>
           <div class="cardContainer">
             
               <div class="card">

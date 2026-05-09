@@ -164,15 +164,102 @@ document.addEventListener("DOMContentLoaded", function () {
             navUsername.textContent = localStorage.getItem("username") || "User";
         }
 
+        // ==================== PROFILE MENU SETUP ====================
+        const profileIcon = document.getElementById("profileIcon");
+        const profileMenu = document.getElementById("profileMenu");
+        const profileUsername = document.getElementById("profileUsername");
+        const profileEmail = document.getElementById("profileEmail");
+        const accountOption = document.getElementById("accountOption");
+        const privacyOption = document.getElementById("privacyOption");
+        const settingsOption = document.getElementById("settingsOption");
+        const picturesOption = document.getElementById("picturesOption");
+        const logoutOption = document.getElementById("logoutOption");
+
+        // Update profile info
+        if (profileUsername) {
+            profileUsername.textContent = localStorage.getItem("username") || "User";
+        }
+        if (profileEmail) {
+            profileEmail.textContent = localStorage.getItem("email") || "user@example.com";
+        }
+
+        // Toggle profile menu
+        if (profileIcon) {
+            profileIcon.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (profileMenu) {
+                    profileMenu.classList.toggle("active");
+                }
+            });
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener("click", (e) => {
+            if (profileMenu && profileIcon) {
+                if (!profileIcon.contains(e.target) && !profileMenu.contains(e.target)) {
+                    profileMenu.classList.remove("active");
+                }
+            }
+        });
+
+        // Account option
+        if (accountOption) {
+            accountOption.addEventListener("click", (e) => {
+                e.preventDefault();
+                alert(`👤 Account Details\n\nUsername: ${localStorage.getItem("username")}\nEmail: ${localStorage.getItem("email")}\n\nAccount Type: Premium\nMember Since: 2024\n\nPassword: ••••••••`);
+                profileMenu.classList.remove("active");
+            });
+        }
+
+        // Privacy option
+        if (privacyOption) {
+            privacyOption.addEventListener("click", (e) => {
+                e.preventDefault();
+                alert(`🔒 Privacy & Security Settings\n\n✓ Profile Visibility: Public\n✓ Show Recently Played: On\n✓ Two-Factor Authentication: ${localStorage.getItem("2fa") ? "Enabled" : "Disabled"}\n✓ Data Sharing: Off\n✓ Cookies: Necessary Only\n\nView detailed privacy policy: https://www.musify.com/privacy/`);
+                profileMenu.classList.remove("active");
+            });
+        }
+
+        // Settings option
+        if (settingsOption) {
+            settingsOption.addEventListener("click", (e) => {
+                e.preventDefault();
+                alert(`⚙️ Settings\n\n🔊 Audio Quality: High\n🌙 Dark Mode: On\n📢 Notifications: All\n🎨 Theme: Default\n💾 Cache: Clear\n🔄 Auto-Update: On\n\nMore settings available in Settings page.`);
+                profileMenu.classList.remove("active");
+            });
+        }
+
+        // Pictures/Profile option
+        if (picturesOption) {
+            picturesOption.addEventListener("click", (e) => {
+                e.preventDefault();
+                alert(`🖼️ Pictures & Profile\n\nProfile Avatar: 👤\nProfile Banner: Default\nBio: Music Lover 🎵\n\n📸 Upload Options:\n• Change Avatar\n• Upload Banner\n• Edit Bio\n• View All Photos\n\nRecent Activity:\n• Last played: Today\n• Favorite Genre: Bollywood\n• Total Playlists: 8\n• Total Likes: 234`);
+                profileMenu.classList.remove("active");
+            });
+        }
+
+        // Logout from profile menu
+        if (logoutOption) {
+            logoutOption.addEventListener("click", (e) => {
+                e.preventDefault();
+                performLogout();
+            });
+        }
+
         const logoutBtn = document.getElementById("logoutBtn");
         if (logoutBtn) {
             logoutBtn.addEventListener("click", function () {
-                localStorage.removeItem("token");
-                localStorage.removeItem("username");
-                localStorage.removeItem("email");
-                localStorage.removeItem("is_logged_in");
-                window.location.reload();
+                performLogout();
             });
+        }
+
+        // Logout function
+        function performLogout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            localStorage.removeItem("email");
+            localStorage.removeItem("is_logged_in");
+            window.location.reload();
         }
     }
 

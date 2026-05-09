@@ -122,6 +122,35 @@ function goToSignup() {
 
           <div class="buttons" id="welcomeInfo" style="display:none; gap:12px; align-items:center;">
             <span class="text-white font-semibold">Welcome, <span id="navUsername"></span></span>
+            <div class="profileContainer">
+              <div class="profileIcon" id="profileIcon">👤</div>
+              <div class="profileMenu" id="profileMenu">
+                <div class="profileHeader">
+                  <div class="profileAvatar" id="profileAvatar">👤</div>
+                  <div class="profileInfo">
+                    <p id="profileUsername">User</p>
+                    <p id="profileEmail">email@example.com</p>
+                  </div>
+                </div>
+                <div class="profileMenuDivider"></div>
+                <a href="#" class="profileMenuOption" id="accountOption">
+                  <span>👤 Account</span>
+                </a>
+                <a href="#" class="profileMenuOption" id="privacyOption">
+                  <span>🔒 Privacy & Security</span>
+                </a>
+                <a href="#" class="profileMenuOption" id="settingsOption">
+                  <span>⚙️ Settings</span>
+                </a>
+                <a href="#" class="profileMenuOption" id="picturesOption">
+                  <span>🖼️ Pictures & Profile</span>
+                </a>
+                <div class="profileMenuDivider"></div>
+                <a href="#" class="profileMenuOption profileMenuLogout" id="logoutOption">
+                  <span>🚪 Logout</span>
+                </a>
+              </div>
+            </div>
             <button id="logoutBtn" class="loginbtn" style="background:linear-gradient(135deg,#f97316,#ea580c);">Logout</button>
           </div>
 

@@ -73,10 +73,10 @@
           <div class="nav">
             <div class="hamburgerContainer">
               <img
-                width="40"0
+                width="40"
                 class="invert hamburger"
                 src="img/hamburger.svg"
-                alt=""
+                alt="hamburger menu"
               />
               <svg
                 width="24"
@@ -110,7 +110,7 @@
               </svg>
             </div>
           </div>
-          <div class="buttons">
+          <div class="buttons" id="authButtons">
   <button class="signupbtn" onclick="goToSignup()">Sign up</button>
   <script>
 function goToSignup() {
@@ -119,6 +119,11 @@ function goToSignup() {
 </script>
   <button class="loginbtn" onclick="goToLogin()">Log in</button>
 </div>
+
+          <div class="buttons" id="welcomeInfo" style="display:none; gap:12px; align-items:center;">
+            <span class="text-white font-semibold">Welcome, <span id="navUsername"></span></span>
+            <button id="logoutBtn" class="loginbtn" style="background:linear-gradient(135deg,#f97316,#ea580c);">Logout</button>
+          </div>
 
 <script>
 function goToLogin() {
@@ -208,5 +213,6 @@ function goToLogin() {
       </div>
     </div>
     <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
   </body>
 </html>

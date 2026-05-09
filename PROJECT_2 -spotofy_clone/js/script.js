@@ -190,3 +190,105 @@ currentSong.addEventListener("timeupdate", () => {
 }
 
 main();
+
+// ==================== SEARCH FUNCTIONALITY ====================
+const searchToggle = document.getElementById("searchToggle");
+const searchContainer = document.getElementById("searchContainer");
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
+
+// Toggle search container
+if (searchToggle) {
+  searchToggle.addEventListener("click", () => {
+    const isVisible = searchContainer.style.display !== "none";
+    searchContainer.style.display = isVisible ? "none" : "block";
+    if (!isVisible) {
+      searchInput.focus();
+    }
+  });
+}
+
+// Search functionality
+if (searchInput) {
+  searchInput.addEventListener("input", async (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    searchResults.innerHTML = "";
+
+    if (query.length === 0) {
+      return;
+    }
+
+    // Search in songs
+    try {
+      const allFolders = ["ncs", "karan aujla", "daily mix", "Diljit", "honey singh", "instagram trending", "vibes songs", "Ap dillhon", "talwinder"];
+      
+      for (const folder of allFolders) {
+        try {
+          const a = await fetch(`/songs/${folder}/`);
+          const response = await a.text();
+          const div = document.createElement("div");
+          div.innerHTML = response;
+          const as = div.getElementsByTagName("a");
+
+          for (let element of as) {
+            if (element.href.endsWith(".mp3")) {
+              const songName = element.href.split(`/${folder}/`)[1].replaceAll("%20", " ");
+              if (songName.toLowerCase().includes(query)) {
+                const result = document.createElement("div");
+                result.className = "searchResult";
+                result.innerHTML = `🎵 ${songName}`;
+                result.addEventListener("click", () => {
+                  playMusic(songName);
+                  searchContainer.style.display = "none";
+                  searchInput.value = "";
+                  searchResults.innerHTML = "";
+                });
+                searchResults.appendChild(result);
+              }
+            }
+          }
+        } catch (err) {
+          console.log(`Could not search in folder: ${folder}`);
+        }
+      }
+    } catch (error) {
+      console.log("Search error:", error);
+    }
+
+    // Search in playlist titles (cards)
+    const cards = document.querySelectorAll(".card");
+    cards.forEach((card) => {
+      const title = card.querySelector("h2")?.innerText.toLowerCase() || "";
+      const description = card.querySelector("p")?.innerText.toLowerCase() || "";
+      
+      if (title.includes(query) || description.includes(query)) {
+        const result = document.createElement("div");
+        result.className = "searchResult";
+        result.innerHTML = `🎶 ${title || "Playlist"}`;
+        result.addEventListener("click", () => {
+          card.click();
+          searchContainer.style.display = "none";
+          searchInput.value = "";
+          searchResults.innerHTML = "";
+        });
+        searchResults.appendChild(result);
+      }
+    });
+
+    if (searchResults.children.length === 0) {
+      const noResult = document.createElement("div");
+      noResult.className = "searchResult";
+      noResult.style.color = "var(--text-secondary)";
+      noResult.innerHTML = "No results found";
+      searchResults.appendChild(noResult);
+    }
+  });
+}
+
+// ==================== HOME BUTTON RELOAD ====================
+const homeBtn = document.getElementById("homeBtn");
+if (homeBtn) {
+  homeBtn.addEventListener("click", () => {
+    location.reload();
+  });
+}

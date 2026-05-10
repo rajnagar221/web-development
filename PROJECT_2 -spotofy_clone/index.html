@@ -19,11 +19,15 @@
             <img width="40" class="invert" src="img/logo.svg" alt="" />
           </div>
           <ul>
-            <li><img class="invert" src="img/home.svg" alt="home" />Home</li>
-            <li>
-              <img class="invert" src="img/search.svg" alt="home" />Search
+            <li id="homeBtn"><img class="invert" src="img/home.svg" alt="home" />Home</li>
+            <li id="searchToggle">
+              <img class="invert" src="img/search.svg" alt="search" />Search
             </li>
           </ul>
+        </div>
+        <div class="searchContainer" id="searchContainer" style="display: none;">
+          <input type="text" id="searchInput" placeholder="Search songs or playlists..." class="searchInput">
+          <div id="searchResults" class="searchResults"></div>
         </div>
 
         <div class="library bg-grey rounded m-1 p-1">
@@ -151,7 +155,6 @@ function goToSignup() {
                 </a>
               </div>
             </div>
-            <button id="logoutBtn" class="loginbtn" style="background:linear-gradient(135deg,#f97316,#ea580c);">Logout</button>
           </div>
 
 <script>

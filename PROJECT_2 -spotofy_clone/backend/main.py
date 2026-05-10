@@ -1,45 +1,56 @@
-from pymongo import MongoClient
+﻿from datetime import datetime, timedelta
+from typing import List, Optional
+import os
+import re
+from fastapi.staticfiles import StaticFiles
+from bson import ObjectId
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-from datetime import datetime, timedelta
-import hashlib
+from pydantic import BaseModel
+from pymongo import MongoClient
 
 app = FastAPI()
 
-# ===================== CORS =====================
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # production me specific URL likhna
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ===================== MongoDB =====================
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 try:
-    client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS=5000)
-    client.admin.command('ping')
-    print("✅ MongoDB Connected Successfully")
+    client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000)
+    client.admin.command("ping")
+    print("✅ MongoDB connected successfully")
+    db = client["spotify_clone"]
 except Exception as e:
-    print(f"❌ MongoDB Connection Error: {e}")
-    print("MongoDB should be running on localhost:27017")
+    raise RuntimeError(f"MongoDB connection failed: {e}")
 
-db = client["spotify_clone"]
 users_collection = db["users"]
+songs_collection = db["songs"]
+playlists_collection = db["playlists"]
+albums_collection = db["albums"]
 
-# ===================== JWT Config =====================
+SONGS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "songs"))
+if os.path.isdir(SONGS_DIR):
+    app.mount("/songs", StaticFiles(directory=SONGS_DIR), name="songs")
+else:
+    print(f"⚠️ Songs directory not found: {SONGS_DIR}")
+
 SECRET_KEY = "my_super_secret_key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
-# ===================== Models =====================
 class SignupModel(BaseModel):
     username: str
     email: str
@@ -49,128 +60,192 @@ class LoginModel(BaseModel):
     email: str
     password: str
 
-# ===================== Helper Functions =====================
-def hash_password(password: str):
+class SongModel(BaseModel):
+    title: str
+    artist: str
+    album: str
+    duration: Optional[int]
+    file_path: str
+    genre: Optional[str]
+    cover_image: Optional[str]
+    folder: Optional[str] = None
+
+class PlaylistModel(BaseModel):
+    name: str
+    description: str
+    cover_image: str
+    songs: List[str]
+
+
+def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
-def verify_password(plain_password, hashed_password):
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def create_access_token(data: dict):
-    to_encode = data.copy()
+def create_access_token(data: dict) -> str:
+    token_data = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    token_data.update({"exp": expire})
+    return jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
 
-# ===================== Signup =====================
 @app.post("/signup")
 def signup(user: SignupModel):
-    try:
-        # Check if user already exists
-        existing_user = users_collection.find_one({"email": user.email})
-        if existing_user:
-            raise HTTPException(status_code=400, detail="User already exists with this email")
+    existing_user = users_collection.find_one({"email": user.email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists with this email")
 
-        # Validate password length
-        if len(user.password) < 6:
-            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    if len(user.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
 
-        # Insert user into database
-        result = users_collection.insert_one({
-            "username": user.username,
-            "email": user.email,
-            "password": hash_password(user.password),
-            "created_at": datetime.utcnow(),
-            "last_login": None
-        })
+    result = users_collection.insert_one({
+        "username": user.username,
+        "email": user.email,
+        "password": hash_password(user.password),
+        "created_at": datetime.utcnow(),
+        "last_login": None,
+    })
 
-        return {
-            "message": "User created successfully",
-            "user_id": str(result.inserted_id)
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Signup error: {str(e)}")
+    return {"message": "User created successfully", "user_id": str(result.inserted_id)}
 
-# ===================== Login =====================
 @app.post("/login")
 def login(user: LoginModel):
-    try:
-        db_user = users_collection.find_one({"email": user.email})
-        if not db_user:
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+    db_user = users_collection.find_one({"email": user.email})
+    if not db_user or not verify_password(user.password, db_user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
-        if not verify_password(user.password, db_user["password"]):
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+    users_collection.update_one(
+        {"email": user.email},
+        {"$set": {"last_login": datetime.utcnow()}},
+    )
 
-        # Update last login time
-        users_collection.update_one(
-            {"email": user.email},
-            {"$set": {"last_login": datetime.utcnow()}}
-        )
+    token = create_access_token({"sub": user.email, "username": db_user.get("username")})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "message": "Login successful ✅",
+        "username": db_user.get("username"),
+    }
 
-        token = create_access_token({"sub": user.email, "username": db_user.get("username")})
-
-        return {
-            "access_token": token,
-            "token_type": "bearer",
-            "message": "Login successful ✅",
-            "username": db_user.get("username")
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Login error: {str(e)}")
-
-# ===================== Get Current User =====================
 @app.get("/me")
 def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("sub")
-        if email is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
-        user = users_collection.find_one({"email": email})
-        if user is None:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        return {
-            "username": user.get("username"),
-            "email": user.get("email"),
-            "user_id": str(user.get("_id")),
-            "last_login": user.get("last_login")
-        }
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
-# ===================== Check Login Status =====================
+    email = payload.get("sub")
+    if not email:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    user = users_collection.find_one({"email": email})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        "username": user.get("username"),
+        "email": user.get("email"),
+        "user_id": str(user.get("_id")),
+        "last_login": user.get("last_login"),
+    }
+
 @app.get("/check-login")
-def check_login(token: str = None):
-    if not token:
-        return {"is_logged_in": False, "message": "No token provided"}
-    
+def check_login(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email = payload.get("sub")
         user = users_collection.find_one({"email": email})
-        
-        return {
-            "is_logged_in": True,
-            "username": user.get("username"),
-            "email": email,
-            "message": "User is logged in ✅"
-        }
+        if not user:
+            return {"is_logged_in": False}
+        return {"is_logged_in": True, "username": user.get("username"), "email": email, "message": "User is logged in ✅"}
     except JWTError:
         return {"is_logged_in": False, "message": "Invalid or expired token"}
-    except Exception as e:
-        return {"is_logged_in": False, "message": f"Error: {str(e)}"}
 
-# ===================== Logout =====================
 @app.post("/logout")
 def logout():
     return {"message": "Logout successful ✅"}
+
+@app.post("/api/songs")
+def add_song(song: SongModel):
+    song_data = song.dict()
+    if not song_data.get("folder") and song_data.get("file_path"):
+        match = re.match(r"^/songs/([^/]+)/", song_data["file_path"])
+        if match:
+            song_data["folder"] = match.group(1)
+
+    result = songs_collection.insert_one(song_data)
+    return {"message": "Song added successfully", "song_id": str(result.inserted_id)}
+
+@app.get("/api/songs")
+def get_all_songs():
+    songs = list(songs_collection.find({}, {"_id": 0}))
+    return {"songs": songs}
+
+@app.get("/api/songs/id/{song_id}")
+def get_song(song_id: str):
+    song = songs_collection.find_one({"_id": ObjectId(song_id)})
+    if not song:
+        raise HTTPException(status_code=404, detail="Song not found")
+    song["_id"] = str(song["_id"])
+    return song
+
+@app.get("/api/songs/{folder}")
+def get_songs_by_folder(folder: str):
+    query = {
+        "$or": [
+            {"folder": {"$regex": f"^{re.escape(folder)}$", "$options": "i"}},
+            {"album": {"$regex": f"^{re.escape(folder)}$", "$options": "i"}},
+            {"file_path": {"$regex": f"/{re.escape(folder)}/", "$options": "i"}},
+        ]
+    }
+    songs = list(songs_collection.find(query, {"file_path": 1, "_id": 0}))
+    return {"songs": [os.path.basename(song["file_path"]) for song in songs if song.get("file_path")]}
+
+@app.get("/api/albums")
+def get_albums():
+    albums = list(albums_collection.find({}, {"_id": 0}))
+    return {"albums": albums}
+
+@app.get("/api/playlists")
+def get_playlists():
+    playlists = []
+    for playlist in playlists_collection.find({}, {"_id": 0}):
+        song_details = []
+        for song_id in playlist.get("songs", []):
+            song = songs_collection.find_one({"_id": ObjectId(song_id)})
+            if song:
+                song["_id"] = str(song["_id"])
+                song_details.append(song)
+        playlist["songs"] = song_details
+        playlists.append(playlist)
+    return {"playlists": playlists}
+
+@app.post("/api/playlists")
+def create_playlist(playlist: PlaylistModel):
+    result = playlists_collection.insert_one(playlist.dict())
+    return {"message": "Playlist created successfully", "playlist_id": str(result.inserted_id)}
+
+@app.get("/api/search")
+def search_songs(query: str):
+    song_results = list(songs_collection.find({
+        "$or": [
+            {"title": {"$regex": query, "$options": "i"}},
+            {"artist": {"$regex": query, "$options": "i"}},
+            {"album": {"$regex": query, "$options": "i"}},
+        ]
+    }, {"_id": 0}))
+
+    playlist_results = list(playlists_collection.find({
+        "$or": [
+            {"name": {"$regex": query, "$options": "i"}},
+            {"description": {"$regex": query, "$options": "i"}},
+        ]
+    }, {"_id": 0}))
+
+    return {"songs": song_results, "playlists": playlist_results}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

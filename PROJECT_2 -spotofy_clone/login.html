@@ -188,18 +188,36 @@
             Access your secure workspace and managed identities.
           </p>
         </div>
+        <div class="grid grid-cols-2 gap-2 rounded-3xl border border-white/10 bg-slate-950/80 p-2 text-sm font-semibold text-slate-300 mb-6">
+          <button type="button" data-login-tab="email" class="rounded-[20px] bg-slate-800 py-3 text-white transition">Email</button>
+          <button type="button" data-login-tab="phone" class="rounded-[20px] py-3 text-slate-400 transition hover:bg-slate-800 hover:text-white">Phone</button>
+        </div>
         <form id="loginForm" class="flex flex-col gap-stack-md">
-          <div class="flex flex-col gap-unit">
+          <div id="loginEmailSection" class="flex flex-col gap-unit">
             <label
               class="font-label-bold text-label-bold text-slate-400 uppercase"
               >Email Address</label
             >
             <div class="relative group">
               <input
-                id="email"
+                id="loginEmail"
                 class="w-full px-4 py-3 bg-slate-900/80 border border-slate-600/40 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 cubic-bezier(0.4,0,0.2,1)"
                 placeholder="name@gmail.com"
                 type="email"
+              />
+            </div>
+          </div>
+          <div id="loginPhoneSection" class="hidden flex flex-col gap-unit">
+            <label
+              class="font-label-bold text-label-bold text-slate-400 uppercase"
+              >Phone Number</label
+            >
+            <div class="relative group">
+              <input
+                id="loginPhone"
+                class="w-full px-4 py-3 bg-slate-900/80 border border-slate-600/40 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 cubic-bezier(0.4,0,0.2,1)"
+                placeholder="+91 98765 43210"
+                type="tel"
               />
             </div>
           </div>
@@ -217,7 +235,7 @@
             </div>
             <div class="relative group">
               <input
-                id="password"
+                id="loginPassword"
                 class="w-full px-4 py-3 bg-slate-900/80 border border-slate-600/40 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 cubic-bezier(0.4,0,0.2,1)"
                 placeholder="••••••••"
                 type="password"
@@ -241,19 +259,20 @@
         </div>
         <div class="grid grid-cols-2 gap-4">
           <button
-            class="flex items-center justify-center gap-2 py-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors duration-200"
+            type="button"
+            class="google-auth-btn flex items-center justify-center gap-2 py-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors duration-200"
           >
             <img
               alt="Google Logo"
               class="w-5 h-5"
-              data-alt="Official Google icon with red, yellow, green, and blue segments on a white background"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjKjsd4UiNK-qRj-pEmrsyuoSB-_aA0YQkab--TXOdbFkgetUvMZkcdqVlP-FRXOGHO6P-5U2Pm4Ck9rUCzXXxy7cfBuKK-JkkhE0cOtt2kBUbbxNCZILSvOw-W2VTAAhkCVRCXWhDvHRqt_jjZ9Ljpu10sUnJPClquUDTR6XTUPXZxBEptCa0Kke05KH_OQtt2E5VIsVeXgrXbpi0-sxfIfdQMShY6yowW75VDnvg916xXwSbvwsJtTy46dBWxorK67TpcF2qVkc"
+              src="https://www.svgrepo.com/show/355037/google.svg"
             />
             <span class="font-button-text text-button-text text-on-surface"
-              >Google</span
+              >Continue with Google</span
             >
           </button>
           <button
+            type="button"
             class="flex items-center justify-center gap-2 py-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors duration-200"
           >
             <span
@@ -272,13 +291,14 @@
             Don't have an account?
             <a
               class="font-button-text text-on-secondary-fixed-variant hover:opacity-80 transition-opacity"
-              href="#"
+              href="signup.html"
               >Create Account</a
             >
           </p>
         </div>
       </div>
     </main>
+    <div id="toastContainer" class="pointer-events-none fixed bottom-6 left-1/2 z-50 mx-auto hidden w-auto max-w-lg -translate-x-1/2 rounded-full bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-2xl"></div>
     <footer
       class="w-full py-8 mt-auto flex flex-col items-center space-y-4 px-8 text-center bg-transparent"
     >

@@ -2,18 +2,18 @@
 
 /* ============== Root Variables ============== */
 :root {
-    --primary-color: #1DB954;
-    --secondary-color: #191414;
-    --tertiary-color: #282828;
-    --accent-color: #1ed760;
-    --text-primary: #ffffff;
-    --text-secondary: #b3b3b3;
-    --text-tertiary: #a0a0a0;
-    --bg-primary: #121212;
-    --bg-secondary: #181818;
-    --bg-tertiary: #1e1e1e;
-    --border-color: #282828;
-    --hover-color: #1fdf64;
+    --primary-color: #FF4B2B;
+    --secondary-color: #141E30;
+    --tertiary-color: #1C2A42;
+    --accent-color: #FF4B2B;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B8C2D1;
+    --text-tertiary: #94A3B8;
+    --bg-primary: #141E30;
+    --bg-secondary: #1B2B49;
+    --bg-tertiary: #243B55;
+    --border-color: rgba(255,255,255,0.08);
+    --hover-color: #FF6D45;
     --play-opacity: 0;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -26,10 +26,21 @@
 }
 
 body {
-    background-color: var(--bg-primary);
+    background: linear-gradient(135deg, #141E30 0%, #243B55 100%);
     color: var(--text-primary);
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
+    zoom: 0.8;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 html {
@@ -39,7 +50,8 @@ html {
 /* ============== Main Container ============== */
 .container {
     display: flex;
-    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
     width: 100%;
     gap: 0;
 }
@@ -48,7 +60,7 @@ html {
 .left {
     width: 25%;
     height: 100%;
-    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--bg-tertiary) 100%);
+    background: linear-gradient(135deg, #141E30 0%, #243B55 100%);
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -72,18 +84,21 @@ html {
 
 /* ============== Home Section ============== */
 .home {
-    background-color: var(--tertiary-color);
+    background-color: rgba(255,255,255,0.05);
     border-radius: 12px;
     padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 16px;
     transition: var(--transition);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
 }
 
 .home .logo {
     display: flex;
     align-items: center;
+    gap: 10px;
     margin-bottom: 8px;
 }
 
@@ -91,6 +106,15 @@ html {
     width: 40px;
     height: 40px;
     filter: invert(1);
+}
+
+.home .logo .logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .home ul {
@@ -187,6 +211,70 @@ html {
     background-color: var(--border-color);
     border-color: var(--primary-color);
     color: var(--text-primary);
+}
+
+.libraryActions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.libraryBtn {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 13px;
+}
+
+.libraryBtn:hover,
+.libraryBtn.active {
+    background: var(--primary-color);
+    color: var(--text-primary);
+    border-color: var(--primary-color);
+}
+
+.item-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.favorite-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.04);
+    font-size: 14px;
+}
+
+.favorite-btn:hover {
+    color: var(--primary-color);
+    background: rgba(255,255,255,0.12);
+}
+
+.favorite-btn.liked {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: rgba(30, 215, 96, 0.18);
+}
+
+.playbar-fav {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+    border-radius: 50%;
+    margin-right: 8px;
 }
 
 .songList .info {
@@ -324,27 +412,27 @@ html {
 }
 
 .signupbtn {
-    background-color: transparent;
-    color: var(--text-secondary);
-    border: 1px solid var(--text-secondary);
+    background-color: rgba(255,255,255,0.08);
+    color: var(--text-primary);
+    border: 1px solid rgba(255,255,255,0.16);
 }
 
 .signupbtn:hover {
     color: var(--text-primary);
-    border-color: var(--text-primary);
-    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255,255,255,0.28);
+    background-color: rgba(255, 255, 255, 0.12);
 }
 
 .loginbtn {
     background-color: var(--primary-color);
-    color: var(--secondary-color);
+    color: #ffffff;
     font-weight: 700;
 }
 
 .loginbtn:hover {
     background-color: var(--hover-color);
     transform: scale(1.05);
-    box-shadow: 0 8px 24px rgba(29, 185, 84, 0.4);
+    box-shadow: 0 12px 30px rgba(255, 75, 43, 0.35);
 }
 
 /* ============== Playlists Section ============== */
@@ -787,7 +875,7 @@ html {
 }
 /* ============== Search Container ============== */
 .searchContainer {
-    background-color: var(--tertiary-color);
+    background-color: rgba(255,255,255,0.08);
     border-radius: 12px;
     padding: 12px;
     margin: 0 8px;
@@ -796,13 +884,15 @@ html {
     gap: 12px;
     max-height: 400px;
     overflow-y: auto;
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
 }
 
 .searchInput {
     width: 100%;
     padding: 10px 12px;
-    background-color: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.16);
     border-radius: 8px;
     color: var(--text-primary);
     font-family: 'Poppins', sans-serif;
@@ -811,13 +901,13 @@ html {
 }
 
 .searchInput::placeholder {
-    color: var(--text-secondary);
+    color: rgba(255,255,255,0.7);
 }
 
 .searchInput:focus {
     outline: none;
     border-color: var(--primary-color);
-    background-color: var(--tertiary-color);
+    background-color: rgba(255,255,255,0.12);
 }
 
 .searchResults {
@@ -869,12 +959,12 @@ html {
     position: absolute;
     top: 50px;
     right: 0;
-    background: linear-gradient(135deg, var(--tertiary-color) 0%, var(--bg-tertiary) 100%);
-    border: 1px solid var(--border-color);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 12px;
     min-width: 280px;
     padding: 12px 0;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
     opacity: 0;
     pointer-events: none;
     transform: translateY(-10px);

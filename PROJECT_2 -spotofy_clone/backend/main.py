@@ -55,9 +55,10 @@ class SignupModel(BaseModel):
     username: str
     email: str
     password: str
+    phone: Optional[str] = None
 
 class LoginModel(BaseModel):
-    email: str
+    identifier: str
     password: str
 
 class SongModel(BaseModel):
@@ -85,6 +86,23 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
+def is_valid_email(value: str) -> bool:
+    return bool(re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", value))
+
+
+def normalize_phone(value: str) -> str:
+    return re.sub(r"[^0-9+]", "", value)
+
+
+def find_user_by_identifier(identifier: str):
+    if is_valid_email(identifier):
+        return users_collection.find_one({"email": identifier})
+    normalized = normalize_phone(identifier)
+    if normalized:
+        return users_collection.find_one({"phone": normalized})
+    return None
+
+
 def create_access_token(data: dict) -> str:
     token_data = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -93,9 +111,19 @@ def create_access_token(data: dict) -> str:
 
 @app.post("/signup")
 def signup(user: SignupModel):
-    existing_user = users_collection.find_one({"email": user.email})
-    if existing_user:
+    existing_email = users_collection.find_one({"email": user.email})
+    if existing_email:
         raise HTTPException(status_code=400, detail="User already exists with this email")
+
+    if user.phone:
+        normalized_phone = normalize_phone(user.phone)
+        if len(normalized_phone) < 10:
+            raise HTTPException(status_code=400, detail="Enter a valid phone number")
+        existing_phone = users_collection.find_one({"phone": normalized_phone})
+        if existing_phone:
+            raise HTTPException(status_code=400, detail="User already exists with this phone number")
+    else:
+        normalized_phone = None
 
     if len(user.password) < 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
@@ -103,6 +131,7 @@ def signup(user: SignupModel):
     result = users_collection.insert_one({
         "username": user.username,
         "email": user.email,
+        "phone": normalized_phone,
         "password": hash_password(user.password),
         "created_at": datetime.utcnow(),
         "last_login": None,
@@ -112,14 +141,50 @@ def signup(user: SignupModel):
 
 @app.post("/login")
 def login(user: LoginModel):
-    db_user = users_collection.find_one({"email": user.email})
+    db_user = find_user_by_identifier(user.identifier)
     if not db_user or not verify_password(user.password, db_user["password"]):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
     users_collection.update_one(
-        {"email": user.email},
+        {"_id": db_user["_id"]},
         {"$set": {"last_login": datetime.utcnow()}},
     )
+
+    token = create_access_token({"sub": db_user["email"], "username": db_user.get("username")})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "message": "Login successful ✅",
+        "username": db_user.get("username"),
+    }
+
+@app.post("/google-login")
+def google_login():
+    email = "google-demo@musify.com"
+    db_user = users_collection.find_one({"email": email})
+    if not db_user:
+        result = users_collection.insert_one({
+            "username": "Google User",
+            "email": email,
+            "phone": None,
+            "password": hash_password("google-demo-password"),
+            "created_at": datetime.utcnow(),
+            "last_login": datetime.utcnow(),
+        })
+        db_user = users_collection.find_one({"_id": result.inserted_id})
+
+    users_collection.update_one(
+        {"_id": db_user["_id"]},
+        {"$set": {"last_login": datetime.utcnow()}},
+    )
+
+    token = create_access_token({"sub": db_user["email"], "username": db_user.get("username")})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "message": "Google login successful ✅",
+        "username": db_user.get("username"),
+    }
 
     token = create_access_token({"sub": user.email, "username": db_user.get("username")})
     return {

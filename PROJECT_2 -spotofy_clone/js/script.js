@@ -15,14 +15,64 @@ const FOLDERS = [
 
 let currentSong = new Audio();
 let songs = [];
+let displaySongs = [];
 let currFolder = "";
+let currentFolder = "";
 let currentTrack = "";
+let likedSongs = new Set();
+let showLikedSongs = false;
 
 function formatTime(seconds) {
   if (isNaN(seconds) || seconds < 0) return "00:00";
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60);
   return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+}
+
+function loadLikedSongs() {
+  try {
+    const saved = localStorage.getItem("likedSongs");
+    likedSongs = new Set(saved ? JSON.parse(saved) : []);
+  } catch {
+    likedSongs = new Set();
+  }
+}
+
+function saveLikedSongs() {
+  localStorage.setItem("likedSongs", JSON.stringify(Array.from(likedSongs)));
+}
+
+function getLikedSongObjects() {
+  return Array.from(likedSongs).map((item) => {
+    const [folder, track] = item.split("|");
+    return { folder, track };
+  });
+}
+
+function isTrackLiked(folder, track) {
+  return likedSongs.has(`${folder}|${track}`);
+}
+
+function toggleLikeTrack(folder, track, shouldRender = true) {
+  const key = `${folder}|${track}`;
+  if (likedSongs.has(key)) {
+    likedSongs.delete(key);
+  } else {
+    likedSongs.add(key);
+  }
+  saveLikedSongs();
+  updatePlaybarLikeButton();
+  if (shouldRender) {
+    renderSongList();
+  }
+}
+
+function updatePlaybarLikeButton() {
+  const button = getElement("#favoritePlaybarBtn");
+  if (!button) return;
+  const hasTrack = currentTrack && currentFolder;
+  button.disabled = !hasTrack;
+  button.classList.toggle("liked", hasTrack && isTrackLiked(currentFolder, currentTrack));
 }
 
 function getElement(selector) {
@@ -39,6 +89,7 @@ function updateSongInfo(track) {
   const songInfo = getElement(".songinfo");
   if (!songInfo) return;
   songInfo.textContent = decodeURIComponent(track.split("/").pop());
+  updatePlaybarLikeButton();
 }
 
 function updateTimeDisplay() {
@@ -50,33 +101,48 @@ function updateTimeDisplay() {
   progressCircle.style.left = `${(currentSong.currentTime / currentSong.duration) * 100}%`;
 }
 
-function buildSongUrl(track) {
+function buildSongUrl(folder, track) {
   const fileName = track.split("/").pop();
-  return `${STATIC_SONGS_URL}/${encodeURIComponent(currFolder)}/${encodeURIComponent(fileName)}`;
+  return `${STATIC_SONGS_URL}/${encodeURIComponent(folder)}/${encodeURIComponent(fileName)}`;
+}
+
+function updateLibraryButtons() {
+  const likedBtn = getElement("#likedSongsBtn");
+  const allBtn = getElement("#allSongsBtn");
+  if (likedBtn) likedBtn.classList.toggle("active", showLikedSongs);
+  if (allBtn) allBtn.classList.toggle("active", !showLikedSongs);
 }
 
 function renderSongList() {
   const songListContainer = getElement(".songList ul");
   if (!songListContainer) return;
 
-  if (songs.length === 0) {
-    songListContainer.innerHTML = `<li class="empty-song-list">No songs found in this folder.</li>`;
+  const currentItems = showLikedSongs ? getLikedSongObjects() : displaySongs;
+
+  if (currentItems.length === 0) {
+    const message = showLikedSongs ? "No liked songs yet." : "No songs found in this folder.";
+    songListContainer.innerHTML = `<li class="empty-song-list">${message}</li>`;
+    updateLibraryButtons();
     return;
   }
 
-  songListContainer.innerHTML = songs
-    .map((song) => {
-      const title = decodeURIComponent(song).replace(/\.mp3$/i, "");
+  songListContainer.innerHTML = currentItems
+    .map(({ folder, track }) => {
+      const title = decodeURIComponent(track).replace(/\.mp3$/i, "");
+      const likedClass = isTrackLiked(folder, track) ? "liked" : "";
       return `
-        <li data-file="${song}">
+        <li data-folder="${folder}" data-file="${track}">
           <img class="invert" width="34" src="img/music.svg" alt="song icon">
           <div class="info">
             <div>${title}</div>
-            <div>Unknown Artist</div>
+            <div>${folder}</div>
           </div>
-          <div class="playnow">
-            <span>Play Now</span>
-            <img class="invert" src="img/play.svg" alt="play icon">
+          <div class="item-actions">
+            <button type="button" class="favorite-btn ${likedClass}" title="Toggle like">❤</button>
+            <div class="playnow">
+              <span>Play</span>
+              <img class="invert" src="img/play.svg" alt="play icon">
+            </div>
           </div>
         </li>`;
     })
@@ -84,26 +150,38 @@ function renderSongList() {
 
   Array.from(document.querySelectorAll(".songList li")).forEach((item) => {
     const track = item.getAttribute("data-file");
+    const folder = item.getAttribute("data-folder");
     const playButton = item.querySelector(".playnow");
+    const favButton = item.querySelector(".favorite-btn");
 
     item.addEventListener("click", () => {
-      if (track) {
-        playMusic(track);
+      if (track && folder) {
+        playMusic(track, folder);
       }
     });
 
     if (playButton) {
       playButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        if (!track) return;
-        if (track === currentTrack && !currentSong.paused) {
+        if (!track || !folder) return;
+        if (track === currentTrack && folder === currentFolder && !currentSong.paused) {
           togglePlayback();
         } else {
-          playMusic(track);
+          playMusic(track, folder);
         }
       });
     }
+
+    if (favButton) {
+      favButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (!track || !folder) return;
+        toggleLikeTrack(folder, track);
+      });
+    }
   });
+
+  updateLibraryButtons();
 }
 
 async function getSongs(folder) {
@@ -121,6 +199,8 @@ async function getSongs(folder) {
     songs = [];
   }
 
+  showLikedSongs = false;
+  displaySongs = songs.map((track) => ({ folder: currFolder, track }));
   renderSongList();
   return songs;
 }
@@ -173,7 +253,7 @@ function attachAlbumEvents() {
         if (folder !== currFolder) {
           await getSongs(folder);
           if (songs.length > 0) {
-            playMusic(songs[0]);
+            playMusic(songs[0], folder);
           }
         } else {
           if (!currentSong.src || currentSong.paused) {
@@ -181,7 +261,7 @@ function attachAlbumEvents() {
               await getSongs(folder);
             }
             if (songs.length > 0) {
-              playMusic(songs[0]);
+              playMusic(songs[0], folder);
             }
           } else {
             currentSong.pause();
@@ -200,7 +280,7 @@ function attachAlbumEvents() {
 }
 
 function getCurrentSongIndex() {
-  return songs.findIndex((song) => song === currentTrack || song.split("/").pop() === currentTrack.split("/").pop());
+  return displaySongs.findIndex((item) => item.folder === currentFolder && item.track === currentTrack);
 }
 
 function updateAlbumPlayIcons() {
@@ -216,17 +296,18 @@ function updateAlbumPlayIcons() {
   });
 }
 
-function togglePlayback(track) {
-  if (track && track !== currentTrack) {
-    playMusic(track);
+function togglePlayback(track, folder) {
+  if (track && (track !== currentTrack || folder !== currentFolder)) {
+    playMusic(track, folder);
     return;
   }
 
   if (!currentSong.src) {
     if (track) {
-      playMusic(track);
-    } else if (songs.length > 0) {
-      playMusic(songs[0]);
+      playMusic(track, folder);
+    } else if (displaySongs.length > 0) {
+      const nextItem = displaySongs[0];
+      playMusic(nextItem.track, nextItem.folder);
     }
     return;
   }
@@ -242,9 +323,9 @@ function togglePlayback(track) {
   }
 }
 
-function playMusic(track) {
-  if (!track) return;
-  if (track === currentTrack && currentSong.src) {
+function playMusic(track, folder = currFolder) {
+  if (!track || !folder) return;
+  if (track === currentTrack && folder === currentFolder && currentSong.src) {
     if (currentSong.paused) {
       currentSong.play().catch((err) => console.warn("Playback failed:", err));
       updatePlayButton(true);
@@ -254,9 +335,12 @@ function playMusic(track) {
   }
 
   currentTrack = track;
-  currentSong.src = buildSongUrl(track);
+  currentFolder = folder;
+  currFolder = folder;
+  currentSong.src = buildSongUrl(folder, track);
   currentSong.load();
   updateSongInfo(track);
+  updatePlaybarLikeButton();
   currentSong.play().catch((err) => console.warn("Playback failed:", err));
   updatePlayButton(true);
   updateAlbumPlayIcons();
@@ -265,14 +349,20 @@ function playMusic(track) {
 function playPreviousSong() {
   const index = getCurrentSongIndex();
   if (index > 0) {
-    playMusic(songs[index - 1]);
+    const item = displaySongs[index - 1];
+    if (item) {
+      playMusic(item.track, item.folder);
+    }
   }
 }
 
 function playNextSong() {
   const index = getCurrentSongIndex();
-  if (index >= 0 && index < songs.length - 1) {
-    playMusic(songs[index + 1]);
+  if (index >= 0 && index < displaySongs.length - 1) {
+    const item = displaySongs[index + 1];
+    if (item) {
+      playMusic(item.track, item.folder);
+    }
   }
 }
 
@@ -303,8 +393,17 @@ function setupControlButtons() {
   const playButton = document.getElementById("play");
   const previousButton = document.getElementById("previous");
   const nextButton = document.getElementById("next");
+  const favoritePlaybarBtn = getElement("#favoritePlaybarBtn");
   const seekbar = getElement(".seekbar");
   const volumeRange = getElement(".range input");
+
+  if (favoritePlaybarBtn) {
+    favoritePlaybarBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (!currentTrack || !currentFolder) return;
+      toggleLikeTrack(currentFolder, currentTrack);
+    });
+  }
 
   if (playButton) {
     playButton.addEventListener("click", () => {
@@ -418,6 +517,27 @@ function setupSidebarToggle() {
   }
 }
 
+function setupLikedSongsButtons() {
+  const likedSongsBtn = getElement("#likedSongsBtn");
+  const allSongsBtn = getElement("#allSongsBtn");
+
+  if (likedSongsBtn) {
+    likedSongsBtn.addEventListener("click", () => {
+      showLikedSongs = true;
+      displaySongs = getLikedSongObjects();
+      renderSongList();
+    });
+  }
+
+  if (allSongsBtn) {
+    allSongsBtn.addEventListener("click", () => {
+      showLikedSongs = false;
+      displaySongs = songs.map((track) => ({ folder: currFolder, track }));
+      renderSongList();
+    });
+  }
+}
+
 function setupHomeButton() {
   const homeBtn = document.getElementById("homeBtn");
   if (homeBtn) {
@@ -425,11 +545,62 @@ function setupHomeButton() {
   }
 }
 
+function setupProfileMenu() {
+  const profileIcon = getElement("#profileIcon");
+  const profileMenu = getElement("#profileMenu");
+  const profileUsername = getElement("#profileUsername");
+  const profileEmail = getElement("#profileEmail");
+  const profileAvatar = getElement("#profileAvatar");
+  const logoutOption = getElement("#logoutOption");
+  const profileContainer = getElement(".profileContainer");
+
+  const username = localStorage.getItem("username") || "User";
+  const email = localStorage.getItem("email") || "email@example.com";
+  const initials = username
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0].toUpperCase())
+    .slice(0, 2)
+    .join("") || "U";
+
+  if (profileUsername) profileUsername.textContent = username;
+  if (profileEmail) profileEmail.textContent = email;
+  if (profileAvatar) profileAvatar.textContent = initials;
+
+  if (profileIcon && profileMenu) {
+    profileIcon.addEventListener("click", (event) => {
+      event.stopPropagation();
+      profileMenu.classList.toggle("active");
+    });
+  }
+
+  if (logoutOption) {
+    logoutOption.addEventListener("click", (event) => {
+      event.preventDefault();
+      localStorage.removeItem("token");
+      localStorage.removeItem("is_logged_in");
+      localStorage.removeItem("username");
+      localStorage.removeItem("email");
+      window.location.href = "login.html";
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    if (!profileContainer || !profileMenu) return;
+    if (!profileContainer.contains(event.target)) {
+      profileMenu.classList.remove("active");
+    }
+  });
+}
+
 async function main() {
+  loadLikedSongs();
   setupPlayerEvents();
   setupControlButtons();
   setupSidebarToggle();
+  setupLikedSongsButtons();
   setupHomeButton();
+  setupProfileMenu();
   await setupSearch();
   await displayAlbums();
   await getSongs(FOLDERS[0]);

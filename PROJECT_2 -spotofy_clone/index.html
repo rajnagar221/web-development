@@ -9,7 +9,7 @@
   </head>
 
   <body>
-    <div class="container flex bg-black">
+    <div class="container flex bg-grey">
       <div class="left">
         <div class="close">
           <img width="30" class="invert" src="img/close.svg" alt="" />
@@ -17,6 +17,7 @@
         <div class="home bg-grey rounded m-1 p-1">
           <div class="logo">
             <img width="40" class="invert" src="img/logo.svg" alt="" />
+            <span class="logo-text">musify</span>
           </div>
           <ul>
             <li id="homeBtn"><img class="invert" src="img/home.svg" alt="home" />Home</li>
@@ -34,6 +35,11 @@
           <div class="heading">
             <img class="invert" src="img/playlist.svg" alt="" />
             <h1>Your Library</h1>
+          </div>
+
+          <div class="libraryActions">
+            <button id="allSongsBtn" class="libraryBtn active">All Songs</button>
+            <button id="likedSongsBtn" class="libraryBtn">Liked Songs</button>
           </div>
 
           <div class="songList">
@@ -226,6 +232,7 @@ function goToLogin() {
             <div class="abovebar">
               <div class="songinfo"></div>
               <div class="songbuttons">
+                <button id="favoritePlaybarBtn" class="favorite-btn playbar-fav" title="Like this song">❤</button>
                 <img width="35" id="previous" src="img/prevsong.svg" alt="" />
                 <img width="35" id="play" src="img/play.svg" alt="" />
                 <img width="35" id="next" src="img/nextsong.svg" alt="" />

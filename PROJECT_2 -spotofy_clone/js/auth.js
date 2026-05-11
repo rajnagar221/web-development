@@ -1,259 +1,222 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const API_BASE_URL = "http://127.0.0.1:8000";
 
-    // ==================== LOGIN HANDLER ====================
     const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const loginTabs = document.querySelectorAll("[data-login-tab]");
+    const loginEmailSection = document.getElementById("loginEmailSection");
+    const loginPhoneSection = document.getElementById("loginPhoneSection");
+    const toastContainer = document.getElementById("toastContainer");
+    const googleButtons = document.querySelectorAll(".google-auth-btn");
 
-    if (loginForm) {
-        loginForm.addEventListener("submit", async function (e) {
-            e.preventDefault();
+    let loginMode = "email";
 
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+    function showToast(message, variant = "info") {
+        if (!toastContainer) {
+            alert(message);
+            return;
+        }
+        toastContainer.textContent = message;
+        toastContainer.className = `fixed bottom-6 left-1/2 z-50 transform -translate-x-1/2 rounded-full px-5 py-3 text-sm font-medium text-white shadow-2xl transition-all duration-300 ${variant === "success" ? "bg-emerald-500" : variant === "error" ? "bg-rose-500" : "bg-slate-800"}`;
+        toastContainer.style.opacity = "1";
+        clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(() => {
+            if (toastContainer) {
+                toastContainer.style.opacity = "0";
+            }
+        }, 3200);
+    }
 
-            // Validation
-            if (!email || !password) {
-                alert("❌ Email and password are required");
+    function setLoginMode(mode) {
+        loginMode = mode;
+        loginTabs.forEach((tab) => {
+            const active = tab.dataset.loginTab === mode;
+            tab.classList.toggle("bg-slate-800", active);
+            tab.classList.toggle("text-white", active);
+            tab.classList.toggle("bg-transparent", !active);
+            tab.classList.toggle("text-slate-400", !active);
+        });
+        if (loginEmailSection && loginPhoneSection) {
+            loginEmailSection.classList.toggle("hidden", mode !== "email");
+            loginPhoneSection.classList.toggle("hidden", mode !== "phone");
+        }
+    }
+
+    loginTabs.forEach((tab) => {
+        tab.addEventListener("click", (event) => {
+            const mode = event.currentTarget.dataset.loginTab;
+            if (mode) {
+                setLoginMode(mode);
+            }
+        });
+    });
+
+    async function handleLogin(identifier, password) {
+        if (!identifier || !password) {
+            showToast("Please fill in both fields.", "error");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    identifier: identifier,
+                    password: password,
+                }),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                showToast(data.detail || "Login failed.", "error");
                 return;
             }
 
-            try {
-                const response = await fetch("http://127.0.0.1:8000/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        password: password
-                    })
-                });
+            localStorage.setItem("token", data.access_token);
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("email", data.email || "");
+            localStorage.setItem("is_logged_in", "true");
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Save token and user info
-                    localStorage.setItem("token", data.access_token);
-                    localStorage.setItem("username", data.username);
-                    localStorage.setItem("email", email);
-                    localStorage.setItem("is_logged_in", "true");
-
-                    // Show success modal
-                    const successModal = document.getElementById("successModal");
-                    if (successModal) {
-                        const successUsername = document.getElementById("successUsername");
-                        if (successUsername) {
-                            successUsername.textContent = data.username;
-                        }
-                        successModal.classList.remove("hidden");
-                        
-                        // Redirect to homepage after 3 seconds
-                        setTimeout(() => {
-                            window.location.href = "index.html";
-                        }, 3000);
-                    } else {
-                        // Fallback if modal not found
-                        alert(`✅ Login Successful!\nWelcome ${data.username}!`);
-                        setTimeout(() => {
-                            window.location.href = "index.html";
-                        }, 1000);
-                    }
-                } else {
-                    alert(`❌ ${data.detail || "Login failed"}`);
-                }
-
-            } catch (error) {
-                alert("❌ Server Error - Make sure backend is running on http://127.0.0.1:8000");
-                console.log(error);
-            }
-        });
+            showToast(`Welcome back, ${data.username}!`, "success");
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1200);
+        } catch (err) {
+            console.error(err);
+            showToast("Server error. Make sure backend is running.", "error");
+        }
     }
 
-    // ==================== SIGNUP HANDLER ====================
-    const signupForm = document.getElementById("signupForm");
+    async function handleGoogleAuth() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/google-login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                showToast(data.detail || "Google login failed.", "error");
+                return;
+            }
+            localStorage.setItem("token", data.access_token);
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("email", "google-demo@musify.com");
+            localStorage.setItem("is_logged_in", "true");
+            showToast("Signed in with Google!", "success");
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1200);
+        } catch (err) {
+            console.error(err);
+            showToast("Google login is unavailable right now.", "error");
+        }
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const identifier = loginMode === "email"
+                ? document.getElementById("loginEmail").value.trim()
+                : document.getElementById("loginPhone").value.trim();
+            const password = document.getElementById("loginPassword").value.trim();
+            handleLogin(identifier, password);
+        });
+    }
 
     if (signupForm) {
         signupForm.addEventListener("submit", async function (e) {
             e.preventDefault();
+            const fullname = document.getElementById("fullname").value.trim();
+            const email = document.getElementById("signupEmail").value.trim();
+            const phone = document.getElementById("signupPhone").value.trim();
+            const password = document.getElementById("signupPassword").value.trim();
+            const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-            const fullname = document.getElementById("fullname").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
-
-            // Validation
             if (!fullname || !email || !password || !confirmPassword) {
-                alert("❌ All fields are required");
+                showToast("All fields are required.", "error");
                 return;
             }
-
             if (password.length < 6) {
-                alert("❌ Password must be at least 6 characters");
+                showToast("Password must be at least 6 characters.", "error");
                 return;
             }
-
             if (password !== confirmPassword) {
-                alert("❌ Passwords do not match");
+                showToast("Passwords do not match.", "error");
                 return;
             }
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/signup", {
+                const response = await fetch(`${API_BASE_URL}/signup`, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
                         username: fullname,
                         email: email,
-                        password: password
-                    })
+                        phone: phone,
+                        password: password,
+                    }),
                 });
-
                 const data = await response.json();
-
-                if (response.ok) {
-                    alert(`✅ ${data.message}\nAccount created successfully!\nRedirecting to login...`);
-
-                    // Redirect to login
-                    setTimeout(() => {
-                        window.location.href = "login.html";
-                    }, 2000);
-                } else {
-                    alert(`❌ ${data.detail || "Signup failed"}`);
+                if (!response.ok) {
+                    showToast(data.detail || "Signup failed.", "error");
+                    return;
                 }
-
-            } catch (error) {
-                alert("❌ Server Error - Make sure backend is running on http://127.0.0.1:8000");
-                console.log(error);
+                showToast("Account created successfully! Redirecting...");
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 1400);
+            } catch (err) {
+                console.error(err);
+                showToast("Server error. Make sure backend is running.", "error");
             }
         });
     }
 
-    // ==================== CHECK LOGIN STATUS ====================
-    const dashboardPage = document.querySelector(".dashboard, [data-page='dashboard']");
-    if (dashboardPage) {
+    googleButtons.forEach((button) => {
+        button.addEventListener("click", (e) => {
+            e.preventDefault();
+            handleGoogleAuth();
+        });
+    });
+
+    function checkDashboardLogin() {
+        const dashboardPage = document.querySelector(".dashboard, [data-page='dashboard']");
+        if (!dashboardPage) return;
+
         const token = localStorage.getItem("token");
         const username = localStorage.getItem("username");
-        
         if (token && username) {
-            console.log(`✅ User ${username} is logged in`);
-            // Update UI to show logged in user
             const userDisplay = document.getElementById("user-display");
             if (userDisplay) {
                 userDisplay.textContent = `Welcome, ${username}`;
             }
-        } else {
-            console.log("❌ No active session");
-            // Redirect to login if not logged in
-            // window.location.href = "login.html";
         }
     }
 
-    // ==================== INDEX BUTTON VISIBILITY ====================
-    const authButtons = document.getElementById("authButtons");
-    const welcomeInfo = document.getElementById("welcomeInfo");
-    const navUsername = document.getElementById("navUsername");
-    const isLoggedIn = localStorage.getItem("is_logged_in") === "true";
-
-    if (isLoggedIn && authButtons) {
-        authButtons.style.display = "none";
-        if (welcomeInfo) {
-            welcomeInfo.style.display = "flex";
-        }
-        if (navUsername) {
-            navUsername.textContent = localStorage.getItem("username") || "User";
-        }
-
-        // ==================== PROFILE MENU SETUP ====================
-        const profileIcon = document.getElementById("profileIcon");
-        const profileMenu = document.getElementById("profileMenu");
-        const profileUsername = document.getElementById("profileUsername");
-        const profileEmail = document.getElementById("profileEmail");
-        const accountOption = document.getElementById("accountOption");
-        const privacyOption = document.getElementById("privacyOption");
-        const settingsOption = document.getElementById("settingsOption");
-        const picturesOption = document.getElementById("picturesOption");
-        const logoutOption = document.getElementById("logoutOption");
-
-        // Update profile info
-        if (profileUsername) {
-            profileUsername.textContent = localStorage.getItem("username") || "User";
-        }
-        if (profileEmail) {
-            profileEmail.textContent = localStorage.getItem("email") || "user@example.com";
-        }
-
-        // Toggle profile menu
-        if (profileIcon) {
-            profileIcon.addEventListener("click", (e) => {
-                e.stopPropagation();
-                if (profileMenu) {
-                    profileMenu.classList.toggle("active");
-                }
-            });
-        }
-
-        // Close menu when clicking outside
-        document.addEventListener("click", (e) => {
-            if (profileMenu && profileIcon) {
-                if (!profileIcon.contains(e.target) && !profileMenu.contains(e.target)) {
-                    profileMenu.classList.remove("active");
-                }
+    function updateIndexAuthButtons() {
+        const authButtons = document.getElementById("authButtons");
+        const welcomeInfo = document.getElementById("welcomeInfo");
+        const navUsername = document.getElementById("navUsername");
+        const isLoggedIn = localStorage.getItem("is_logged_in") === "true";
+        if (isLoggedIn && authButtons) {
+            authButtons.style.display = "none";
+            if (welcomeInfo) {
+                welcomeInfo.style.display = "flex";
             }
-        });
-
-        // Account option
-        if (accountOption) {
-            accountOption.addEventListener("click", (e) => {
-                e.preventDefault();
-                alert(`👤 Account Details\n\nUsername: ${localStorage.getItem("username")}\nEmail: ${localStorage.getItem("email")}\n\nAccount Type: Premium\nMember Since: 2024\n\nPassword: ••••••••`);
-                profileMenu.classList.remove("active");
-            });
-        }
-
-        // Privacy option
-        if (privacyOption) {
-            privacyOption.addEventListener("click", (e) => {
-                e.preventDefault();
-                alert(`🔒 Privacy & Security Settings\n\n✓ Profile Visibility: Public\n✓ Show Recently Played: On\n✓ Two-Factor Authentication: ${localStorage.getItem("2fa") ? "Enabled" : "Disabled"}\n✓ Data Sharing: Off\n✓ Cookies: Necessary Only\n\nView detailed privacy policy: https://www.musify.com/privacy/`);
-                profileMenu.classList.remove("active");
-            });
-        }
-
-        // Settings option
-        if (settingsOption) {
-            settingsOption.addEventListener("click", (e) => {
-                e.preventDefault();
-                alert(`⚙️ Settings\n\n🔊 Audio Quality: High\n🌙 Dark Mode: On\n📢 Notifications: All\n🎨 Theme: Default\n💾 Cache: Clear\n🔄 Auto-Update: On\n\nMore settings available in Settings page.`);
-                profileMenu.classList.remove("active");
-            });
-        }
-
-        // Pictures/Profile option
-        if (picturesOption) {
-            picturesOption.addEventListener("click", (e) => {
-                e.preventDefault();
-                alert(`🖼️ Pictures & Profile\n\nProfile Avatar: 👤\nProfile Banner: Default\nBio: Music Lover 🎵\n\n📸 Upload Options:\n• Change Avatar\n• Upload Banner\n• Edit Bio\n• View All Photos\n\nRecent Activity:\n• Last played: Today\n• Favorite Genre: Bollywood\n• Total Playlists: 8\n• Total Likes: 234`);
-                profileMenu.classList.remove("active");
-            });
-        }
-
-        // Logout from profile menu
-        if (logoutOption) {
-            logoutOption.addEventListener("click", (e) => {
-                e.preventDefault();
-                performLogout();
-            });
-        }
-
-        // Logout function
-        function performLogout() {
-            localStorage.removeItem("token");
-            localStorage.removeItem("username");
-            localStorage.removeItem("email");
-            localStorage.removeItem("is_logged_in");
-            window.location.reload();
+            if (navUsername) {
+                navUsername.textContent = localStorage.getItem("username") || "User";
+            }
         }
     }
 
+    setLoginMode("email");
+    checkDashboardLogin();
+    updateIndexAuthButtons();
 });

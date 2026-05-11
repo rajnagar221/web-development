@@ -20,6 +20,11 @@
     color: white;
 }
 
+.bg-grey{
+    background-color: #202B3C;
+    color: white;
+}
+
 .invert{
     filter: invert(1);
 }

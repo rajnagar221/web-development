@@ -205,6 +205,14 @@ async function getSongs(folder) {
   return songs;
 }
 
+async function loadExternalMusic() {
+    let res = await fetch(`${API_BASE_URL}/api/external-music`);
+    let data = await res.json();
+    console.log(data);
+}
+
+loadExternalMusic();
+
 async function displayAlbums() {
   const cardContainer = getElement(".cardContainer");
   if (!cardContainer) return;

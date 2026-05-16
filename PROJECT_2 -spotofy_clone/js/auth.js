@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const loginTabs = document.querySelectorAll("[data-login-tab]");
     const loginEmailSection = document.getElementById("loginEmailSection");
     const loginPhoneSection = document.getElementById("loginPhoneSection");
+    const loginEmailInput = document.getElementById("loginEmail");
+    const loginPhoneInput = document.getElementById("loginPhone");
     const toastContainer = document.getElementById("toastContainer");
     const googleButtons = document.querySelectorAll(".google-auth-btn");
 
@@ -17,12 +19,16 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         toastContainer.textContent = message;
-        toastContainer.className = `fixed bottom-6 left-1/2 z-50 transform -translate-x-1/2 rounded-full px-5 py-3 text-sm font-medium text-white shadow-2xl transition-all duration-300 ${variant === "success" ? "bg-emerald-500" : variant === "error" ? "bg-rose-500" : "bg-slate-800"}`;
+        toastContainer.style.display = "block";
         toastContainer.style.opacity = "1";
+        toastContainer.style.background = variant === "success" ? "rgba(34, 197, 94, 0.18)" : variant === "error" ? "rgba(244, 63, 94, 0.18)" : "rgba(15, 23, 42, 0.95)";
+        toastContainer.style.borderColor = variant === "success" ? "rgba(34, 197, 94, 0.4)" : variant === "error" ? "rgba(244, 63, 94, 0.4)" : "rgba(148, 163, 184, 0.35)";
+        toastContainer.style.color = "#FFFFFF";
         clearTimeout(window.toastTimer);
         window.toastTimer = setTimeout(() => {
             if (toastContainer) {
                 toastContainer.style.opacity = "0";
+                setTimeout(() => toastContainer.style.display = "none", 300);
             }
         }, 3200);
     }
@@ -31,14 +37,19 @@ document.addEventListener("DOMContentLoaded", function () {
         loginMode = mode;
         loginTabs.forEach((tab) => {
             const active = tab.dataset.loginTab === mode;
-            tab.classList.toggle("bg-slate-800", active);
-            tab.classList.toggle("text-white", active);
-            tab.classList.toggle("bg-transparent", !active);
-            tab.classList.toggle("text-slate-400", !active);
+            tab.classList.toggle("active", active);
         });
+
         if (loginEmailSection && loginPhoneSection) {
             loginEmailSection.classList.toggle("hidden", mode !== "email");
             loginPhoneSection.classList.toggle("hidden", mode !== "phone");
+        }
+
+        if (loginEmailInput && loginPhoneInput) {
+            loginEmailInput.disabled = mode !== "email";
+            loginPhoneInput.disabled = mode !== "phone";
+            loginEmailInput.required = mode === "email";
+            loginPhoneInput.required = mode === "phone";
         }
     }
 

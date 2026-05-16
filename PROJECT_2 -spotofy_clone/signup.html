@@ -1,231 +1,478 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Create Account | Musify</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Musify - Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF4B2B;
+            --primary-soft: #FF6D45;
+            --text-main: #F7F9FF;
+            --text-muted: #AAB7D8;
+            --text-soft: #7E95B7;
+            --bg-start: #141E30;
+            --bg-end: #243B55;
+            --border: rgba(255, 255, 255, 0.12);
+            --transition: all 0.25s ease;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top left, rgba(255, 75, 43, 0.12), transparent 26%),
+                        radial-gradient(circle at bottom right, rgba(255, 75, 43, 0.08), transparent 18%),
+                        linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(255, 75, 43, 0.12), transparent 30%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1080px;
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            min-height: calc(100vh - 40px);
+            background: rgba(10, 18, 34, 0.86);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+        }
+
+        .side-panel {
+            padding: 38px 30px;
+            background: linear-gradient(180deg, rgba(20, 30, 48, 0.94), rgba(28, 42, 66, 0.97));
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .branding {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .branding-mark {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+            box-shadow: 0 18px 35px rgba(255, 75, 43, 0.24);
+        }
+
+        .branding-mark svg {
+            width: 28px;
+            height: 28px;
+            fill: #fff;
+        }
+
+        .branding-text h1 {
+            font-size: 24px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .branding-text p {
+            font-size: 12px;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+        }
+
+        .feature-list {
+            display: grid;
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .feature-badge {
+            width: 42px;
+            min-width: 42px;
+            height: 42px;
+            border-radius: 16px;
+            background: rgba(255, 75, 43, 0.12);
+            border: 1px solid rgba(255, 75, 43, 0.2);
+            display: grid;
+            place-items: center;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .feature-copy h3 {
+            font-size: 15px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .feature-copy p {
+            color: var(--text-soft);
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .side-footer {
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .form-panel {
+            padding: 40px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-card {
+            width: 100%;
+            max-width: 365px;
+        }
+
+        .form-heading {
+            font-size: 26px;
+            line-height: 1.1;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 26px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .field-wrapper {
+            position: relative;
+        }
+
+        .field-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .form-input {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            padding: 12px 16px 12px 44px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-soft);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 75, 43, 0.08);
+            box-shadow: 0 0 0 3px rgba(255, 75, 43, 0.1);
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .checkbox-row input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-row label {
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px 0;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            box-shadow: 0 16px 34px rgba(255, 75, 43, 0.22);
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .signin-row {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .signin-row a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .footer-links {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            color: var(--text-soft);
+            font-size: 12px;
+        }
+
+        .footer-links a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        #toastContainer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-size: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(14px);
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 980px) {
+            .container {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+
+            .side-panel {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 28px 22px;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .container {
+                border-radius: 24px;
+            }
+
+            .form-panel {
+                padding: 22px 18px;
+            }
+
+            .form-heading {
+                font-size: 22px;
+            }
+
+            .form-subtitle {
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+
+            .form-input {
+                padding: 11px 14px 11px 42px;
+                font-size: 13px;
+            }
+
+            .checkbox-row {
+                font-size: 12px;
+            }
+
+            .signin-row {
+                font-size: 12px;
+            }
+
+            .footer-links {
+                font-size: 11px;
+                gap: 8px;
+            }
+        }
+    </style>
 </head>
-<body class="font-body-md text-white min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
-  <!-- Animated background blobs -->
-  <div class="fixed inset-0 z-0 overflow-hidden">
-    <div class="absolute top-[-50%] right-[-20%] w-[50%] h-[50%] bg-gradient-to-br from-slate-500/15 to-slate-700/0 blur-[150px] rounded-full animate-pulse"></div>
-    <div class="absolute bottom-[-30%] left-[-10%] w-[40%] h-[40%] bg-gradient-to-tr from-slate-600/20 to-slate-700/0 blur-[120px] rounded-full"></div>
-    <div class="absolute top-[50%] left-[50%] w-[30%] h-[30%] bg-gradient-to-br from-slate-400/15 to-slate-500/5 blur-[100px] rounded-full animate-pulse"></div>
-  </div>
+<body>
+    <div class="container">
+        <aside class="side-panel">
+            <div>
+                <div class="branding">
+                    <div class="branding-mark">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+                    </div>
+                    <div class="branding-text">
+                        <h1>MUSIFY</h1>
+                        <p>Music streaming, simplified.</p>
+                    </div>
+                </div>
 
-  <!-- Header -->
-  <header class="fixed top-0 w-full z-50 bg-gradient-to-b from-slate-950/95 to-transparent backdrop-blur-md border-b border-white/5">
-    <div class="flex items-center justify-between px-6 h-16 max-w-screen-sm mx-auto">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-500 rounded-full flex items-center justify-center shadow-md shadow-slate-900/20">
-          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-        </div>
-        <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">musify</span>
-      </div>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-badge">🎵</div>
+                        <div class="feature-copy">
+                            <h3>Premium sound</h3>
+                            <p>Clear audio for every mood and playlist.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-badge">🎧</div>
+                        <div class="feature-copy">
+                            <h3>Ad-free listening</h3>
+                            <p>Focus on music, not interruptions.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-badge">📱</div>
+                        <div class="feature-copy">
+                            <h3>Offline ready</h3>
+                            <p>Download playlists and play anywhere.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="side-footer">Create your account with the same modern Musify experience you already love.</div>
+        </aside>
+
+        <main class="form-panel">
+            <section class="form-card">
+                <div class="form-heading">Create your account</div>
+                <p class="form-subtitle">Join Musify and access your playlists, offline music, and premium features.</p>
+
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label class="form-label" for="fullname">Full Name</label>
+                        <div class="field-wrapper">
+                            <span class="field-icon">👤</span>
+                            <input type="text" id="fullname" class="form-input" placeholder="Your full name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="signupEmail">Email Address</label>
+                        <div class="field-wrapper">
+                            <span class="field-icon">✉️</span>
+                            <input type="email" id="signupEmail" class="form-input" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="signupPhone">Phone Number</label>
+                        <div class="field-wrapper">
+                            <span class="field-icon">📱</span>
+                            <input type="tel" id="signupPhone" class="form-input" placeholder="+91 98765 43210">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="signupPassword">Password</label>
+                        <div class="field-wrapper">
+                            <span class="field-icon">🔒</span>
+                            <input type="password" id="signupPassword" class="form-input" placeholder="Create a strong password" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">Confirm Password</label>
+                        <div class="field-wrapper">
+                            <span class="field-icon">🔒</span>
+                            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                        </div>
+                    </div>
+
+                    <label class="checkbox-row">
+                        <input type="checkbox" required>
+                        <span>I agree to the <a href="#" style="color: var(--primary); text-decoration: none;">Terms</a> and <a href="#" style="color: var(--primary); text-decoration: none;">Privacy Policy</a>.</span>
+                    </label>
+
+                    <button type="submit" class="submit-btn">Create Account</button>
+                </form>
+
+                <div style="margin: 20px 0; text-align: center; color: var(--text-soft); font-size: 12px;">OR</div>
+                <button type="button" class="google-auth-btn" style="width: 100%; padding: 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: var(--text-main); cursor: pointer; font-weight: 600; font-size: 14px; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px;">🔵 Sign up with Google</button>
+
+                <div class="signin-row">Already have an account? <a href="login.html">Sign in</a></div>
+
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <span>•</span>
+                    <a href="#">Terms of Service</a>
+                    <span>•</span>
+                    <a href="#">Support</a>
+                </div>
+            </section>
+        </main>
     </div>
-  </header>
 
-  <!-- Main Content -->
-  <main class="z-10 w-full max-w-md px-4 sm:px-6 pt-24 pb-8">
-    <div class="relative">
-      <!-- Glow effect -->
-      <div class="absolute inset-0 bg-gradient-to-br from-[#6063ee]/20 to-[#4648d4]/20 blur-2xl rounded-2xl -z-10"></div>
-
-      <!-- Main card -->
-      <div class="bg-gradient-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/10 rounded-3xl p-8 sm:p-10 shadow-2xl shadow-slate-950/40 ring-1 ring-white/10">
-        <!-- Header -->
-        <div class="flex flex-col gap-2 text-center mb-8">
-          <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">
-            Create Account
-          </h1>
-          <p class="text-sm text-slate-400">
-            Join millions of music lovers today
-          </p>
-        </div>
-
-        <!-- Form -->
-        <form class="flex flex-col gap-5" id="signupForm">
-          <!-- Full Name -->
-          <div class="flex flex-col gap-3">
-            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wide">
-              Full Name
-            </label>
-            <div class="relative group">
-              <input
-                id="fullname"
-                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#6063ee] focus:border-transparent focus:bg-white/10 transition-all duration-300 group-hover:bg-white/[0.07] group-hover:border-white/20"
-                placeholder="Your full name"
-                type="text"
-                required
-              />
-            </div>
-          </div>
-
-          <!-- Email -->
-          <div class="flex flex-col gap-3">
-            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wide">
-              Email Address
-            </label>
-            <div class="relative group">
-              <input
-                id="signupEmail"
-                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#6063ee] focus:border-transparent focus:bg-white/10 transition-all duration-300 group-hover:bg-white/[0.07] group-hover:border-white/20"
-                placeholder="you@example.com"
-                type="email"
-                required
-              />
-            </div>
-          </div>
-
-          <!-- Phone -->
-          <div class="flex flex-col gap-3">
-            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wide">
-              Phone Number
-            </label>
-            <div class="relative group">
-              <input
-                id="signupPhone"
-                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#6063ee] focus:border-transparent focus:bg-white/10 transition-all duration-300 group-hover:bg-white/[0.07] group-hover:border-white/20"
-                placeholder="+91 98765 43210"
-                type="tel"
-              />
-            </div>
-          </div>
-
-          <!-- Password -->
-          <div class="flex flex-col gap-3">
-            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wide">
-              Password
-            </label>
-            <div class="relative group">
-              <input
-                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#6063ee] focus:border-transparent focus:bg-white/10 transition-all duration-300 group-hover:bg-white/[0.07] group-hover:border-white/20"
-                placeholder="Create a strong password"
-                type="password"
-                id="signupPassword"
-                required
-              />
-            </div>
-          </div>
-
-          <!-- Confirm Password -->
-          <div class="flex flex-col gap-3">
-            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wide">
-              Confirm Password
-            </label>
-            <div class="relative group">
-              <input
-                id="confirmPassword"
-                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#6063ee] focus:border-transparent focus:bg-white/10 transition-all duration-300 group-hover:bg-white/[0.07] group-hover:border-white/20"
-                placeholder="Confirm your password"
-                type="password"
-                required
-              />
-            </div>
-          </div>
-
-          <!-- Terms Checkbox -->
-          <label class="flex items-start gap-3 cursor-pointer group">
-            <input type="checkbox" class="w-4 h-4 rounded bg-white/5 border border-white/20 checked:bg-[#6063ee] checked:border-[#6063ee] transition-all cursor-pointer mt-1" required />
-            <span class="text-xs text-slate-400 group-hover:text-slate-300 transition-colors">
-              I agree to the <a href="#" class="text-[#6063ee] hover:text-[#7472f5]">Terms of Service</a> and <a href="#" class="text-[#6063ee] hover:text-[#7472f5]">Privacy Policy</a>
-            </span>
-          </label>
-
-          <!-- Sign Up Button -->
-          <button
-            class="mt-4 w-full bg-gradient-to-r from-slate-600 to-slate-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-slate-900/30 hover:shadow-xl hover:shadow-slate-900/40 hover:from-slate-500 hover:to-slate-400 active:scale-95 transition-all duration-200"
-            type="submit"
-          >
-            Create Account
-          </button>
-        </form>
-
-        <!-- Divider -->
-        <div class="flex items-center gap-4 my-7">
-          <div class="h-px bg-gradient-to-r from-white/0 via-white/10 to-white/0 flex-grow"></div>
-          <span class="text-xs text-slate-500 uppercase whitespace-nowrap font-medium">
-            Or sign up with
-          </span>
-          <div class="h-px bg-gradient-to-r from-white/0 via-white/10 to-white/0 flex-grow"></div>
-        </div>
-
-        <!-- Social Buttons -->
-        <div class="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            class="google-auth-btn flex items-center justify-center gap-2 py-3 border border-white/10 rounded-lg hover:bg-white/5 hover:border-white/20 transition-all duration-200 group"
-          >
-            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path fill="#EA4335" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#4285F4" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#FBBC05" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-            <span class="text-sm font-medium">Continue with Google</span>
-          </button>
-          <button
-            class="flex items-center justify-center gap-2 py-3 border border-white/10 rounded-lg hover:bg-white/5 hover:border-white/20 transition-all duration-200 group"
-          >
-            <svg class="w-5 h-5 fill-white group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M17.05 13.5c-.91 0-1.74.35-2.36.92.64-.09 1.27-.25 1.88-.47.61-.23 1.2-.54 1.76-.92-.6.35-1.23.65-1.89.89-.66.23-1.34.41-2.04.52 1.01-.85 1.65-2.08 1.65-3.46 0-.55-.1-1.07-.3-1.56-.72.98-1.72 1.83-2.88 2.39 1.37.92 2.37 2.39 2.81 4.11-.68-.23-1.31-.56-1.88-.99.38 1.39 1.12 2.61 2.15 3.53-.65.14-1.3.22-2 .22-2.76 0-5.18-1.35-6.72-3.42-.78 1.35-1.22 2.88-1.22 4.54 0 4.16 3.36 7.53 7.53 7.53 4.16 0 7.53-3.36 7.53-7.53 0-2.19-.93-4.16-2.41-5.55z"/></svg>
-            <span class="text-sm font-medium">Apple</span>
-          </button>
-        </div>
-
-        <!-- Login Link -->
-        <div class="text-center mt-8 pt-6 border-t border-white/10">
-          <p class="text-sm text-slate-400">
-            Already have an account?
-            <a
-              class="font-semibold text-[#6063ee] hover:text-[#7472f5] transition-colors duration-200"
-              href="./login.html"
-            >
-              Sign In
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
-  </main>
-  <div id="toastContainer" class="pointer-events-none fixed bottom-6 left-1/2 z-50 mx-auto hidden w-auto max-w-lg -translate-x-1/2 rounded-full bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-2xl"></div>
-
-  <!-- Footer -->
-  <footer class="w-full py-6 mt-auto flex flex-col items-center space-y-4 px-6 text-center">
-    <div class="flex flex-wrap items-center justify-center gap-6">
-      <a class="text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200" href="#">
-        Privacy Policy
-      </a>
-      <span class="text-slate-700">•</span>
-      <a class="text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200" href="#">
-        Terms of Service
-      </a>
-      <span class="text-slate-700">•</span>
-      <a class="text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors duration-200" href="#">
-        Support
-      </a>
-    </div>
-    <p class="text-xs font-medium text-slate-600">
-      © 2026 Musify. All rights reserved.
-    </p>
-  </footer>
-
-  <script src="./js/auth.js"></script>
-
-  <!-- Styles -->
-  <style>
-    html {
-      scroll-behavior: smooth;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-20px); }
-    }
-
-    .animate-float {
-      animation: float 6s ease-in-out infinite;
-    }
-
-    input:focus {
-      box-shadow: 0 0 20px rgba(96, 99, 238, 0.3);
-    }
-  </style>
+    <div id="toastContainer"></div>
+    <script src="./js/auth.js"></script>
 </body>
 </html>

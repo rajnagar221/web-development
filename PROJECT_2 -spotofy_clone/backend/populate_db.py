@@ -7,9 +7,9 @@ from datetime import datetime
 try:
     client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS=5000)
     client.admin.command('ping')
-    print("✅ MongoDB Connected Successfully")
+    print("[OK] MongoDB Connected Successfully")
 except Exception as e:
-    print(f"❌ MongoDB Connection Error: {e}")
+    print(f"[ERROR] MongoDB Connection Error: {e}")
     exit(1)
 
 db = client["spotify_clone"]
@@ -26,15 +26,6 @@ albums_collection.delete_many({})
 songs_base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "songs"))
 
 # Playlist data
-playlists_data = [
-    {
-        "name": "Daily mix",
-        "description": "mix songs",
-        "cover_image": "/songs/daily mix/cover.jpg",
-        "songs": []
-    },
-]
-
 playlists_data = [
     {
         "name": "Daily mix",
@@ -148,9 +139,9 @@ for i, playlist_data in enumerate(playlists_data):
     result = playlists_collection.insert_one(playlist_data)
     print(f"Created playlist: {playlist_data['name']}")
 
-print(f"\n✅ Successfully added {len(song_ids)} songs to MongoDB")
-print(f"✅ Successfully created {len(playlists_data)} playlists")
-print(f"✅ Successfully added {len(folders)} albums")
+print(f"\n[OK] Successfully added {len(song_ids)} songs to MongoDB")
+print(f"[OK] Successfully created {len(playlists_data)} playlists")
+print(f"[OK] Successfully added {len(folders)} albums")
 
 # Close connection
 client.close()

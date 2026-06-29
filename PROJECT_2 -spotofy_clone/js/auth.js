@@ -1,17 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const API_BASE_URL = "http://127.0.0.1:8000";
+    const API_BASE_URL = "http://localhost:8000";
 
     const loginForm = document.getElementById("loginForm");
     const signupForm = document.getElementById("signupForm");
-    const loginTabs = document.querySelectorAll("[data-login-tab]");
-    const loginEmailSection = document.getElementById("loginEmailSection");
-    const loginPhoneSection = document.getElementById("loginPhoneSection");
-    const loginEmailInput = document.getElementById("loginEmail");
-    const loginPhoneInput = document.getElementById("loginPhone");
     const toastContainer = document.getElementById("toastContainer");
     const googleButtons = document.querySelectorAll(".google-auth-btn");
-
-    let loginMode = "email";
+    const spotifyButtons = document.querySelectorAll(".spotify-auth-btn");
+    const appleButtons = document.querySelectorAll(".apple-auth-btn");
 
     function showToast(message, variant = "info") {
         if (!toastContainer) {
@@ -19,48 +14,17 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         toastContainer.textContent = message;
-        toastContainer.style.display = "block";
-        toastContainer.style.opacity = "1";
-        toastContainer.style.background = variant === "success" ? "rgba(34, 197, 94, 0.18)" : variant === "error" ? "rgba(244, 63, 94, 0.18)" : "rgba(15, 23, 42, 0.95)";
-        toastContainer.style.borderColor = variant === "success" ? "rgba(34, 197, 94, 0.4)" : variant === "error" ? "rgba(244, 63, 94, 0.4)" : "rgba(148, 163, 184, 0.35)";
-        toastContainer.style.color = "#FFFFFF";
+        toastContainer.className = ""; // Reset classes
+        toastContainer.classList.add(`toast-${variant}`);
+        toastContainer.classList.add("show");
+        
         clearTimeout(window.toastTimer);
         window.toastTimer = setTimeout(() => {
             if (toastContainer) {
-                toastContainer.style.opacity = "0";
-                setTimeout(() => toastContainer.style.display = "none", 300);
+                toastContainer.classList.remove("show");
             }
         }, 3200);
     }
-
-    function setLoginMode(mode) {
-        loginMode = mode;
-        loginTabs.forEach((tab) => {
-            const active = tab.dataset.loginTab === mode;
-            tab.classList.toggle("active", active);
-        });
-
-        if (loginEmailSection && loginPhoneSection) {
-            loginEmailSection.classList.toggle("hidden", mode !== "email");
-            loginPhoneSection.classList.toggle("hidden", mode !== "phone");
-        }
-
-        if (loginEmailInput && loginPhoneInput) {
-            loginEmailInput.disabled = mode !== "email";
-            loginPhoneInput.disabled = mode !== "phone";
-            loginEmailInput.required = mode === "email";
-            loginPhoneInput.required = mode === "phone";
-        }
-    }
-
-    loginTabs.forEach((tab) => {
-        tab.addEventListener("click", (event) => {
-            const mode = event.currentTarget.dataset.loginTab;
-            if (mode) {
-                setLoginMode(mode);
-            }
-        });
-    });
 
     async function handleLogin(identifier, password) {
         if (!identifier || !password) {
@@ -91,10 +55,24 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.setItem("email", data.email || "");
             localStorage.setItem("is_logged_in", "true");
 
-            showToast(`Welcome back, ${data.username}!`, "success");
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 1200);
+            // Success Redirect Modal display
+            const successModal = document.getElementById("successModal");
+            const successUsername = document.getElementById("successUsername");
+            const successAvatar = document.getElementById("successAvatar");
+            
+            if (successModal) {
+                if (successUsername) successUsername.textContent = data.username;
+                if (successAvatar) successAvatar.textContent = data.username.charAt(0).toUpperCase();
+                successModal.classList.add("show");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2500);
+            } else {
+                showToast(`Welcome back, ${data.username}!`, "success");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1200);
+            }
         } catch (err) {
             console.error(err);
             showToast("Server error. Make sure backend is running.", "error");
@@ -118,24 +96,133 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.setItem("username", data.username);
             localStorage.setItem("email", "google-demo@musify.com");
             localStorage.setItem("is_logged_in", "true");
-            showToast("Signed in with Google!", "success");
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 1200);
+            
+            // Show Success Redirect Modal
+            const successModal = document.getElementById("successModal");
+            const successUsername = document.getElementById("successUsername");
+            const successAvatar = document.getElementById("successAvatar");
+            
+            if (successModal) {
+                if (successUsername) successUsername.textContent = data.username;
+                if (successAvatar) successAvatar.textContent = data.username.charAt(0).toUpperCase();
+                successModal.classList.add("show");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2500);
+            } else {
+                showToast("Signed in with Google!", "success");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1200);
+            }
         } catch (err) {
             console.error(err);
             showToast("Google login is unavailable right now.", "error");
         }
     }
 
+    async function handleSpotifyAuth() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/spotify-login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                showToast(data.detail || "Spotify login failed.", "error");
+                return;
+            }
+            localStorage.setItem("token", data.access_token);
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("email", "spotify-demo@musify.com");
+            localStorage.setItem("is_logged_in", "true");
+            
+            // Show Success Redirect Modal
+            const successModal = document.getElementById("successModal");
+            const successUsername = document.getElementById("successUsername");
+            const successAvatar = document.getElementById("successAvatar");
+            
+            if (successModal) {
+                if (successUsername) successUsername.textContent = data.username;
+                if (successAvatar) successAvatar.textContent = data.username.charAt(0).toUpperCase();
+                successModal.classList.add("show");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2500);
+            } else {
+                showToast("Signed in with Spotify!", "success");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1200);
+            }
+        } catch (err) {
+            console.error(err);
+            showToast("Spotify login is unavailable right now.", "error");
+        }
+    }
+
+    async function handleAppleAuth() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/apple-login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                showToast(data.detail || "Apple login failed.", "error");
+                return;
+            }
+            localStorage.setItem("token", data.access_token);
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("email", "apple-demo@musify.com");
+            localStorage.setItem("is_logged_in", "true");
+            
+            // Show Success Redirect Modal
+            const successModal = document.getElementById("successModal");
+            const successUsername = document.getElementById("successUsername");
+            const successAvatar = document.getElementById("successAvatar");
+            
+            if (successModal) {
+                if (successUsername) successUsername.textContent = data.username;
+                if (successAvatar) successAvatar.textContent = data.username.charAt(0).toUpperCase();
+                successModal.classList.add("show");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2500);
+            } else {
+                showToast("Signed in with Apple!", "success");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1200);
+            }
+        } catch (err) {
+            console.error(err);
+            showToast("Apple login is unavailable right now.", "error");
+        }
+    }
+
     if (loginForm) {
-        loginForm.addEventListener("submit", function (e) {
+        loginForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-            const identifier = loginMode === "email"
-                ? document.getElementById("loginEmail").value.trim()
-                : document.getElementById("loginPhone").value.trim();
+            const identifier = document.getElementById("loginEmail").value.trim();
             const password = document.getElementById("loginPassword").value.trim();
-            handleLogin(identifier, password);
+            
+            const submitBtn = loginForm.querySelector(".submit-btn");
+            if (submitBtn) {
+                submitBtn.classList.add("loading");
+                submitBtn.disabled = true;
+            }
+
+            await handleLogin(identifier, password);
+
+            if (submitBtn) {
+                submitBtn.classList.remove("loading");
+                submitBtn.disabled = false;
+            }
         });
     }
 
@@ -144,7 +231,6 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
             const fullname = document.getElementById("fullname").value.trim();
             const email = document.getElementById("signupEmail").value.trim();
-            const phone = document.getElementById("signupPhone").value.trim();
             const password = document.getElementById("signupPassword").value.trim();
             const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
@@ -161,6 +247,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            const submitBtn = signupForm.querySelector(".submit-btn");
+            if (submitBtn) {
+                submitBtn.classList.add("loading");
+                submitBtn.disabled = true;
+            }
+
             try {
                 const response = await fetch(`${API_BASE_URL}/signup`, {
                     method: "POST",
@@ -170,30 +262,66 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: JSON.stringify({
                         username: fullname,
                         email: email,
-                        phone: phone,
                         password: password,
                     }),
                 });
                 const data = await response.json();
                 if (!response.ok) {
                     showToast(data.detail || "Signup failed.", "error");
+                    if (submitBtn) {
+                        submitBtn.classList.remove("loading");
+                        submitBtn.disabled = false;
+                    }
                     return;
                 }
-                showToast("Account created successfully! Redirecting...");
+                showToast("Account created successfully! Redirecting...", "success");
                 setTimeout(() => {
                     window.location.href = "login.html";
                 }, 1400);
             } catch (err) {
                 console.error(err);
                 showToast("Server error. Make sure backend is running.", "error");
+                if (submitBtn) {
+                    submitBtn.classList.remove("loading");
+                    submitBtn.disabled = false;
+                }
             }
         });
     }
 
     googleButtons.forEach((button) => {
-        button.addEventListener("click", (e) => {
+        button.addEventListener("click", async (e) => {
             e.preventDefault();
-            handleGoogleAuth();
+            
+            button.style.opacity = "0.7";
+            button.style.pointerEvents = "none";
+            await handleGoogleAuth();
+            button.style.opacity = "1";
+            button.style.pointerEvents = "auto";
+        });
+    });
+
+    spotifyButtons.forEach((button) => {
+        button.addEventListener("click", async (e) => {
+            e.preventDefault();
+            
+            button.style.opacity = "0.7";
+            button.style.pointerEvents = "none";
+            await handleSpotifyAuth();
+            button.style.opacity = "1";
+            button.style.pointerEvents = "auto";
+        });
+    });
+
+    appleButtons.forEach((button) => {
+        button.addEventListener("click", async (e) => {
+            e.preventDefault();
+            
+            button.style.opacity = "0.7";
+            button.style.pointerEvents = "none";
+            await handleAppleAuth();
+            button.style.opacity = "1";
+            button.style.pointerEvents = "auto";
         });
     });
 
@@ -227,7 +355,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    setLoginMode("email");
     checkDashboardLogin();
     updateIndexAuthButtons();
 });

@@ -5,14 +5,15 @@ from datetime import datetime
 
 # Connect to MongoDB
 try:
-    client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS=5000)
+    client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS=2000)
     client.admin.command('ping')
     print("[OK] MongoDB Connected Successfully")
+    db = client["spotify_clone"]
 except Exception as e:
-    print(f"[ERROR] MongoDB Connection Error: {e}")
-    exit(1)
+    print(f"[WARNING] MongoDB Connection Error: {e}. Seeding local JSON database instead...")
+    from main import JSONDatabase
+    db = JSONDatabase(os.path.join(os.path.dirname(__file__), "db.json"))
 
-db = client["spotify_clone"]
 songs_collection = db["songs"]
 playlists_collection = db["playlists"]
 albums_collection = db["albums"]

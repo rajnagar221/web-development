@@ -4,475 +4,182 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Musify - Sign Up</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #FF4B2B;
-            --primary-soft: #FF6D45;
-            --text-main: #F7F9FF;
-            --text-muted: #AAB7D8;
-            --text-soft: #7E95B7;
-            --bg-start: #141E30;
-            --bg-end: #243B55;
-            --border: rgba(255, 255, 255, 0.12);
-            --transition: all 0.25s ease;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at top left, rgba(255, 75, 43, 0.12), transparent 26%),
-                        radial-gradient(circle at bottom right, rgba(255, 75, 43, 0.08), transparent 18%),
-                        linear-gradient(135deg, var(--bg-start), var(--bg-end));
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at center, rgba(255, 75, 43, 0.12), transparent 30%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1080px;
-            display: grid;
-            grid-template-columns: 1.05fr 0.95fr;
-            min-height: calc(100vh - 40px);
-            background: rgba(10, 18, 34, 0.86);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 32px;
-            overflow: hidden;
-            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
-        }
-
-        .side-panel {
-            padding: 38px 30px;
-            background: linear-gradient(180deg, rgba(20, 30, 48, 0.94), rgba(28, 42, 66, 0.97));
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 24px;
-        }
-
-        .branding {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 14px;
-        }
-
-        .branding-mark {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            display: grid;
-            place-items: center;
-            background: linear-gradient(135deg, var(--primary), var(--primary-soft));
-            box-shadow: 0 18px 35px rgba(255, 75, 43, 0.24);
-        }
-
-        .branding-mark svg {
-            width: 28px;
-            height: 28px;
-            fill: #fff;
-        }
-
-        .branding-text h1 {
-            font-size: 24px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, var(--primary), var(--primary-soft));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .branding-text p {
-            font-size: 12px;
-            color: var(--text-soft);
-            text-transform: uppercase;
-            letter-spacing: 0.22em;
-        }
-
-        .feature-list {
-            display: grid;
-            gap: 18px;
-            margin-top: 18px;
-        }
-
-        .feature-item {
-            display: flex;
-            gap: 14px;
-            align-items: flex-start;
-        }
-
-        .feature-badge {
-            width: 42px;
-            min-width: 42px;
-            height: 42px;
-            border-radius: 16px;
-            background: rgba(255, 75, 43, 0.12);
-            border: 1px solid rgba(255, 75, 43, 0.2);
-            display: grid;
-            place-items: center;
-            color: var(--primary);
-            font-size: 18px;
-        }
-
-        .feature-copy h3 {
-            font-size: 15px;
-            margin-bottom: 6px;
-            font-weight: 700;
-        }
-
-        .feature-copy p {
-            color: var(--text-soft);
-            font-size: 13px;
-            line-height: 1.55;
-        }
-
-        .side-footer {
-            color: var(--text-soft);
-            font-size: 12px;
-            line-height: 1.6;
-            opacity: 0.95;
-        }
-
-        .form-panel {
-            padding: 40px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .form-card {
-            width: 100%;
-            max-width: 365px;
-        }
-
-        .form-heading {
-            font-size: 26px;
-            line-height: 1.1;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .form-subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            line-height: 1.7;
-            margin-bottom: 26px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        .field-wrapper {
-            position: relative;
-        }
-
-        .field-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary);
-            font-size: 16px;
-        }
-
-        .form-input {
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.10);
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-main);
-            padding: 12px 16px 12px 44px;
-            font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .form-input::placeholder {
-            color: var(--text-soft);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 75, 43, 0.08);
-            box-shadow: 0 0 0 3px rgba(255, 75, 43, 0.1);
-        }
-
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .checkbox-row input {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .checkbox-row label {
-            color: var(--text-muted);
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 13px 0;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-soft));
-            color: #fff;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            cursor: pointer;
-            box-shadow: 0 16px 34px rgba(255, 75, 43, 0.22);
-            transition: var(--transition);
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .signin-row {
-            text-align: center;
-            margin-top: 22px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .signin-row a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .footer-links {
-            margin-top: 24px;
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            color: var(--text-soft);
-            font-size: 12px;
-        }
-
-        .footer-links a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        #toastContainer {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 18px;
-            border-radius: 14px;
-            font-size: 13px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(14px);
-            display: none;
-            z-index: 1000;
-        }
-
-        @media (max-width: 980px) {
-            .container {
-                grid-template-columns: 1fr;
-                min-height: auto;
-            }
-
-            .side-panel {
-                display: none;
-            }
-
-            .form-panel {
-                padding: 28px 22px;
-            }
-        }
-
-        @media (max-width: 580px) {
-            .container {
-                border-radius: 24px;
-            }
-
-            .form-panel {
-                padding: 22px 18px;
-            }
-
-            .form-heading {
-                font-size: 22px;
-            }
-
-            .form-subtitle {
-                font-size: 13px;
-                margin-bottom: 20px;
-            }
-
-            .form-input {
-                padding: 11px 14px 11px 42px;
-                font-size: 13px;
-            }
-
-            .checkbox-row {
-                font-size: 12px;
-            }
-
-            .signin-row {
-                font-size: 12px;
-            }
-
-            .footer-links {
-                font-size: 11px;
-                gap: 8px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/auth.css" />
 </head>
 <body>
-    <div class="container">
-        <aside class="side-panel">
-            <div>
-                <div class="branding">
-                    <div class="branding-mark">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
-                    </div>
-                    <div class="branding-text">
-                        <h1>MUSIFY</h1>
-                        <p>Music streaming, simplified.</p>
+    <!-- Ambient backdrops -->
+    <div class="ambient-glow glow-top-left"></div>
+    <div class="ambient-glow glow-bottom-right"></div>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <!-- Left Pane: Branding & Marketing Features -->
+            <aside class="side-panel">
+                <div>
+                    <a href="index.html" class="branding">
+                        <img src="img/logo.svg" alt="Musify Logo" class="branding-logo" />
+                        <div class="branding-text">
+                            <h1>MUSIFY</h1>
+                            <p>Music streaming, simplified.</p>
+                        </div>
+                    </a>
+
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-badge">
+                                <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                            </div>
+                            <div class="feature-copy">
+                                <h3>Premium sound</h3>
+                                <p>Clear audio for every mood and playlist.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-badge">
+                                <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z"/></svg>
+                            </div>
+                            <div class="feature-copy">
+                                <h3>Ad-free listening</h3>
+                                <p>Focus on music, not interruptions.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-badge">
+                                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                            </div>
+                            <div class="feature-copy">
+                                <h3>Offline ready</h3>
+                                <p>Download playlists and play anywhere.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="feature-list">
-                    <div class="feature-item">
-                        <div class="feature-badge">🎵</div>
-                        <div class="feature-copy">
-                            <h3>Premium sound</h3>
-                            <p>Clear audio for every mood and playlist.</p>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-badge">🎧</div>
-                        <div class="feature-copy">
-                            <h3>Ad-free listening</h3>
-                            <p>Focus on music, not interruptions.</p>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-badge">📱</div>
-                        <div class="feature-copy">
-                            <h3>Offline ready</h3>
-                            <p>Download playlists and play anywhere.</p>
-                        </div>
-                    </div>
+                <div class="side-footer">
+                    Create your account with the same modern Musify experience you already love.
                 </div>
-            </div>
+            </aside>
 
-            <div class="side-footer">Create your account with the same modern Musify experience you already love.</div>
-        </aside>
+            <!-- Right Pane: Sign Up Form Card -->
+            <main class="form-panel">
+                <section class="form-card">
+                    <div class="form-title">Create your account</div>
+                    <p class="form-subtitle">Join Musify and access your playlists, offline music, and premium features.</p>
 
-        <main class="form-panel">
-            <section class="form-card">
-                <div class="form-heading">Create your account</div>
-                <p class="form-subtitle">Join Musify and access your playlists, offline music, and premium features.</p>
-
-                <form id="signupForm">
-                    <div class="form-group">
-                        <label class="form-label" for="fullname">Full Name</label>
-                        <div class="field-wrapper">
-                            <span class="field-icon">👤</span>
-                            <input type="text" id="fullname" class="form-input" placeholder="Your full name" required>
+                    <form id="signupForm">
+                        <div class="form-group">
+                            <label class="form-label" for="fullname">Full Name</label>
+                            <div class="field-wrapper">
+                                <span class="field-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                </span>
+                                <input type="text" id="fullname" class="form-input" placeholder="Your name" required>
+                            </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="signupEmail">Email Address</label>
+                            <div class="field-wrapper">
+                                <span class="field-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                        <polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                </span>
+                                <input type="email" id="signupEmail" class="form-input" placeholder="you@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label class="form-label" for="signupPassword">Password</label>
+                                <div class="field-wrapper">
+                                    <span class="field-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                        </svg>
+                                    </span>
+                                    <input type="password" id="signupPassword" class="form-input" placeholder="••••••••" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="confirmPassword">Confirm</label>
+                                <div class="field-wrapper">
+                                    <span class="field-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                        </svg>
+                                    </span>
+                                    <input type="password" id="confirmPassword" class="form-input" placeholder="••••••••" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <label class="checkbox-row">
+                            <span class="checkbox-container">
+                                <input type="checkbox" required>
+                                <span class="checkbox-checkmark"></span>
+                            </span>
+                            <span class="checkbox-label">I agree to the <a href="#" class="forgot-link">Terms</a> and <a href="#" class="forgot-link">Privacy</a></span>
+                        </label>
+
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-spinner"></span>
+                            <span class="btn-text">Create Account</span>
+                        </button>
+                    </form>
+
+                    <div class="auth-divider">or</div>
+                    
+                    <div class="social-auth-group">
+                        <button type="button" class="google-auth-btn">
+                            <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                            Google
+                        </button>
+                        <button type="button" class="spotify-auth-btn">
+                            <svg class="spotify-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" fill="#1DB954"/>
+                            </svg>
+                            Spotify
+                        </button>
+                        <button type="button" class="apple-auth-btn">
+                            <svg class="apple-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.58 2.95-1.39" fill="currentColor"/>
+                            </svg>
+                            Apple
+                        </button>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="signupEmail">Email Address</label>
-                        <div class="field-wrapper">
-                            <span class="field-icon">✉️</span>
-                            <input type="email" id="signupEmail" class="form-input" placeholder="you@example.com" required>
-                        </div>
+                    <div class="switch-flow">
+                        Already have an account? <a href="login.html">Sign in</a>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="signupPhone">Phone Number</label>
-                        <div class="field-wrapper">
-                            <span class="field-icon">📱</span>
-                            <input type="tel" id="signupPhone" class="form-input" placeholder="+91 98765 43210">
-                        </div>
+                    
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <span>•</span>
+                        <a href="#">Terms of Service</a>
+                        <span>•</span>
+                        <a href="#">Support</a>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="signupPassword">Password</label>
-                        <div class="field-wrapper">
-                            <span class="field-icon">🔒</span>
-                            <input type="password" id="signupPassword" class="form-input" placeholder="Create a strong password" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="confirmPassword">Confirm Password</label>
-                        <div class="field-wrapper">
-                            <span class="field-icon">🔒</span>
-                            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
-                        </div>
-                    </div>
-
-                    <label class="checkbox-row">
-                        <input type="checkbox" required>
-                        <span>I agree to the <a href="#" style="color: var(--primary); text-decoration: none;">Terms</a> and <a href="#" style="color: var(--primary); text-decoration: none;">Privacy Policy</a>.</span>
-                    </label>
-
-                    <button type="submit" class="submit-btn">Create Account</button>
-                </form>
-
-                <div style="margin: 20px 0; text-align: center; color: var(--text-soft); font-size: 12px;">OR</div>
-                <button type="button" class="google-auth-btn" style="width: 100%; padding: 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: var(--text-main); cursor: pointer; font-weight: 600; font-size: 14px; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px;">🔵 Sign up with Google</button>
-
-                <div class="signin-row">Already have an account? <a href="login.html">Sign in</a></div>
-
-                <div class="footer-links">
-                    <a href="#">Privacy Policy</a>
-                    <span>•</span>
-                    <a href="#">Terms of Service</a>
-                    <span>•</span>
-                    <a href="#">Support</a>
-                </div>
-            </section>
-        </main>
+                </section>
+            </main>
+        </div>
     </div>
 
+    <!-- Toast Alert Container -->
     <div id="toastContainer"></div>
+
     <script src="./js/auth.js"></script>
 </body>
 </html>

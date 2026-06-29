@@ -11,7 +11,7 @@ try:
     db = client["spotify_clone"]
 except Exception as e:
     print(f"[WARNING] MongoDB Connection Error: {e}. Seeding local JSON database instead...")
-    from main import JSONDatabase
+    from app.database import JSONDatabase
     db = JSONDatabase(os.path.join(os.path.dirname(__file__), "db.json"))
 
 songs_collection = db["songs"]

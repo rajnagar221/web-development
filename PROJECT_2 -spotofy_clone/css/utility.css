@@ -63,3 +63,39 @@
   /* For Firefox */
   /* scrollbar-color: #333 #222; Dark color for the thumb and track in Firefox */
   
+/* ============== Prevent Selection & Dragging ============== */
+/* Use `.no-select` on any container to disable text selection inside it */
+.no-select,
+.no-select * {
+    -webkit-user-select: none;
+    /* Chrome, Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+ */
+    user-select: none;
+    /* Standard */
+    -webkit-touch-callout: none;
+    /* Disable callout on iOS */
+}
+
+/* Prevent images from being dragged or selected */
+img,
+.no-drag,
+.no-drag img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Utility class for profile pictures / album art */
+.profile-pic,
+.album-art {
+    -webkit-user-drag: none;
+    -user-drag: none;
+    user-select: none;
+}
+  

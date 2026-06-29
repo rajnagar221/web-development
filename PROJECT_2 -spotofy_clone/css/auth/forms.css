@@ -1,0 +1,454 @@
+/* Form Panel */
+.form-panel {
+    padding: 40px 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.form-card {
+    width: 100%;
+    max-width: 380px;
+}
+
+.form-title {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.form-subtitle {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+/* Styled sliding tabs */
+.tab-group {
+    position: relative;
+    display: flex;
+    padding: 4px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    margin-bottom: 18px;
+}
+
+.tab-btn {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+    border: none;
+    background: transparent;
+    padding: 10px 0;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: center;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-btn.active {
+    color: #FFFFFF;
+}
+
+.tab-btn svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    fill: currentColor;
+}
+
+/* We can use CSS transitions for sliding highlight */
+.tab-indicator {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    bottom: 4px;
+    width: calc(50% - 4px);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-group[data-active-tab="phone"] .tab-indicator {
+    transform: translateX(100%);
+}
+
+/* Side-by-side Form Grid */
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Form controls */
+.form-group {
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.form-group.hidden {
+    display: none !important;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-sub);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.field-wrapper {
+    position: relative;
+}
+
+.field-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.field-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.form-input {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-primary);
+    padding: 10px 14px 10px 40px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    transition: var(--transition);
+}
+
+.form-input::placeholder {
+    color: var(--text-sub);
+}
+
+.form-input:hover {
+    border-color: var(--border-color-hover);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(29, 185, 84, 0.02);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.form-input:focus ~ .field-icon {
+    color: var(--primary);
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.forgot-link {
+    font-size: 11px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.forgot-link:hover {
+    color: var(--primary-hover);
+    text-shadow: 0 0 8px rgba(29, 185, 84, 0.3);
+}
+
+/* Custom Checkbox */
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-container {
+    display: inline-block;
+    position: relative;
+    width: 16px;
+    height: 16px;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkbox-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    transition: var(--transition);
+}
+
+.checkbox-container:hover input ~ .checkbox-checkmark {
+    border-color: var(--border-color-hover);
+}
+
+.checkbox-container input:checked ~ .checkbox-checkmark {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 8px rgba(29, 185, 84, 0.3);
+}
+
+.checkbox-checkmark::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid #000000;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-container input:checked ~ .checkbox-checkmark::after {
+    display: block;
+}
+
+.checkbox-label {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.checkbox-label a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.checkbox-label a:hover {
+    text-decoration: underline;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary);
+    color: #000000;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.2);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.submit-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(29, 185, 84, 0.3);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Spinner inside button */
+.btn-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.15);
+    border-top-color: #000000;
+    border-radius: 50%;
+    animation: btn-spin 0.6s linear infinite;
+    display: none;
+}
+
+@keyframes btn-spin {
+    to { transform: rotate(360deg); }
+}
+
+.submit-btn.loading .btn-spinner {
+    display: block;
+}
+
+.submit-btn.loading .btn-text {
+    opacity: 0.8;
+}
+
+/* Divider */
+.auth-divider {
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-sub);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.auth-divider:not(:empty)::before {
+    margin-right: .5em;
+}
+
+.auth-divider:not(:empty)::after {
+    margin-left: .5em;
+}
+
+/* Social Buttons Row */
+.social-auth-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.google-auth-btn,
+.spotify-auth-btn,
+.apple-auth-btn {
+    padding: 10px;
+    border-radius: 10px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 12px;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.google-auth-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+}
+
+.google-auth-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--border-color-hover);
+    transform: translateY(-1px);
+}
+
+.spotify-auth-btn {
+    background: rgba(29, 185, 84, 0.05);
+    border: 1px solid rgba(29, 185, 84, 0.18);
+}
+
+.spotify-auth-btn:hover {
+    background: rgba(29, 185, 84, 0.12);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: 0 0 10px rgba(29, 185, 84, 0.2);
+}
+
+.apple-auth-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+}
+
+.apple-auth-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--border-color-hover);
+    transform: translateY(-1px);
+}
+
+.google-icon,
+.spotify-icon,
+.apple-icon {
+    width: 15px;
+    height: 15px;
+}
+
+/* Footer / Switch flow styles */
+.switch-flow {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.switch-flow a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.switch-flow a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+.footer-links {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: var(--text-sub);
+    font-size: 11px;
+}
+
+.footer-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-links a:hover {
+    color: var(--text-muted);
+}
+

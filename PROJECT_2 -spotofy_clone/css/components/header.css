@@ -1,0 +1,583 @@
+/* ============== Header ============== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(180deg, var(--bg-tertiary), transparent);
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px;
+    z-index: 100;
+    gap: 16px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo-top {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-top img {
+    width: 24px;
+    filter: invert(1);
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-pill {
+    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-radius: 999px;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.nav-pill.active,
+.nav-pill:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.header-search {
+    flex: 1;
+    max-width: 540px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Topbar transparent -> solid on scroll */
+.topbar {
+    background: transparent;
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.topbar.scrolled {
+    background: rgba(0, 0, 0, 0.95);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Topbar left (home) and centered search */
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* make library expand toward playbar and scroll when needed */
+.library {
+    min-height: 0;
+    max-height: calc(100% - 140px);
+    overflow-y: auto;
+}
+
+.liked-songs {
+    display: block;
+}
+
+.libraryBtn.liked {
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+    color: #fff;
+    font-weight: 700;
+    border: none;
+}
+
+.homeBtn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+}
+
+.homeBtn img {
+    width: 20px;
+    height: 20px
+}
+
+.header-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1f2428;
+    padding: 12px 20px;
+    border-radius: 999px;
+    width: 74%;
+    max-width: 980px;
+    min-width: 520px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.header-search .searchInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #f3f3f3;
+    font-size: 16px;
+    padding: 8px 0;
+}
+
+.searchActionBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.searchActionBtn:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+
+.top-left-logo .small-logo {
+    width: 42px;
+    height: 42px;
+    filter: invert(1);
+}
+
+.homeIconBtn,
+.squareIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.header-right .pillBtn {
+    background: #ffffff;
+    color: #000000;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    box-shadow: none;
+}
+
+/* ============== Search Container ============== */
+.searchContainer {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px;
+    margin: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+}
+
+.searchInput {
+    width: 100%;
+    padding: 12px 100px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.searchInput::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.searchResults {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.searchResult {
+    padding: 10px 12px;
+    background-color: var(--bg-tertiary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid transparent;
+}
+
+.searchResult:hover {
+    background-color: var(--tertiary-color);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* ============== Profile Container ============== */
+.profileContainer {
+    position: relative;
+}
+
+.profileIcon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--hover-color) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(30, 215, 96, 0.3);
+}
+
+.profileIcon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(30, 215, 96, 0.5);
+}
+
+.profileMenu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    min-width: 280px;
+    padding: 12px 0;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: var(--transition);
+    z-index: 1001;
+    display: none;
+}
+
+.profileMenu.active {
+    background-color: #141E30;
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.profileHeader {
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px;
+    align-items: center;
+}
+
+.profileAvatar {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--hover-color) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.profileInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.profileInfo p:first-child {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.profileInfo p:last-child {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.profileMenuDivider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 8px 0;
+}
+
+.profileMenuOption {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+}
+
+.profileMenuOption:hover {
+    background-color: var(--border-color);
+    padding-left: 20px;
+}
+
+.profileMenuLogout {
+    color: #ff6b6b;
+}
+
+.profileMenuLogout:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+@media (max-width: 600px) {
+    .container {
+        gap: 0;
+    }
+
+    .left {
+        width: 100%;
+        max-height: 100%;
+        border-bottom: none;
+    }
+
+    .library {
+        max-height: 40vh;
+    }
+
+    .cardContainer {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 8px;
+        margin-bottom: 140px;
+    }
+
+    .card {
+        border-radius: 8px;
+    }
+
+    .card h3 {
+        font-size: 12px;
+    }
+
+    .card p {
+        font-size: 11px;
+        margin-bottom: 10px;
+    }
+
+    .header {
+        padding: 10px 12px;
+    }
+
+    .buttons {
+        gap: 8px;
+    }
+
+    .signupbtn,
+    .loginbtn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .musifyPlaylists h2 {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .musifyPlaylists {
+        padding: 12px;
+        grid-template-columns: 1fr;
+    }
+
+    .header-right {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .header-search {
+        padding: 8px 12px;
+    }
+
+    .searchContainer {
+        margin: 8px 12px 0;
+    }
+
+    .rightSidebar {
+        width: 100%;
+    }
+
+    .cardContainer {
+        margin-bottom: 16px;
+    }
+
+    .playbar {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .songbuttons {
+        gap: 10px;
+    }
+
+    .songbuttons img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .nav svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .timevol {
+        gap: 12px;
+    }
+
+    .volume {
+        gap: 6px;
+    }
+
+    .volume img {
+        width: 16px;
+        height: 16px;
+    }
+
+    .range input {
+        width: 60px;
+    }
+}
+
+@media (max-width: 400px) {
+    .cardContainer {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .header>* {
+        padding: 0;
+    }
+
+    .hamburgerContainer {
+        gap: 8px;
+    }
+
+    .playbar {
+        padding: 10px;
+    }
+
+    .songinfo {
+        font-size: 11px;
+    }
+
+    .songtime {
+        font-size: 10px;
+    }
+}
+
+/* SEARCH RESULT IMPROVEMENTS
+   ========================================== */
+
+.searchResult {
+    padding: 10px 16px !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    font-size: 13px !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: background 0.15s ease !important;
+}
+
+.searchResult:hover {
+    background: rgba(255,255,255,0.1) !important;
+}
+
+.searchResult.no-result {
+    color: #b3b3b3 !important;
+    cursor: default !important;
+}
+
+.searchResult.no-result:hover {
+    background: transparent !important;
+}
+
+/* ============== Responsive Design ============== */
+@media (max-width: 1024px) {
+    .header-search {
+        max-width: 100%;
+    }
+
+    .header {
+        padding: 16px 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .header-left,
+    .header-search,
+    .header-right {
+        width: 100%;
+    }
+
+    .header-right {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .searchContainer {
+        margin: 12px 16px 0;
+    }
+}

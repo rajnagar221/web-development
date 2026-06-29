@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ============== Root Variables ============== */
+:root {
+    --primary-color: #1DB954;
+    --secondary-color: #071016;
+    --tertiary-color: #11181f;
+    --accent-color: #1ed760;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B8C2D1;
+    --text-tertiary: #94A3B8;
+    --bg-primary: #081018;
+    --bg-secondary: #101820;
+    --bg-tertiary: #16212b;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --hover-color: #1ed760;
+    --play-opacity: 0;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

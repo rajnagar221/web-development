@@ -1,0 +1,532 @@
+/* ============== Sidebar (Left) ============== */
+.left {
+    width: 29%;
+    min-width: 280px;
+    height: 100%;
+    background: #000;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-y: auto;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.22);
+    transition: var(--transition);
+}
+/* allow children to shrink/grow properly */
+.left {
+    min-height: 0;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    backdrop-filter: blur(14px);
+    position: relative;
+}
+
+.sidebar-brand img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    filter: invert(1);
+}
+
+.sidebar-brand .close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .sidebar-brand .close {
+        display: inline-flex;
+    }
+}
+
+.sidebar-brand .logo-text {
+    font-size: 24px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.sidebar-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-footer a {
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.sidebar-footer a:hover {
+    color: var(--text-primary);
+}
+
+/* ============== Home Section ============== */
+.home {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 24px;
+    padding: 95px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    transition: var(--transition);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+}
+
+.home .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.home .logo img {
+    width: 40px;
+    height: 40px;
+    filter: invert(1);
+}
+
+.home .logo .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+}
+
+.home ul {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+}
+
+.home ul li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.home ul li:hover {
+    background-color: var(--border-color);
+    color: var(--text-primary);
+    transform: translateX(4px);
+}
+
+.home ul li img {
+    width: 20px;
+    height: 20px;
+    filter: invert(1);
+}
+
+/* ============== Library Section ============== */
+.library {
+    flex: 1;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 24px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+    transition: var(--transition);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.library-icon-only {
+    padding: 18px;
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.library-icon-only .library-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+}
+
+.library-icon-only .library-icon img {
+    width: 24px;
+    height: 24px;
+    filter: invert(1);
+}
+
+.heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.heading img {
+    width: 17px;
+    height: 17px;
+    filter: invert(1);
+    flex-shrink: 0;
+}
+
+.heading h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 20px;
+    line-height: 1.1;
+}
+
+.library-subtitle {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.librarySearch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.librarySearch img {
+    width: 18px;
+    height: 18px;
+}
+
+.librarySearch input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+}
+
+.libraryRecents {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.recents-more {
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.songList {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.songList ul {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.songList ul li {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    color: #fff !important;
+}
+
+.songList ul li:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.songList ul li img {
+    display: none !important; /* Hide music icon as requested */
+}
+
+.songList .info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+}
+
+.songList .info .song-title {
+    font-size: 12px !important; /* Small font size as requested */
+    font-weight: 600 !important;
+    color: #fff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.songList .info .song-artist {
+    font-size: 10px !important; /* Compact subtitle */
+    color: #a7a7a7 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.songList ul li .item-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.songList ul li .favorite-btn {
+    display: inline-flex !important;
+    background: transparent !important;
+    border: none !important;
+    color: #a7a7a7 !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.songList ul li .favorite-btn.liked,
+.songList ul li .favorite-btn:hover {
+    color: #1db954 !important;
+}
+
+.songList ul li .playnow {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    opacity: 0 !important;
+    transition: opacity 0.2s ease !important;
+}
+
+.songList ul li:hover .playnow {
+    opacity: 1 !important;
+}
+
+.songList ul li .playnow span {
+    font-size: 10px !important;
+    color: #1db954 !important;
+    font-weight: 700 !important;
+}
+
+.songList ul li .playnow img {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.libraryActions {
+    display: none;
+}
+
+.libraryBtn {
+    display: none;
+}
+
+.item-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.favorite-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 14px;
+}
+
+.favorite-btn:hover {
+    color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.favorite-btn.liked {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: rgba(30, 215, 96, 0.18);
+}
+
+.playbar-fav {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.songList .info {
+    flex: 1;
+    min-width: 0;
+}
+
+.info div {
+    word-break: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.playnow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.playnow span {
+    font-size: 14px;
+    width: 50px;
+    padding: 8px;
+    text-align: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.playnow span:hover {
+    color: var(--primary-color);
+}
+
+/* ============== Footer ============== */
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    padding: 12px 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: 12px;
+}
+
+.footer a {
+    color: var(--text-tertiary);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer a:hover {
+    color: var(--primary-color);
+}
+
+/* ==========================================
+   SONG LIST PLAYING STATE
+   ========================================== */
+
+.songList li.playing {
+    background: rgba(29, 185, 84, 0.08) !important;
+    border-left: 3px solid #1db954 !important;
+}
+
+.songList li.playing .song-title {
+    color: #1db954 !important;
+}
+
+/* ============== Responsive Design ============== */
+@media (max-width: 1024px) {
+    .left {
+        width: 30%;
+    }
+
+    .right {
+        width: 70%;
+    }
+}
+
+@media (max-width: 768px) {
+    .left {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 12px;
+        gap: 12px;
+        position: fixed;
+        left: -100%;
+        top: 0;
+        z-index: 999;
+        height: 100vh;
+        border-radius: 0;
+        transition: left 0.3s ease;
+    }
+
+    .left.active {
+        left: 0;
+    }
+
+    .left .close {
+        display: block;
+    }
+
+    .right {
+        width: 100%;
+        border-radius: 0;
+        margin-top: 0;
+    }
+
+    .hamburger {
+        display: block;
+    }
+}
+

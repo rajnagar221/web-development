@@ -1,0 +1,187 @@
+/* Toast styling override/enhancement */
+#toastContainer {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+}
+
+#toastContainer.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+#toastContainer.toast-success {
+    background: rgba(29, 185, 84, 0.12);
+    border-color: rgba(29, 185, 84, 0.35);
+    color: #FFFFFF;
+}
+
+#toastContainer.toast-error {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #FFFFFF;
+}
+
+#toastContainer.toast-info {
+    background: rgba(18, 22, 33, 0.9);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+}
+
+/* Success modal styles */
+#successModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(4, 5, 8, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#successModal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 340px;
+    background: #0f131f;
+    border: 1px solid rgba(29, 185, 84, 0.15);
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#successModal.show .modal-card {
+    transform: scale(1);
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary);
+    display: grid;
+    place-items: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+    color: #000000;
+}
+
+.modal-icon svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+}
+
+.modal-title {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.modal-message {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+
+.user-card {
+    background: rgba(29, 185, 84, 0.05);
+    border: 1px solid rgba(29, 185, 84, 0.15);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #000000;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    font-family: var(--font-heading);
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-details .label {
+    font-size: 9px;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-details .username {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.redirect-text {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 20px;
+}
+
+.modal-btn {
+    width: 100%;
+    padding: 11px 0;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary);
+    color: #000000;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.modal-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(29, 185, 84, 0.3);
+}
+

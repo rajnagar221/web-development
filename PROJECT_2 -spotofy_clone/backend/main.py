@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone 
 from typing import List, Optional
 import os
 import requests
@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-from pydantic import BaseModel
+from pydantic import BaseModel , EmailStr
 from pymongo import MongoClient
 
 load_dotenv()
@@ -36,6 +36,10 @@ def get_music_api_headers():
         "Content-Type": "application/json; charset=utf-8"
     }
 
+@app.get("/")
+def health():   
+    return {"message": "Music Player Backend."}
+    
 @app.get("/api/external-search/{query}")
 def external_search(query: str):
     try:
@@ -86,14 +90,140 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import uuid
+import json
+
+class JSONCollection:
+    def __init__(self, db, name):
+        self.db = db
+        self.name = name
+
+    def _get_data(self):
+        data = self.db._load_data()
+        if self.name not in data:
+            data[self.name] = []
+            self.db._save_data(data)
+        return data[self.name]
+
+    def _save_data(self, data):
+        all_data = self.db._load_data()
+        all_data[self.name] = data
+        self.db._save_data(all_data)
+
+    def find_one(self, query):
+        data = self._get_data()
+        for doc in data:
+            if self._match(doc, query):
+                return doc.copy()
+        return None
+
+    def find(self, query=None, projection=None):
+        if query is None:
+            query = {}
+        data = self._get_data()
+        results = []
+        for doc in data:
+            if self._match(doc, query):
+                res = doc.copy()
+                if projection:
+                    for k, v in list(projection.items()):
+                        if v == 0 and k in res:
+                            del res[k]
+                results.append(res)
+        return results
+
+    def insert_one(self, doc):
+        data = self._get_data()
+        doc_copy = doc.copy()
+        if "_id" not in doc_copy:
+            doc_copy["_id"] = str(uuid.uuid4())
+        data.append(doc_copy)
+        self._save_data(data)
+        
+        class InsertResult:
+            def __init__(self, inserted_id):
+                self.inserted_id = inserted_id
+        return InsertResult(doc_copy["_id"])
+
+    def update_one(self, query, update):
+        data = self._get_data()
+        updated = False
+        for doc in data:
+            if self._match(doc, query):
+                if "$set" in update:
+                    for k, v in update["$set"].items():
+                        doc[k] = v
+                    updated = True
+                    break
+        if updated:
+            self._save_data(data)
+        return updated
+
+    def delete_many(self, query):
+        data = self._get_data()
+        initial_len = len(data)
+        data = [doc for doc in data if not self._match(doc, query)]
+        if len(data) != initial_len:
+            self._save_data(data)
+
+    def _match(self, doc, query):
+        for k, v in query.items():
+            if k == "$or":
+                match_any = False
+                for sub_query in v:
+                    if self._match(doc, sub_query):
+                        match_any = True
+                        break
+                if not match_any:
+                    return False
+            else:
+                doc_val = doc.get(k)
+                if isinstance(v, dict):
+                    if "$regex" in v:
+                        pattern = v["$regex"]
+                        flags = 0
+                        if "i" in v.get("$options", ""):
+                            flags = re.IGNORECASE
+                        if not re.search(pattern, str(doc_val or ""), flags):
+                            return False
+                else:
+                    if doc_val != v:
+                        return False
+        return True
+
+class JSONDatabase:
+    def __init__(self, filepath):
+        self.filepath = filepath
+        if not os.path.exists(self.filepath):
+            with open(self.filepath, 'w', encoding='utf-8') as f:
+                json.dump({}, f)
+
+    def _load_data(self):
+        try:
+            with open(self.filepath, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            return {}
+
+    def _save_data(self, data):
+        try:
+            with open(self.filepath, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=4)
+        except Exception as e:
+            print(f"Error saving database: {e}")
+
+    def __getitem__(self, name):
+        return JSONCollection(self, name)
+
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 try:
-    client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000)
+    client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=2000)
     client.admin.command("ping")
     print("[OK] MongoDB connected successfully")
     db = client["spotify_clone"]
 except Exception as e:
-    raise RuntimeError(f"MongoDB connection failed: {e}")
+    print(f"[WARNING] MongoDB connection failed, falling back to local JSON database. Error: {e}")
+    db = JSONDatabase(os.path.join(os.path.dirname(__file__), "db.json"))
 
 users_collection = db["users"]
 songs_collection = db["songs"]
@@ -115,12 +245,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 class SignupModel(BaseModel):
     username: str
-    email: str
+    email: EmailStr
     password: str
     phone: Optional[str] = None
 
 class LoginModel(BaseModel):
-    identifier: str
+    username: Optional[str] = None
+    identifier: Optional[str] = None
     password: str
 
 class SongModel(BaseModel):
@@ -157,12 +288,17 @@ def normalize_phone(value: str) -> str:
 
 
 def find_user_by_identifier(identifier: str):
+    if not identifier:
+        return None
+
     if is_valid_email(identifier):
         return users_collection.find_one({"email": identifier})
+
     normalized = normalize_phone(identifier)
     if normalized:
         return users_collection.find_one({"phone": normalized})
-    return None
+
+    return users_collection.find_one({"username": identifier})
 
 
 def create_access_token(data: dict) -> str:
@@ -213,8 +349,12 @@ def signup(user: SignupModel):
     }
 @app.post("/login")
 def login(user: LoginModel):
+    login_identifier = (user.username or user.identifier or "").strip()
 
-    db_user = find_user_by_identifier(user.identifier)
+    if not login_identifier:
+        raise HTTPException(status_code=400, detail="Email or phone is required")
+
+    db_user = find_user_by_identifier(login_identifier)
 
     if not db_user:
         raise HTTPException(status_code=401, detail="User not found")
@@ -227,12 +367,7 @@ def login(user: LoginModel):
         {"_id": db_user["_id"]},
         {"$set": {"last_login": datetime.now(UTC)}}
     )
-
-    token = create_access_token({
-        "sub": db_user["email"],
-        "username": db_user.get("username")
-    })
-
+    token = create_access_token({"sub": db_user["email"], "username": db_user.get("username")})
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -240,6 +375,7 @@ def login(user: LoginModel):
         "username": db_user.get("username"),
         "email": db_user.get("email"),
     }
+
 
 @app.post("/google-login")
 def google_login():
@@ -266,6 +402,62 @@ def google_login():
         "access_token": token,
         "token_type": "bearer",
         "message": "Google login successful",
+        "username": db_user.get("username"),
+    }
+
+@app.post("/spotify-login")
+def spotify_login():
+    email = "spotify-demo@musify.com"
+    db_user = users_collection.find_one({"email": email})
+    if not db_user:
+        result = users_collection.insert_one({
+            "username": "Spotify User",
+            "email": email,
+            "phone": None,
+            "password": hash_password("spotify-demo-password"),
+            "created_at": datetime.utcnow(),
+            "last_login": datetime.utcnow(),
+        })
+        db_user = users_collection.find_one({"_id": result.inserted_id})
+
+    users_collection.update_one(
+        {"_id": db_user["_id"]},
+        {"$set": {"last_login": datetime.now(UTC)}},
+    )
+
+    token = create_access_token({"sub": db_user["email"], "username": db_user.get("username")})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "message": "Spotify login successful",
+        "username": db_user.get("username"),
+    }
+
+@app.post("/apple-login")
+def apple_login():
+    email = "apple-demo@musify.com"
+    db_user = users_collection.find_one({"email": email})
+    if not db_user:
+        result = users_collection.insert_one({
+            "username": "Apple User",
+            "email": email,
+            "phone": None,
+            "password": hash_password("apple-demo-password"),
+            "created_at": datetime.utcnow(),
+            "last_login": datetime.utcnow(),
+        })
+        db_user = users_collection.find_one({"_id": result.inserted_id})
+
+    users_collection.update_one(
+        {"_id": db_user["_id"]},
+        {"$set": {"last_login": datetime.now(UTC)}},
+    )
+
+    token = create_access_token({"sub": db_user["email"], "username": db_user.get("username")})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "message": "Apple login successful",
         "username": db_user.get("username"),
     }
 
@@ -328,7 +520,7 @@ def get_song(song_id: str):
     try:
         song_obj_id = ObjectId(song_id)
     except Exception:
-        raise HTTPException(status_code=400, detail="Invalid song ID format")
+        song_obj_id = song_id
 
     song = songs_collection.find_one({"_id": song_obj_id})
     if not song:
@@ -359,7 +551,11 @@ def get_playlists():
     for playlist in playlists_collection.find({}, {"_id": 0}):
         song_details = []
         for song_id in playlist.get("songs", []):
-            song = songs_collection.find_one({"_id": ObjectId(song_id)})
+            try:
+                song_query_id = ObjectId(song_id)
+            except Exception:
+                song_query_id = song_id
+            song = songs_collection.find_one({"_id": song_query_id})
             if song:
                 song["_id"] = str(song["_id"])
                 song_details.append(song)
@@ -385,7 +581,7 @@ def search_songs(query: str):
     playlist_results = list(playlists_collection.find({
         "$or": [
             {"name": {"$regex": query, "$options": "i"}},
-            {"description": {"$regex": query, "$options": "i"}},
+            {"description": {"$regex": query, "$options": "i"}},    
         ]
     }, {"_id": 0}))
 
@@ -394,3 +590,5 @@ def search_songs(query: str):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+ 

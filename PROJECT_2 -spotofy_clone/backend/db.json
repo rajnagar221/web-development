@@ -1,0 +1,114 @@
+{
+    "albums": [
+        {
+            "folder": "ncs",
+            "title": "mood Songs",
+            "description": "Songs for you",
+            "cover_image": "/songs/ncs/cover.jpg",
+            "_id": "3724a0b8-ccd4-4541-8831-acf595f6116d"
+        },
+        {
+            "folder": "karan aujla",
+            "title": "Karan Aujla",
+            "description": "Karan Aujla for you",
+            "cover_image": "/songs/karan aujla/cover.jpg",
+            "_id": "c59c7854-9be0-4310-a831-af28177fcb75"
+        },
+        {
+            "folder": "daily mix",
+            "title": "Daily mix ",
+            "description": " Hits daily collection",
+            "cover_image": "/songs/daily mix/en (1).jpg",
+            "_id": "6c7326fd-1fdd-491c-813b-f887b847450b"
+        },
+        {
+            "folder": "Diljit",
+            "title": "Diljit Dosanjh",
+            "description": "Punjabi Hits Collection",
+            "cover_image": "/songs/Diljit/en (8).jpg",
+            "_id": "f6613dd1-b52b-4d71-ba43-97e710b272a2"
+        },
+        {
+            "folder": "honey singh",
+            "title": "honey singh",
+            "description": "hindi rap Hits Collection",
+            "cover_image": "/songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg",
+            "_id": "8e175021-469d-4cd4-9744-af303a3aaf85"
+        },
+        {
+            "folder": "instagram trending",
+            "title": "insta trending",
+            "description": "insta Hits Collection",
+            "cover_image": "/songs/instagram trending/ab67706c0000d72c168dd5c32e7333944fe7616d (1).webp",
+            "_id": "a8b6f8dd-a9be-41ef-a2b8-eaed1b9c2549"
+        },
+        {
+            "folder": "vibes songs",
+            "title": "vibe song",
+            "description": "vibes Hits Collection",
+            "cover_image": "/songs/vibes songs/ab67706f000000023da05797a7c490186a98e713.jpg",
+            "_id": "b9a80860-9774-42ae-a3bc-88d92a84ece6"
+        },
+        {
+            "folder": "Ap dillhon",
+            "title": "ap dillhon",
+            "description": "punjabi songs",
+            "cover_image": "/songs/Ap dillhon/ab67706f00000002558eebc8a959a3e4f5acadc4.jpg",
+            "_id": "303a85de-db5f-45d8-b47b-36892bbc32b5"
+        },
+        {
+            "folder": "talwinder",
+            "title": "talwinder ",
+            "description": "love songs",
+            "cover_image": "/songs/talwinder/1.jpg",
+            "_id": "e4c3f4ee-4f73-4bf5-95e2-ffb3bae178ba"
+        }
+    ],
+    "songs": [
+        {
+            "title": "tera hone laga hu",
+            "artist": "NCS",
+            "album": "mood Songs",
+            "duration": null,
+            "file_path": "/songs/ncs/tera hone laga hu.mp3",
+            "genre": "Electronic",
+            "cover_image": "/songs/ncs/cover.jpg",
+            "folder": "ncs",
+            "_id": "26157b1c-7a47-4c5e-8839-e315374a349b"
+        },
+        {
+            "title": "tera hone laga hu",
+            "artist": "Karan Aujla",
+            "album": "Karan Aujla",
+            "duration": null,
+            "file_path": "/songs/karan aujla/tera hone laga hu.mp3",
+            "genre": "Hip-Hop/Rap",
+            "cover_image": "/songs/karan aujla/cover.jpg",
+            "folder": "karan aujla",
+            "_id": "a3c4beb5-c894-4b70-b61b-a6ae5057372b"
+        },
+        {
+            "title": "tera hone laga hu",
+            "artist": "Diljit Dosanjh",
+            "album": "Diljit Dosanjh",
+            "duration": null,
+            "file_path": "/songs/Diljit/tera hone laga hu.mp3",
+            "genre": "Hip-Hop/Rap",
+            "cover_image": "/songs/Diljit/en (8).jpg",
+            "folder": "Diljit",
+            "_id": "e037c8cb-b045-4a99-abc7-cc54108396c5"
+        }
+    ],
+    "playlists": [
+        {
+            "name": "Daily mix",
+            "description": "mix songs",
+            "songs": [
+                "26157b1c-7a47-4c5e-8839-e315374a349b",
+                "a3c4beb5-c894-4b70-b61b-a6ae5057372b",
+                "e037c8cb-b045-4a99-abc7-cc54108396c5"
+            ],
+            "_id": "c594d667-94fc-4fa0-b020-22c39492ebd0"
+        }
+    ]
+}

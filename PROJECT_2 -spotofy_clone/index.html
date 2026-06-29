@@ -1,257 +1,1024 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/utility.css" />
-    <title>musify - Web Player: Music for everyone</title>
-  </head>
 
-  <body>
-    <div class="container flex bg-grey">
-      <div class="left">
-        <div class="close">
-          <img width="30" class="invert" src="img/close.svg" alt="" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/utility.css" />
+  <title>musify - Web Player: Music for everyone</title>
+</head>
+
+<body>
+  <div class="container">
+    <aside class="left">
+      <div class="sidebar-brand">
+        <img src="img/logo.svg" alt="musify logo" width="36" />
+        <span class="logo-text">musify</span>
+        <button class="close iconBtn" aria-label="Close menu">✕</button>
+      </div>
+
+      <div class="library">
+        <div class="library-filter-pills">
+          <button id="likedSongsBtn" class="libraryBtn liked">❤ Liked Songs</button>
+          <button id="allSongsBtn" class="libraryBtn">All Songs</button>
+          <button class="libraryBtn">Daily Mix</button>
+          <button class="libraryBtn">Favorites</button>
         </div>
-        <div class="home bg-grey rounded m-1 p-1">
-          <div class="logo">
-            <img width="40" class="invert" src="img/logo.svg" alt="" />
-            <span class="logo-text">musify</span>
-          </div>
+
+        <div class="heading">
+          <img src="img/playlist.svg" alt="Playlists" />
+          <h5>Your library</h5>
+        </div>
+
+        <div class="songList">
           <ul>
-            <li id="homeBtn"><img class="invert" src="img/home.svg" alt="home" />Home</li>
-            <li id="searchToggle">
-              <img class="invert" src="img/search.svg" alt="search" />Search
-            </li>
+            <!-- Songs are dynamically loaded here -->
           </ul>
         </div>
-        <div class="searchContainer" id="searchContainer" style="display: none;">
-          <input type="text" id="searchInput" placeholder="Search songs or playlists..." class="searchInput">
-          <div id="searchResults" class="searchResults"></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="#">Settings</a>
+        <a href="#">Support</a>
+        <a href="#">Logout</a>
+      </div>
+    </aside>
+
+    <section class="right">
+      <header class="header topbar">
+        <div class="topbar-left">
+          <button class="hamburger iconBtn" title="Menu">☰</button>
+          <button id="homeBtn" class="nav-circle" title="Home">
+            <img src="img/home.svg" alt="home" />
+          </button>
+          <div class="header-search">
+            <img src="img/search.svg" class="invert" alt="search" />
+            <input id="searchInput" class="searchInput" type="search" placeholder="What do you want to play?" />
+          </div>
         </div>
 
-        <div class="library bg-grey rounded m-1 p-1">
-          <div class="heading">
-            <img class="invert" src="img/playlist.svg" alt="" />
-            <h1>Your Library</h1>
+        <div class="header-right">
+          <button id="explorePremiumBtn" class="pillBtn">
+            Explore Premium
+          </button>
+          <button class="pillBtn secondary">Install App</button>
+          <button id="notificationsBtn" class="iconBtn" title="Notifications">
+            🔔
+          </button>
+          <button class="iconBtn" title="Queue">☰</button>
+          <div class="profileContainer">
+            <div id="profileIcon" class="profileIcon">R</div>
+            <div id="profileMenu" class="profileMenu">
+              <div class="profileHeader">
+                <div id="profileAvatar" class="profileAvatar">R</div>
+                <div class="profileInfo">
+                  <p id="profileUsername">User</p>
+                  <p id="profileEmail">user@example.com</p>
+                </div>
+              </div>
+              <div class="profileMenuDivider"></div>
+              <button class="profileMenuOption">Profile</button>
+              <button class="profileMenuOption">Settings</button>
+              <button id="logoutOption" class="profileMenuOption profileMenuLogout">
+                Logout
+              </button>
+            </div>
           </div>
+        </div>
+      </header>
 
-          <div class="libraryActions">
-            <button id="allSongsBtn" class="libraryBtn active">All Songs</button>
-            <button id="likedSongsBtn" class="libraryBtn">Liked Songs</button>
-          </div>
+      <div class="searchContainer" id="searchContainer" style="display: none">
+        <div id="searchResults" class="searchResults"></div>
+      </div>
 
-          <div class="songList">
-            <ul></ul>
-          </div>
+      <div class="main-grid">
+        <div class="main-left">
+          <div class="hero-panel">
+            <div class="section-h eader">
+              <div class="section-title-wrapper">
+                <p class="eyebrow-text">Made For</p>
+                <h2>Rajnagar</h2>
+              </div>
+            </div>
 
-          <div class="footer">
-            <div>
-              <a href="https://www.musify.com/jp/legal/"><span>Legal</span></a>
+            <div class="row-wrapper">
+              <div id="topCardsSection" class="horizontal-row hero-card-row">
+                <div class="card" data-folder="karan aujla">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="Daily Mix 01" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 01</h2>
+                  <p>Yashraj, Karan Aujla, Cheema Y and more</p>
+                </div>
+
+                <div class="card" data-folder="ncs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="Daily Mix 02" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 02</h2>
+                  <p>NoCopyrightSounds - Alan Walker, Cartoon, Deaf Kev</p>
+                </div>
+
+                <div class="card" data-folder="daily mix">
+                  <div class="card-image-wrapper">
+                    <img src="songs/daily mix/en (1).jpg" alt="Daily Mix 03" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 03</h2>
+                  <p>Karan Aujla, Diljit Dosanjh, Shubh, Talwinder</p>
+                </div>
+
+                <div class="card" data-folder="Diljit">
+                  <div class="card-image-wrapper">
+                    <img src="songs/Diljit/en (8).jpg" alt="Daily Mix 04" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 04</h2>
+                  <p>Diljit Dosanjh, Intense, Jatinder Shah and more</p>
+                </div>
+
+                <div class="card" data-folder="honey singh">
+                  <div class="card-image-wrapper">
+                    <img src="songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg" alt="Daily Mix 05" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 05</h2>
+                  <p>Yo Yo Honey Singh, Alfaaz, Mafia Mundeer classics</p>
+                </div>
+
+                <div class="card" data-folder="talwinder">
+                  <div class="card-image-wrapper">
+                    <img src="songs/talwinder/1.jpg" alt="Daily Mix 06" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 06</h2>
+                  <p>Talwinder, NDS, Sanjoy - deep vibes & melodies</p>
+                </div>
+
+                <div class="card" data-folder="vibes songs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/vibes songs/ab67706f000000023da05797a7c490186a98e713.jpg" alt="Daily Mix 07" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 07</h2>
+                  <p>Late night drives, lo-fi beats, and aesthetic tunes</p>
+                </div>
+
+                <div class="card" data-folder="Ap dillhon">
+                  <div class="card-image-wrapper">
+                    <img src="songs/Ap dillhon/ab67706f00000002558eebc8a959a3e4f5acadc4.jpg" alt="Daily Mix 08" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 08</h2>
+                  <p>AP Dhillon, Gurinder Gill, Shinda Kahlon hits</p>
+                </div>
+
+                <div class="card" data-folder="instagram trending">
+                  <div class="card-image-wrapper">
+                    <img src="songs/instagram trending/ab67606c0000d72c168dd5c32e7333944fe7616d (1).webp"
+                      alt="Daily Mix 09" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 09</h2>
+                  <p>Trending Reels tracks, viral Punjabi hits and pop</p>
+                </div>
+
+                <div class="card" data-folder="karan aujla">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="Daily Mix 10" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 10</h2>
+                  <p>Karan Aujla, Tru-Skool, Deep Jandu and more</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <a href="https://www.musify.com/jp/privacy/"
-                ><span>Privacy Center</span></a
-              >
+
+            <!-- <div class="card">
+                  <div class="card-image">
+                    <img src="songs/ncs/cover.jpg" alt="Daily Mix 01" />
+                    <span class="card-badge">Daily Mix 01</span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-image">
+                    <img src="songs/ncs/cover.jpg" alt="Daily Mix 02" />
+                    <span class="card-badge">Daily Mix 02</span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-image">
+                    <img src="songs/daily mix/en (1).jpg" alt="Daily Mix 03" />
+                    <span class="card-badge">Daily Mix 03</span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-image">
+                    <img src="songs/Diljit/en (8).jpg" alt="Daily Mix 04" />
+                    <span class="card-badge">Daily Mix 04</span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-image">
+                    <img
+                      src="songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg"
+                      alt="Daily Mix 05"
+                    />
+                    <span class="card-badge">Daily Mix 05</span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-image">
+                    <img src="songs/talwinder/1.jpg" alt="Daily Mix 06" />
+                    <span class="card-badge">Daily Mix 06</span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-image">
+                    <img
+                      src="songs/vibes songs/ab67706f000000023da05797a7c490186a98e713.jpg"
+                      alt="Daily Mix 07"
+                    />
+                    <span class="card-badge">Daily Mix 07</span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-image">
+                    <img
+                      src="songs/Ap dillhon/ab67706f00000002558eebc8a959a3e4f5acadc4.jpg"
+                      alt="Daily Mix 08"
+                    />
+                    <span class="card-badge">Daily Mix 08</span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-image">
+                    <img
+                      src="songs/instagram trending/ab67606c0000d72c168dd5c32e7333944fe7616d (1).webp"
+                      alt="Daily Mix 09"
+                    />
+                    <span class="card-badge">Daily Mix 09</span>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-image">
+                    <img src="songs/ncs/cover.jpg" alt="Daily Mix 10" />
+                    <span class="card-badge">Daily Mix 10</span>
+                  </div>
+                </div>
+              </div> -->
+
+            <div class="section-header" style="margin-top: 14px;">
+              <div class="section-title-wrapper">
+                <p class="eyebrow-text">Based on your recent listening</p>
+                <h2>Recents</h2>
+              </div>
             </div>
-            <div>
-              <a href="https://www.musify.com/jp/legal/privacy-policy/"
-                ><span>Privacy Policy</span></a
-              >
+
+            <div class="row-wrapper">
+              <div class="cardContainer">
+                <div class="card" data-folder="ncs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="Rajnagar" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>NCS Mix</h2>
+                  <p>Alan Walker, Cartoon, Deaf Kev</p>
+                </div>
+
+                <div class="card" data-folder="daily mix">
+                  <div class="card-image-wrapper">
+                    <img src="songs/daily mix/en (1).jpg" alt="Rajnagar" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Daily Mix 03</h2>
+                  <p>Diljit, Karan Aujla, Shubh, Talwinder</p>
+                </div>
+
+                <div class="card" data-folder="Diljit">
+                  <div class="card-image-wrapper">
+                    <img src="songs/Diljit/en (8).jpg" alt="Rajnagar" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Diljit Dosanjh Mix</h2>
+                  <p>Diljit Dosanjh, Jatinder Shah, Intense</p>
+                </div>
+
+                <div class="card" data-folder="honey singh">
+                  <div class="card-image-wrapper">
+                    <img src="songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg" alt="Rajnagar" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Yo Yo Honey Singh</h2>
+                  <p>Honey Singh, Alfaaz, Mafia Mundeer</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <a href="https://www.musify.com/jp/legal/cookies-policy/"
-                ><span>Cookies</span></a
-              >
+
+            <!-- ROW 3: Popular Albums -->
+            <div class="section-header" style="margin-top: 14px;">
+              <div class="section-title-wrapper">
+                <h2>Popular Albums</h2>
+              </div>
             </div>
-            <div>
-              <a href="https://www.musify.com/jp/legal/privacy-policy/#s3"
-                ><span>About Ads</span></a
-              >
+            <div class="row-wrapper">
+              <div class="horizontal-row">
+                <div class="card" data-folder="ncs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="Popular Album 1" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Electronic Beats</h2>
+                  <p>NCS, Alan Walker, Cartoon</p>
+                </div>
+                <div class="card" data-folder="Diljit">
+                  <div class="card-image-wrapper">
+                    <img src="songs/Diljit/en (8).jpg" alt="Popular Album 2" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>G.O.A.T.</h2>
+                  <p>Diljit Dosanjh, Intense</p>
+                </div>
+                <div class="card" data-folder="honey singh">
+                  <div class="card-image-wrapper">
+                    <img src="songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg" alt="Popular Album 3" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>International Villager</h2>
+                  <p>Yo Yo Honey Singh</p>
+                </div>
+                <div class="card" data-folder="karan aujla">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="Popular Album 4" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Making Memories</h2>
+                  <p>Karan Aujla, Ikky</p>
+                </div>
+                <div class="card" data-folder="talwinder">
+                  <div class="card-image-wrapper">
+                    <img src="songs/talwinder/1.jpg" alt="Popular Album 5" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Duniya</h2>
+                  <p>Talwinder, NDS</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <a href="https://www.musify.com/jp/accessibility/"
-                ><span>Accessibility</span></a
-              >
+
+            <!-- ROW 4: Recently Played -->
+            <div class="section-header" style="margin-top: 14px;">
+              <div class="section-title-wrapper">
+                <h2>Recently Played</h2>
+              </div>
             </div>
+            <div class="row-wrapper">
+              <div class="horizontal-row">
+                <div class="card" data-folder="vibes songs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/vibes songs/ab67706f000000023da05797a7c490186a98e713.jpg" alt="Vibes" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Chill Vibes</h2>
+                  <p>Lo-Fi, Punjabi Aesthetic, Late Night</p>
+                </div>
+                <div class="card" data-folder="Ap dillhon">
+                  <div class="card-image-wrapper">
+                    <img src="songs/Ap dillhon/ab67706f00000002558eebc8a959a3e4f5acadc4.jpg" alt="AP Dhillon" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>AP Dhillon Hits</h2>
+                  <p>Ap Dhillon, Gurinder Gill, Shinda Kahlon</p>
+                </div>
+                <div class="card" data-folder="instagram trending">
+                  <div class="card-image-wrapper">
+                    <img src="songs/instagram trending/ab67606c0000d72c168dd5c32e7333944fe7616d (1).webp"
+                      alt="Trending" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Reels Trending</h2>
+                  <p>Viral reels soundtracks, trending pop</p>
+                </div>
+                <div class="card" data-folder="ncs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="NCS" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Electronic Mix</h2>
+                  <p>High-energy gaming tracks</p>
+                </div>
+                <div class="card" data-folder="daily mix">
+                  <div class="card-image-wrapper">
+                    <img src="songs/daily mix/en (1).jpg" alt="Daily Mix" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Chill Punjabi</h2>
+                  <p>Punjabi aesthetic playlists</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- ROW 5: Trending Now -->
+            <div class="section-header" style="margin-top: 14px;">
+              <div class="section-title-wrapper">
+                <h2>Trending Now</h2>
+              </div>
+            </div>
+            <div class="row-wrapper">
+              <div class="horizontal-row">
+                <div class="card" data-folder="karan aujla">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="Karan Aujla" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Softly Hits</h2>
+                  <p>Karan Aujla, Ikky</p>
+                </div>
+                <div class="card" data-folder="honey singh">
+                  <div class="card-image-wrapper">
+                    <img src="songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg" alt="Honey Singh" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Desi Kalakaar</h2>
+                  <p>Honey Singh, Lil Golu</p>
+                </div>
+                <div class="card" data-folder="Diljit">
+                  <div class="card-image-wrapper">
+                    <img src="songs/Diljit/en (8).jpg" alt="Diljit" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Lover Radio</h2>
+                  <p>Diljit Dosanjh, Intense, Raj Ranjodh</p>
+                </div>
+                <div class="card" data-folder="vibes songs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/vibes songs/ab67706f000000023da05797a7c490186a98e713.jpg" alt="Vibes" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Aesthetic Lo-Fi</h2>
+                  <p>Relaxing Punjabi lofi hits</p>
+                </div>
+                <div class="card" data-folder="ncs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="NCS" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>EDM Gaming</h2>
+                  <p>Best workout EDM tracks</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- ROW 6: Recommended Radios -->
+            <div class="section-header" style="margin-top: 14px;">
+              <div class="section-title-wrapper">
+                <h2>Recommended Radios</h2>
+              </div>
+            </div>
+            <div class="row-wrapper">
+              <div class="horizontal-row">
+                <div class="card" data-folder="talwinder">
+                  <div class="card-image-wrapper">
+                    <img src="songs/talwinder/1.jpg" alt="Talwinder" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Talwinder Radio</h2>
+                  <p>With NDS, Shubh, Karan Aujla</p>
+                </div>
+                <div class="card" data-folder="Ap dillhon">
+                  <div class="card-image-wrapper">
+                    <img src="songs/Ap dillhon/ab67706f00000002558eebc8a959a3e4f5acadc4.jpg" alt="AP Dhillon" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>AP Dhillon Radio</h2>
+                  <p>With Gurinder Gill, Shinda Kahlon</p>
+                </div>
+                <div class="card" data-folder="instagram trending">
+                  <div class="card-image-wrapper">
+                    <img src="songs/instagram trending/ab67606c0000d72c168dd5c32e7333944fe7616d (1).webp"
+                      alt="Trending" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Reels Viral Radio</h2>
+                  <p>Trending tunes from Instagram reels</p>
+                </div>
+                <div class="card" data-folder="daily mix">
+                  <div class="card-image-wrapper">
+                    <img src="songs/daily mix/en (1).jpg" alt="Daily Mix" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Acoustic Mix Radio</h2>
+                  <p>Pure vocals and soft beats</p>
+                </div>
+                <div class="card" data-folder="Diljit">
+                  <div class="card-image-wrapper">
+                    <img src="songs/Diljit/en (8).jpg" alt="Diljit" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Diljit Dosanjh Radio</h2>
+                  <p>Sensational Punjabi hits radio</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- ROW 7: Podcast Shows -->
+            <div class="section-header" style="margin-top: 14px;">
+              <div class="section-title-wrapper">
+                <h2>Podcast Shows</h2>
+              </div>
+            </div>
+            <div class="row-wrapper">
+              <div class="horizontal-row">
+                <div class="card" data-folder="ncs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="NCS Podcast" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Gaming & Beats Podcast</h2>
+                  <p>NCS Creators talk music and gaming</p>
+                </div>
+                <div class="card" data-folder="vibes songs">
+                  <div class="card-image-wrapper">
+                    <img src="songs/vibes songs/ab67706f000000023da05797a7c490186a98e713.jpg" alt="Vibes Podcast" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Aesthetic Talk Podcast</h2>
+                  <p>Behind the scenes of aesthetic Punjabi tracks</p>
+                </div>
+                <div class="card" data-folder="daily mix">
+                  <div class="card-image-wrapper">
+                    <img src="songs/daily mix/en (1).jpg" alt="Daily Mix Podcast" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Weekly Mix Podcast</h2>
+                  <p>New music recommendations, artists & shows</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- ROW 8: Artists You Love -->
+            <div class="section-header" style="margin-top: 14px;">
+              <div class="section-title-wrapper">
+                <h2>Artists You Love</h2>
+              </div>
+            </div>
+            <div class="row-wrapper">
+              <div class="horizontal-row">
+                <div class="card" data-folder="karan aujla">
+                  <div class="card-image-wrapper">
+                    <img src="songs/ncs/cover.jpg" alt="Artist 1" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Karan Aujla</h2>
+                  <p>Artist</p>
+                </div>
+                <div class="card" data-folder="Diljit">
+                  <div class="card-image-wrapper">
+                    <img src="songs/Diljit/en (8).jpg" alt="Artist 2" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Diljit Dosanjh</h2>
+                  <p>Artist</p>
+                </div>
+                <div class="card" data-folder="honey singh">
+                  <div class="card-image-wrapper">
+                    <img src="songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg" alt="Artist 3" />
+                    <div class="play" onclick="event.stopPropagation();">▶</div>
+                    <span class="spotify-overlay-logo">
+                      <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+                        <path
+                          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <h2>Yo Yo Honey Singh</h2>
+                  <p>Artist</p>
+                </div>
+              </div>
+            </div>
+
+            <aside class="rightSidebar">
+              <div class="sidebar-header">
+                <button class="iconBtn" title="Now Playing Panel">
+                  <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18">
+                    <path
+                      d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" />
+                  </svg>
+                </button>
+                <h2 id="sidebarHeaderTitle" class="sidebar-header-title">Now Playing</h2>
+                <div class="header-right-actions">
+                  <button class="iconBtn" title="Options">
+                    <svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16">
+                      <circle cx="5" cy="12" r="2" />
+                      <circle cx="12" cy="12" r="2" />
+                      <circle cx="19" cy="12" r="2" />
+                    </svg>
+                  </button>
+                  <button class="iconBtn close-sidebar" title="Close">
+                    <svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16">
+                      <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div id="nowPlayingCard" class="side-card now-playing-card">
+                <div class="now-playing-art-wrapper">
+                  <img id="nowPlayingArt" class="now-playing-art" src="songs/ncs/cover.jpg" alt="now playing" />
+                </div>
+
+                <div class="now-playing-details-row">
+                  <div class="now-playing-text">
+                    <h2 id="nowPlayingTitle" class="now-playing-title">Select a song</h2>
+                    <p id="nowPlayingArtist" class="now-playing-artist">Artist name</p>
+                  </div>
+                  <div class="now-playing-actions">
+                    <button class="iconBtn share-btn" title="Share">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#b3b3b3" stroke-width="2" width="18" height="18">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                        <polyline points="16 6 12 2 8 6" />
+                        <line x1="12" y1="2" x2="12" y2="15" />
+                      </svg>
+                    </button>
+                    <button id="sidebarFavoriteBtn" class="iconBtn plus-btn" title="Save to Liked Songs">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#b3b3b3" stroke-width="2" width="20" height="20">
+                        <path
+                          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- About the artist section -->
+                <div class="about-artist-panel">
+                  <div class="artist-banner-wrapper">
+                    <img id="sidebarArtistImg" class="artist-banner-img" src="songs/ncs/cover.jpg" alt="artist" />
+                    <span class="about-artist-title">About the artist</span>
+                  </div>
+                  <div class="artist-bio-info">
+                    <h4 id="sidebarArtistName">Artist Name</h4>
+                    <p id="sidebarArtistBio">Popular tracks, daily mixes and compilations.</p>
+                  </div>
+                </div>
+
+                <!-- Credits panel -->
+                <div class="credits-panel">
+                  <div class="credits-header">
+                    <h3>Credits</h3>
+                    <a href="#" class="show-all-credits">Show all</a>
+                  </div>
+                  <div class="credits-list">
+                    <div class="credit-item">
+                      <span id="creditArtist1" class="credit-name">Artist Name</span>
+                      <span id="creditRole1" class="credit-role">Main Artist</span>
+                    </div>
+                    <div class="credit-item">
+                      <span id="creditArtist2" class="credit-name">Artist Name</span>
+                      <span id="creditRole2" class="credit-role">Main Artist</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
+    </section>
+  </div>
+
+  <div id="premiumPopup" class="premium-popup hidden" aria-hidden="true">
+    <div class="premium-popup-card">
+      <button class="close-popup iconBtn" aria-label="Close premium offer">✕</button>
+      <div class="premium-popup-title">Upgrade to Premium</div>
+      <p>Listen without limits. Enjoy ad-free music, unlimited skips, offline downloads and high quality audio.</p>
+      <div class="premium-features-grid">
+        <div class="premium-feature-item">
+          <span class="feat-icon">✨</span>
+          Ad-Free Music
+        </div>
+        <div class="premium-feature-item">
+          <span class="feat-icon">⏭️</span>
+          Unlimited Skips
+        </div>
+        <div class="premium-feature-item">
+          <span class="feat-icon">📥</span>
+          Offline Downloads
+        </div>
+        <div class="premium-feature-item">
+          <span class="feat-icon">🔊</span>
+          High Quality Audio
         </div>
       </div>
-      <div class="right bg-grey rounded">
-        <div class="header">
-          <div class="nav">
-            <div class="hamburgerContainer">
-              <img
-                width="40"
-                class="invert hamburger"
-                src="img/hamburger.svg"
-                alt="hamburger menu"
-              />
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15 6L9.70711 11.2929C9.37377 11.6262 9.20711 11.7929 9.20711 12C9.20711 12.2071 9.37377 12.3738 9.70711 12.7071L15 18"
-                  stroke="#ffffff"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M9 18L14.2929 12.7071C14.6262 12.3738 14.7929 12.2071 14.7929 12C14.7929 11.7929 14.6262 11.6262 14.2929 11.2929L9 6"
-                  stroke="#ffffff"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
-          <div class="buttons" id="authButtons">
-  <button class="signupbtn" onclick="goToSignup()">Sign up</button>
-  <script>
-function goToSignup() {
-  window.location.href = "signup.html";
-}
-</script>
-  <button class="loginbtn" onclick="goToLogin()">Log in</button>
-</div>
+      <button id="subscribePremiumBtn" class="pillBtn premium">
+        Start Premium — ₹99/month
+      </button>
+    </div>
+  </div>
 
-          <div class="buttons" id="welcomeInfo" style="display:none; gap:12px; align-items:center;">
-            <span class="text-white font-semibold">Welcome, <span id="navUsername"></span></span>
-            <div class="profileContainer">
-              <div class="profileIcon" id="profileIcon">👤</div>
-              <div class="profileMenu" id="profileMenu">
-                <div class="profileHeader">
-                  <div class="profileAvatar" id="profileAvatar">👤</div>
-                  <div class="profileInfo">
-                    <p id="profileUsername">User</p>
-                    <p id="profileEmail">email@example.com</p>
-                  </div>
-                </div>
-                <div class="profileMenuDivider"></div>
-                <a href="#" class="profileMenuOption" id="accountOption">
-                  <span>👤 Account</span>
-                </a>
-                <a href="#" class="profileMenuOption" id="privacyOption">
-                  <span>🔒 Privacy & Security</span>
-                </a>
-                <a href="#" class="profileMenuOption" id="settingsOption">
-                  <span>⚙️ Settings</span>
-                </a>
-                <a href="#" class="profileMenuOption" id="picturesOption">
-                  <span>🖼️ Pictures & Profile</span>
-                </a>
-                <div class="profileMenuDivider"></div>
-                <a href="#" class="profileMenuOption profileMenuLogout" id="logoutOption">
-                  <span>🚪 Logout</span>
-                </a>
-              </div>
-            </div>
-          </div>
+  <div id="notificationToast" class="notification-toast hidden" role="status" aria-live="polite"></div>
 
-<script>
-function goToLogin() {
-  window.location.href = "login.html";
-}
-</script>
+  <div class="playbar" aria-label="Player controls">
+    <div class="playbar-left">
+      <img id="playbarArt" class="playbar-art" src="songs/ncs/cover.jpg" alt="art" />
+      <div class="songmeta">
+        <div class="songinfo">No track playing</div>
+        <div class="songartist">—</div>
+      </div>
+      <button id="favoritePlaybarBtn" class="favorite-btn" title="Like">
+        ❤
+      </button>
+    </div>
+
+    <div class="playbar-center">
+      <div class="controls">
+        <button id="shuffle" class="iconBtn" title="Shuffle">
+          <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18">
+            <path
+              d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
+          </svg>
+        </button>
+        <button id="previous" class="iconBtn" title="Previous">
+          <svg viewBox="0 0 24 24" fill="#b3b3b3" width="20" height="20">
+            <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
+          </svg>
+        </button>
+        <button id="play" class="play-icon-btn" title="Play / Pause">
+          <svg viewBox="0 0 24 24" fill="#000" width="16" height="16" class="play-svg">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </button>
+        <button id="next" class="iconBtn" title="Next">
+          <svg viewBox="0 0 24 24" fill="#b3b3b3" width="20" height="20">
+            <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+          </svg>
+        </button>
+        <button id="repeat" class="iconBtn" title="Repeat">
+          <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18">
+            <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />
+          </svg>
+        </button>
+      </div>
+      <div class="seekbar-wrap">
+        <span class="current-time">00:00</span>
+        <div class="seekbar">
+          <div class="progress"></div>
+          <div class="circle"></div>
         </div>
-        <div class="musifyPlaylists">
-          <h2>musify Playlists</h2>
-          <div class="cardContainer">
-            
-              <div class="card">
-                <img src="songs/karan aujla/cover.jpg" alt="playlist" />
-                <audio src="songs/karan aujla/tera hone laga hu.mp3"></audio>
-                <h3>Top Hits</h3>
-                <p>Best of trending songs</p>
-              </div>
-
-              <div class="card">
-                <img src="songs/ncs/cover.jpg" alt="playlist" />
-                <h3>Chill Vibes</h3>
-                <p>Relax and feel good</p>
-              </div>
-
-              <div class="card">
-                <img src="songs/daily mix/en (1).jpg" alt="playlist" />
-                <h3>Daily mix</h3>
-                <p>mix songs</p>
-              </div>
-
-              <div class="card">
-                <img src="songs/Diljit/en (8).jpg" alt="playlist" />
-                <h3>Diljit songs</h3>
-                <p>Energy booster songs</p>
-              </div>
-
-              <div class="card">
-                <img src="songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg" alt="playlist" />
-                <h3>honey singh</h3>
-                <p>rap songs</p>
-              </div>
-
-              <div class="card">
-                <img src="songs/instagram trending/ab67706c0000d72c168dd5c32e7333944fe7616d (1).webp" alt="playlist" />
-                <h3>trending</h3>
-                <p>trending instagram songs</p>
-              </div>
-              
-              <div class="card">
-                <img src="songs/vibes songs/ab67706f000000023da05797a7c490186a98e713.jpg" alt="playlist" />
-                <h3>vibes</h3>
-                <p>vibes booster songs</p>
-              </div>
-
-              <div class="card">
-                <img src="songs/Ap dillhon/ab67706f00000002558eebc8a959a3e4f5acadc4.jpg" alt="playlist" />
-                <h3>ap dillhon
-                </h3>
-                <p>rommntic songs</p>
-              </div>
-
-            </div>
-          </div>
-          <div class="playbar">
-            <div class="seekbar">
-              <div class="circle"></div>
-            </div>
-            <div class="abovebar">
-              <div class="songinfo"></div>
-              <div class="songbuttons">
-                <button id="favoritePlaybarBtn" class="favorite-btn playbar-fav" title="Like this song">❤</button>
-                <img width="35" id="previous" src="img/prevsong.svg" alt="" />
-                <img width="35" id="play" src="img/play.svg" alt="" />
-                <img width="35" id="next" src="img/nextsong.svg" alt="" />
-              </div>
-              <div class="timevol">
-                <div class="songtime"></div>
-                <div class="volume">
-                  <img width="25" src="img/volume.svg" alt="" />
-                  <div class="range">
-                    <input type="range" name="volume" id="" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <span class="duration">00:00</span>
       </div>
     </div>
-    <script src="js/script.js"></script>
-    <script src="js/auth.js"></script>
-  </body>
+
+    <div class="playbar-right">
+      <button id="queueBtn" class="iconBtn" title="Volume">
+        <svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16">
+          <path
+            d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+        </svg>
+      </button>
+      <div class="range">
+        <input id="volumeRange" type="range" min="0" max="100" value="80" />
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/script.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+
 </html>

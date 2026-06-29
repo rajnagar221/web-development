@@ -1,14 +1,16 @@
+from app.jwt_config import decode_token
+from app import config
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Depends
 from jose import JWTError, jwt
 from app.database import users_collection
 from app.models import SignupModel, LoginModel
-from app.config import SECRET_KEY, ALGORITHM
+from app.jwt_config import create_access_token, decode_token,verify_token
+
 from app.auth import (
     hash_password,
     verify_password,
     find_user_by_identifier,
-    create_access_token,
     oauth2_scheme,
     normalize_phone
 )
@@ -167,10 +169,10 @@ def apple_login():
         "username": db_user.get("username"),
     }
 
-@router.get("/me")
+@router.get("/profile")
 def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = decode_token(token)
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
@@ -192,7 +194,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 @router.get("/check-login")
 def check_login(token: str = Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = verify_token(token)
         email = payload.get("sub")
         user = users_collection.find_one({"email": email})
         if not user:

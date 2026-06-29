@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-from app.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from app.database import users_collection
 
 UTC = timezone.utc
@@ -36,8 +35,4 @@ def find_user_by_identifier(identifier: str):
 
     return users_collection.find_one({"username": identifier})
 
-def create_access_token(data: dict) -> str:
-    token_data = data.copy()
-    expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    token_data.update({"exp": expire})
-    return jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
+

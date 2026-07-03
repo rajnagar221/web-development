@@ -10,7 +10,8 @@ import {
   renderSongList,
   updateVolumeIcon,
   showToast,
-  toggleLikeTrack
+  toggleLikeTrack,
+  addRecentlyPlayed
 } from './ui.js';
 import { getElement } from './utils.js';
 
@@ -67,6 +68,9 @@ export function togglePlayback(track, folder) {
 export function playMusic(track, folder = state.currFolder) {
   if (!track || !folder) return;
 
+  const nowPlayingCard = document.querySelector("#nowPlayingCard");
+  if (nowPlayingCard) nowPlayingCard.style.display = "flex";
+
   // If same track already playing, just resume
   if (track === state.currentTrack && folder === state.currentFolder && state.currentSong.src) {
     if (state.currentSong.paused) {
@@ -80,6 +84,9 @@ export function playMusic(track, folder = state.currFolder) {
   state.currentTrack = track;
   state.currentFolder = folder;
   state.currFolder = folder;
+
+  // Add to recent songs live
+  addRecentlyPlayed(track, folder);
 
   // Immediately update UI before load completes
   updateSongInfo(track);
@@ -254,12 +261,17 @@ export function setupControlButtons() {
 
   // ---- Volume ----
   if (volumeRange) {
-    state.currentSong.volume = Number(volumeRange.value) / 100;
-    volumeRange.addEventListener("input", (event) => {
-      const vol = Number(event.target.value) / 100;
-      state.currentSong.volume = vol;
-      updateVolumeIcon(vol);
-    });
+    const updateVol = (val) => {
+      const percent = Math.max(0, Math.min(100, Number(val)));
+      const volRatio = percent / 100;
+      state.currentSong.volume = volRatio;
+      updateVolumeIcon(volRatio);
+      volumeRange.style.background = `linear-gradient(to right, #1db954 0%, #1db954 ${percent}%, rgba(255, 255, 255, 0.2) ${percent}%, rgba(255, 255, 255, 0.2) 100%)`;
+    };
+
+    updateVol(volumeRange.value);
+    volumeRange.addEventListener("input", (e) => updateVol(e.target.value));
+    volumeRange.addEventListener("change", (e) => updateVol(e.target.value));
   }
 
   // Volume icon mute toggle

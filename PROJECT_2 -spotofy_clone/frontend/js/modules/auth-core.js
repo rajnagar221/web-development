@@ -254,3 +254,48 @@ export function updateIndexAuthButtons() {
     }
   }
 }
+
+export async function verifyAuthentication() {
+  const token = localStorage.getItem("token");
+  const loader = document.getElementById("appLoader");
+
+  if (!token) {
+    window.location.href = "login.html";
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/check-login`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to verify token");
+    }
+
+    const data = await response.json();
+    if (!data.is_logged_in) {
+      throw new Error(data.message || "Invalid token");
+    }
+
+    // Token is valid! Smoothly fade out the splash loader.
+    if (loader) {
+      loader.classList.add("fade-out");
+      setTimeout(() => {
+        loader.remove();
+      }, 500);
+    }
+    return true;
+  } catch (err) {
+    console.error("Authentication check failed:", err);
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("is_logged_in");
+    window.location.href = "login.html";
+    return false;
+  }
+}
+

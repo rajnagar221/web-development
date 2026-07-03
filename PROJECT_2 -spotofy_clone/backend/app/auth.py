@@ -5,6 +5,7 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from app.database import users_collection
 
+
 UTC = timezone.utc
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -19,7 +20,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def is_valid_email(value: str) -> bool:
     return bool(re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", value))
 
-def normalize_phone(value: str) -> str:
+def normalize_phone(value: str) -> str: 
     return re.sub(r"[^0-9+]", "", value)
 
 def find_user_by_identifier(identifier: str):

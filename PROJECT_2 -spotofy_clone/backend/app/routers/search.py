@@ -1,10 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from app.jwt_config import verify_token
+from fastapi import Depends
 from app.database import songs_collection, playlists_collection
 
 router = APIRouter()
 
 @router.get("/api/search")
-def search_songs(query: str):
+def search_songs(query: str, token=Depends(verify_token)):
+    """Searches for songs and playlists"""
+    if token["error"]:
+        raise HTTPException(status_code=401, detail=token["error"])
     song_results = list(songs_collection.find({
         "$or": [
             {"title": {"$regex": query, "$options": "i"}},

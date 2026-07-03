@@ -47,13 +47,15 @@
     gap: 12px !important;
 }
 
-/* Square Art Frame */
+/* Square/Tall Art Frame with Gradient Overlay (Image 2 style) */
 .now-playing-art-wrapper {
+    position: relative !important;
     width: 100% !important;
-    aspect-ratio: 1 / 1 !important;
-    border-radius: 8px !important;
+    aspect-ratio: 4 / 5 !important;
+    min-height: 320px !important;
+    border-radius: 12px !important;
     overflow: hidden !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7) !important;
 }
 
 .now-playing-art {
@@ -62,61 +64,71 @@
     object-fit: cover !important;
 }
 
-/* Details and Actions Row */
-.now-playing-details-row {
+/* Image overlay on bottom of artwork card */
+.now-playing-image-overlay {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    padding: 24px 16px 16px 16px !important;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%) !important;
     display: flex !important;
-    align-items: center !important;
+    align-items: flex-end !important;
     justify-content: space-between !important;
-    width: 100% !important;
-    padding: 4px 0 !important;
+    gap: 12px !important;
+    z-index: 3 !important;
 }
 
-.now-playing-text {
+.overlay-song-info {
     flex: 1 !important;
     min-width: 0 !important;
 }
 
-.now-playing-title {
-    font-size: 20px !important;
-    font-weight: 700 !important;
-    color: #fff !important;
+.overlay-song-title {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
     margin: 0 0 4px 0 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
 }
 
-.now-playing-artist {
-    font-size: 14px !important;
-    color: #b3b3b3 !important;
+.overlay-song-artist {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.8) !important;
     margin: 0 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
 }
 
-.now-playing-actions {
+.overlay-action-buttons {
     display: flex !important;
     align-items: center !important;
-    gap: 16px !important;
+    gap: 10px !important;
 }
 
-.now-playing-actions .iconBtn {
-    background: transparent !important;
+.overlay-action-buttons .iconBtn {
+    background: rgba(255, 255, 255, 0.12) !important;
     border: none !important;
-    color: #b3b3b3 !important;
-    font-size: 18px !important;
+    border-radius: 50% !important;
+    width: 38px !important;
+    height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
+    backdrop-filter: blur(4px) !important;
+    transition: transform 0.2s ease, background 0.2s ease !important;
 }
 
-.now-playing-actions .iconBtn:hover {
-    color: #fff !important;
+.overlay-action-buttons .iconBtn:hover {
+    background: rgba(255, 255, 255, 0.28) !important;
     transform: scale(1.08) !important;
-}
-
-.now-playing-actions .plus-btn.liked {
-    color: #1db954 !important;
 }
 
 /* About the Artist Section */
@@ -197,7 +209,8 @@
     aspect-ratio: 1 / 1 !important;
 }
 
-/* 4. Spotify Logo Overlay Icon */
+/* 4. Musify Logo Overlay Icon */
+.musify-overlay-logo,
 .spotify-overlay-logo {
     position: absolute;
     top: 8px;
@@ -233,7 +246,8 @@
     z-index: 3;
     pointer-events: auto;
     cursor: pointer;
-    padding-left: 2px !important; /* Centering fix for play arrow */
+    padding-left: 2px !important;
+    /* Centering fix for play arrow */
     border: none !important;
 }
 
@@ -285,19 +299,20 @@
     right: 0 !important;
     width: 100% !important;
     height: 90px !important;
-    background-color: #121212 !important;
-    border-top: 1px solid #282828 !important;
+    background-color: #000000 !important;
+    /* Solid Spotify black playbar */
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-left: none !important;
     border-right: none !important;
     border-bottom: none !important;
-    border-radius: 0 !important; /* Solid flat look */
+    border-radius: 0 !important;
     padding: 0 24px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
     gap: 20px !important;
     z-index: 10000 !important;
-    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.8) !important;
     transform: none !important;
     backdrop-filter: none !important;
 }
@@ -306,41 +321,46 @@
     display: flex !important;
     align-items: center !important;
     gap: 14px !important;
-    width: 25% !important;
-    min-width: 180px !important;
+    width: 30% !important;
+    min-width: 220px !important;
+    flex-shrink: 0 !important;
 }
 
 .playbar-art {
     width: 56px !important;
     height: 56px !important;
-    border-radius: 4px !important;
+    border-radius: 8px !important;
+    /* Song cover art card */
     object-fit: cover !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    background: #282828 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
+    flex-shrink: 0 !important;
 }
 
 .songmeta {
     display: flex !important;
     flex-direction: column !important;
     gap: 3px !important;
+    overflow: hidden !important;
 }
 
 .playbar .songinfo {
-    color: #fff !important;
+    color: #ffffff !important;
     font-size: 14px !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-    max-width: 160px !important;
+    max-width: 200px !important;
 }
 
 .playbar .songartist {
     color: #b3b3b3 !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-    max-width: 160px !important;
+    max-width: 200px !important;
 }
 
 .playbar .favorite-btn {
@@ -350,6 +370,7 @@
     font-size: 16px !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
+    margin-left: 4px !important;
 }
 
 .playbar .favorite-btn.liked {
@@ -433,7 +454,8 @@
 }
 
 .section-title-wrapper h2 {
-    font-size: 18px !important; /* Smaller, professional heading size */
+    font-size: 18px !important;
+    /* Smaller, professional heading size */
     font-weight: 700 !important;
     margin: 0 !important;
     color: #fff !important;
@@ -514,7 +536,8 @@
     background: rgba(255, 255, 255, 0.16) !important;
     border-radius: 999px !important;
     cursor: pointer !important;
-    overflow: visible !important; /* Circle handle overlay visible */
+    overflow: visible !important;
+    /* Circle handle overlay visible */
 }
 
 .seekbar .progress {
@@ -607,28 +630,45 @@
 .sidebar-brand {
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 10px !important;
-    padding: 16px 20px 8px 20px !important;
-    background: transparent !important; /* Flat background, matches Spotify sidebar */
+    justify-content: space-between !important;
+    padding: 12px 16px 10px 16px !important;
+    background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 }
 
-.sidebar-brand img {
-    width: 36px !important;
-    height: 36px !important;
-    object-fit: contain !important;
-    filter: none !important; /* Retain original bright green color */
+/* Icon + text flex row */
+.brand-logo-wrap {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
 }
 
+/* M-waveform icon in sidebar */
+.brand-icon {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: contain !important;
+    flex-shrink: 0 !important;
+}
+
+/* "musify" text next to icon */
+.brand-logo-wrap .logo-text,
 .sidebar-brand .logo-text {
-    font-size: 22px !important;
-    font-weight: 800 !important;
+    font-size: 20px !important;
+    font-weight: 900 !important;
     color: #fff !important;
-    letter-spacing: 0.08em !important;
+    letter-spacing: 0.12em !important;
     text-transform: uppercase !important;
     line-height: 1 !important;
+}
+
+/* Icon on login / signup left panel */
+.branding-icon {
+    width: 60px !important;
+    height: 60px !important;
+    object-fit: contain !important;
+    margin-bottom: 4px !important;
 }
 
 .hero-panel {
@@ -685,7 +725,8 @@
 
 /* Liked Songs pill highlight */
 .libraryBtn.liked {
-    background: #1db954 !important; /* Spotify Green */
+    background: #1db954 !important;
+    /* Spotify Green */
     color: #000 !important;
 }
 
@@ -730,7 +771,8 @@
     outline: none !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6) !important;
     padding-bottom: 4px !important;
-    opacity: 0 !important; /* Hidden by default */
+    opacity: 0 !important;
+    /* Hidden by default */
     pointer-events: none !important;
 }
 
@@ -763,11 +805,14 @@
 /* Hide scrollbar of card sliders cleanly but preserve touch scroll */
 .horizontal-row,
 .cardContainer {
-    scrollbar-width: none !important; /* Firefox */
+    scrollbar-width: none !important;
+    /* Firefox */
 }
+
 .horizontal-row::-webkit-scrollbar,
 .cardContainer::-webkit-scrollbar {
-    display: none !important; /* Safari and Chrome */
+    display: none !important;
+    /* Safari and Chrome */
 }
 
 /* Redesigned Sidebar Title & Credits Styles */
@@ -852,7 +897,7 @@
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    background: linear-gradient(transparent, rgba(0,0,0,0.85)) !important;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.85)) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -905,14 +950,21 @@
     width: 100% !important;
     position: relative !important;
     border: 1px solid rgba(29, 185, 84, 0.3) !important;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(29,185,84,0.1) !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(29, 185, 84, 0.1) !important;
     text-align: center !important;
     animation: popupIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 @keyframes popupIn {
-    from { transform: scale(0.85); opacity: 0; }
-    to   { transform: scale(1);    opacity: 1; }
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .premium-popup-card .close-popup {
@@ -974,7 +1026,7 @@
     font-size: 12px !important;
     color: #fff !important;
     font-weight: 600 !important;
-    border: 1px solid rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
 .premium-feature-item .feat-icon {
@@ -1010,12 +1062,12 @@
 .pillBtn.secondary {
     background: transparent !important;
     color: #fff !important;
-    border: 1px solid rgba(255,255,255,0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
 }
 
 .pillBtn.secondary:hover {
     border-color: #fff !important;
-    background: rgba(255,255,255,0.08) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
 }
 
 .pillBtn.premium {
@@ -1023,12 +1075,12 @@
     color: #000 !important;
     font-size: 16px !important;
     padding: 14px 40px !important;
-    box-shadow: 0 8px 24px rgba(29,185,84,0.4) !important;
+    box-shadow: 0 8px 24px rgba(29, 185, 84, 0.4) !important;
 }
 
 .pillBtn.premium:hover {
     transform: scale(1.04) !important;
-    box-shadow: 0 12px 32px rgba(29,185,84,0.6) !important;
+    box-shadow: 0 12px 32px rgba(29, 185, 84, 0.6) !important;
 }
 
 /* ==========================================
@@ -1051,8 +1103,8 @@
     transition: all 0.3s ease !important;
     pointer-events: none !important;
     white-space: nowrap !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
 .notification-toast.visible {
@@ -1061,6 +1113,1041 @@
 }
 
 .notification-toast.hidden {
-    display: block !important; /* override any display:none, let opacity handle visibility */
+    display: block !important;
+    /* override any display:none, let opacity handle visibility */
 }
 
+/* ============== Edit Profile Modal & Image Upload ============== */
+.profile-modal-card {
+    max-width: 440px !important;
+    padding: 30px 28px !important;
+    background: linear-gradient(135deg, #181818 0%, #0c0c0c 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.profile-modal-title {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    margin-bottom: 24px !important;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: left;
+}
+
+.profile-image-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.profile-image-preview-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--hover-color) 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.profile-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-preview-initials {
+    font-size: 40px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.image-upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+    text-align: center;
+    pointer-events: none;
+}
+
+.image-upload-overlay span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px;
+}
+
+.profile-image-preview-wrapper:hover .image-upload-overlay {
+    opacity: 1;
+}
+
+.profile-image-preview-wrapper input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.remove-img-btn {
+    background: transparent;
+    border: none;
+    color: #a7a7a7;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.remove-img-btn:hover {
+    color: #ff5555;
+    background: rgba(255, 85, 85, 0.05);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #a7a7a7;
+}
+
+.profile-input {
+    background: #282828 !important;
+    border: 1px solid transparent !important;
+    border-radius: 6px !important;
+    color: #fff !important;
+    padding: 12px 14px !important;
+    font-size: 14px !important;
+    font-family: inherit !important;
+    outline: none !important;
+    transition: border-color 0.2s ease, background-color 0.2s ease !important;
+}
+
+.profile-input:focus {
+    background: #333333 !important;
+    border-color: var(--primary-color) !important;
+}
+
+.profile-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+/* Placeholder and Circular avatars styles */
+.placeholder-art {
+    padding: 24px !important;
+    background: linear-gradient(135deg, #242424 0%, #141414 100%) !important;
+    filter: invert(0.6) sepia(0.4) saturate(0.2) !important;
+    opacity: 0.45 !important;
+}
+
+.profileIcon img,
+.profileAvatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    display: block !important;
+}
+
+/* ==================== INSTALL APP POPUP MODAL ==================== */
+.install-app-modal-card {
+    max-width: 480px !important;
+    padding: 32px 28px !important;
+    text-align: center !important;
+    border-radius: 20px !important;
+    background: #181818 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+.install-modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.install-modal-icon {
+    font-size: 42px;
+}
+
+.install-modal-title {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+}
+
+.install-modal-desc {
+    font-size: 13px !important;
+    color: #b3b3b3 !important;
+    line-height: 1.5 !important;
+    margin-bottom: 20px !important;
+}
+
+.install-modal-features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.install-feat-item {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.download-action-btn-large {
+    width: 100% !important;
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    border-radius: 50px !important;
+    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+}
+
+.install-modal-subtext {
+    font-size: 11px !important;
+    color: #727272 !important;
+    margin-top: 12px !important;
+}
+
+
+/* ==================== SPOTIFY ACCOUNT OVERVIEW PAGE (Screenshots 2, 3, 4, 5) ==================== */
+.account-overview-page {
+    width: 100%;
+    min-height: 100%;
+    background: #121212;
+    padding: 24px 32px 60px 32px;
+    color: #ffffff;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.account-container {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.account-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.account-back-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.account-back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-2px);
+}
+
+.account-search-bar {
+    position: relative;
+    width: 320px;
+    max-width: 100%;
+}
+
+.account-search-bar .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+.account-search-bar input {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px 0 38px;
+    background: #1f1f1f;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.account-search-bar input:focus {
+    border-color: #ffffff;
+}
+
+/* Plans Grid (Screenshot 4) */
+.plans-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.account-card {
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 140px;
+    box-sizing: border-box;
+}
+
+.plan-free-card {
+    background: #1f1f1f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.badge-tag {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    width: fit-content;
+    margin-bottom: 12px;
+}
+
+.card-hero-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    color: #ffffff;
+}
+
+.plan-premium-card {
+    background: linear-gradient(135deg, #450af5 0%, #c410b7 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.diamond-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.card-hero-subtitle {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    color: #ffffff;
+}
+
+.account-action-btn {
+    width: fit-content;
+    padding: 10px 22px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    border-radius: 50px !important;
+}
+
+/* Menu Box (Screenshots 2 & 3) */
+.account-card-box {
+    background: #1f1f1f;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.box-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    color: #ffffff;
+}
+
+.box-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.box-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-align: left;
+}
+
+.box-menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.menu-item-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.menu-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    display: inline-block;
+}
+
+.arrow-right {
+    font-size: 20px;
+    color: #b3b3b3;
+    font-weight: 300;
+}
+
+/* Footer Section (Screenshot 5) */
+.musify-account-footer,
+.spotify-account-footer {
+    background: #000000;
+    border-radius: 16px;
+    padding: 36px 28px 24px 28px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-top-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.musify-logo-icon,
+.spotify-logo-icon {
+    font-size: 26px;
+}
+
+.brand-text {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.footer-columns {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-col h4 {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #919496;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+}
+
+.footer-col a {
+    color: #ffffff;
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-col a:hover {
+    color: #1db954;
+    text-decoration: underline;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 12px;
+}
+
+.social-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #292929;
+    border: none;
+    color: #ffffff;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.social-btn:hover {
+    background: #3e3e3e;
+}
+
+.footer-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.legal-links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.legal-links a {
+    color: #919496;
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.legal-links a:hover {
+    color: #ffffff;
+}
+
+.footer-copyright {
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    color: #919496;
+}
+
+/* ==================== 3-CARD PREMIUM PLANS MODAL (Screenshot 6) ==================== */
+.premium-plans-modal-card {
+    max-width: 1080px !important;
+    width: 95% !important;
+    padding: 40px 32px !important;
+    background: #121212 !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.9) !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+}
+
+.premium-modal-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.premium-hero-heading {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+}
+
+.premium-hero-sub {
+    font-size: 14px;
+    color: #b3b3b3;
+}
+
+.premium-plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: stretch;
+}
+
+.premium-plan-card {
+    background: #242424;
+    border-radius: 14px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.plan-badge {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: #000000;
+}
+
+.green-badge {
+    background: #1db954;
+}
+
+.lightgreen-badge {
+    background: #1ed760;
+}
+
+.musify-brand-logo {
+    font-size: 12px;
+    font-weight: 700;
+    color: #b3b3b3;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.plan-title {
+    font-size: 32px;
+    font-weight: 900;
+    margin: 4px 0 12px 0;
+}
+
+.text-green {
+    color: #1db954;
+}
+
+.text-yellow {
+    color: #ccff00;
+}
+
+.text-lightgreen {
+    color: #1ed760;
+}
+
+.plan-price-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+}
+
+.price-main {
+    font-size: 16px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.price-sub {
+    font-size: 12px;
+    color: #b3b3b3;
+}
+
+.plan-divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 16px 0;
+}
+
+.plan-features-list {
+    margin: 0 0 20px 0;
+    padding-left: 18px;
+    color: #dedede;
+    font-size: 13px;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.plan-features-list li {
+    margin-bottom: 8px;
+}
+
+.plan-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.plan-btn {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    border-radius: 50px !important;
+    cursor: pointer !important;
+}
+
+.green-btn {
+    background: #1db954 !important;
+    color: #000000 !important;
+    border: none !important;
+}
+
+.green-btn:hover {
+    background: #1ed760 !important;
+    transform: scale(1.02);
+}
+
+.yellow-btn {
+    background: #ccff00 !important;
+    color: #000000 !important;
+    border: none !important;
+}
+
+.yellow-btn:hover {
+    background: #d8ff33 !important;
+    transform: scale(1.02);
+}
+
+.lightgreen-btn {
+    background: #79f29d !important;
+    color: #000000 !important;
+    border: none !important;
+}
+
+.lightgreen-btn:hover {
+    background: #90f5af !important;
+    transform: scale(1.02);
+}
+
+.outline-btn {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+.outline-btn:hover {
+    border-color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.plan-disclaimer {
+    font-size: 11px;
+    color: #777777;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.plan-disclaimer a {
+    color: #777777;
+    text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+    .premium-plans-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== SETTINGS PAGE STYLES (Screenshots 1 & 2) ==================== */
+.settings-view-page {
+    width: 100%;
+    min-height: 100%;
+    background: #121212;
+    padding: 24px 32px 60px 32px;
+    color: #ffffff;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.settings-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.settings-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.settings-back-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-2px);
+}
+
+.settings-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.settings-main-title {
+    font-size: 32px;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0;
+}
+
+.settings-search-icon {
+    font-size: 16px;
+}
+
+.settings-content-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.settings-group {
+    background: transparent;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-group-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 14px 0;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.settings-row.vertical-stack {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.settings-row.vertical-space {
+    align-items: flex-start;
+    padding: 14px 0;
+}
+
+.settings-row-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.settings-row-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.settings-row-subtext {
+    font-size: 12px;
+    color: #a7a7a7;
+    line-height: 1.4;
+}
+
+.settings-btn {
+    padding: 8px 20px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+}
+
+.settings-select-wrapper {
+    position: relative;
+}
+
+.settings-select {
+    background: #282828;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 10px 36px 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a7a7a7'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 18px;
+    min-width: 180px;
+}
+
+.settings-select:hover {
+    background-color: #333333;
+}
+
+/* Toggle Switch Control (Screenshots 1 & 2) */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #535353;
+    transition: 0.2s ease-in-out;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    transition: 0.2s ease-in-out;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background-color: #1db954;
+}
+
+.toggle-switch input:checked+.toggle-slider:before {
+    transform: translateX(22px);
+}
+
+.settings-notice-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #a7a7a7;
+    margin-bottom: 12px;
+}
+
+.settings-sub-notice {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #888888;
+    margin-top: 6px;
+}
+
+.info-icon {
+    font-size: 14px;
+    color: #a7a7a7;
+}
+
+.crossfade-range-wrap input[type="range"] {
+    width: 140px;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #535353;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.crossfade-range-wrap input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #1db954;
+    cursor: pointer;
+}
+
+.profileIcon {
+    overflow: hidden !important;
+}
+
+.profileAvatar {
+    overflow: hidden !important;
+}
+
+
+}

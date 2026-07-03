@@ -73,35 +73,23 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   googleButtons.forEach((button) => {
-    button.addEventListener("click", async (e) => {
+    button.addEventListener("click", (e) => {
       e.preventDefault();
-      button.style.opacity = "0.7";
-      button.style.pointerEvents = "none";
-      await handleGoogleAuth();
-      button.style.opacity = "1";
-      button.style.pointerEvents = "auto";
+      showAuthToast("Google Login is currently pending. Please do not use this method.", "warning");
     });
   });
 
   spotifyButtons.forEach((button) => {
-    button.addEventListener("click", async (e) => {
+    button.addEventListener("click", (e) => {
       e.preventDefault();
-      button.style.opacity = "0.7";
-      button.style.pointerEvents = "none";
-      await handleSpotifyAuth();
-      button.style.opacity = "1";
-      button.style.pointerEvents = "auto";
+      showAuthToast("Spotify Login is currently pending. Please do not use this method.", "warning");
     });
   });
 
   appleButtons.forEach((button) => {
-    button.addEventListener("click", async (e) => {
+    button.addEventListener("click", (e) => {
       e.preventDefault();
-      button.style.opacity = "0.7";
-      button.style.pointerEvents = "none";
-      await handleAppleAuth();
-      button.style.opacity = "1";
-      button.style.pointerEvents = "auto";
+      showAuthToast("Apple Login is currently pending. Please do not use this method.", "warning");
     });
   });
 

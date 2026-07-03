@@ -1,3 +1,6 @@
+from fastapi import HTTPException
+from app.jwt_config import verify_token
+from fastapi import Depends
 import base64
 import requests
 from fastapi import APIRouter
@@ -19,7 +22,10 @@ def get_music_api_headers():
     }
 
 @router.get("/api/external-search/{query}")
-def external_search(query: str):
+def external_search(query: str = Depends(verify_token)):
+    """Performs a search using the MusicAPI"""
+    if query["error"]:
+        raise HTTPException(status_code=401, detail=query["error"])
     try:
         url = "https://api.musicapi.com/search"
         headers = get_music_api_headers()
@@ -43,8 +49,10 @@ def external_search(query: str):
         return {"error": str(e)}
 
 @router.get("/api/external-music")
-def external_music():
+def external_music(token=Depends(verify_token)):
     """Fetch music from MusicAPI or local DB"""
+    if token["error"]:
+        raise HTTPException(status_code=401, detail=token["error"])
     try:
         url = "https://api.musicapi.com/search/introspection/search?q=believer&type=track&source=youtube"
         headers = get_music_api_headers()

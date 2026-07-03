@@ -1,0 +1,105 @@
+<svg viewBox="0 0 340 240" xmlns="http://www.w3.org/2000/svg" width="340" height="240">
+  <defs>
+    <!-- Main cyan→blue→purple gradient -->
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="35%" stop-color="#4facfe"/>
+      <stop offset="65%" stop-color="#3b6fd4"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <!-- Waves gradient (slightly transparent) -->
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="70%">
+      <stop offset="0%" stop-color="#00d4e8" stop-opacity="0.88"/>
+      <stop offset="50%" stop-color="#4f8ff0" stop-opacity="0.80"/>
+      <stop offset="100%" stop-color="#6a35cc" stop-opacity="0.75"/>
+    </linearGradient>
+    <!-- Purple note -->
+    <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <!-- Drop shadow -->
+    <filter id="sh">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#3b82f6" flood-opacity="0.30"/>
+    </filter>
+  </defs>
+
+  <!-- Transparent background -->
+
+  <g filter="url(#sh)">
+    <!-- WAVE 1 (bottom / widest / most transparent) -->
+    <path d="M 10 168
+             C 45 148, 72 122, 100 140
+             C 128 158, 140 174, 168 152
+             C 196 130, 218 106, 246 126
+             C 266 141, 276 158, 296 144
+             L 296 162
+             C 276 176, 266 159, 246 144
+             C 218 124, 196 148, 168 170
+             C 140 192, 128 176, 100 158
+             C 72 140, 45 166, 10 186 Z"
+          fill="url(#g2)" opacity="0.60"/>
+
+    <!-- WAVE 2 (middle) -->
+    <path d="M 14 146
+             C 48 122, 76 92, 106 112
+             C 136 132, 148 150, 178 128
+             C 208 106, 230 80, 258 102
+             C 278 118, 288 138, 306 122
+             L 306 140
+             C 288 156, 278 136, 258 120
+             C 230 98, 208 124, 178 146
+             C 148 168, 136 150, 106 130
+             C 76 110, 48 140, 14 164 Z"
+          fill="url(#g2)" opacity="0.50"/>
+
+    <!-- WAVE 3 (top / thinnest) -->
+    <path d="M 18 122
+             C 52 96, 82 62, 112 84
+             C 142 106, 154 126, 186 102
+             C 218 78, 240 52, 270 76
+             C 290 94, 298 114, 316 98
+             L 316 116
+             C 298 132, 290 112, 270 94
+             C 240 70, 218 96, 186 120
+             C 154 144, 142 124, 112 102
+             C 82 80, 52 114, 18 140 Z"
+          fill="url(#g2)" opacity="0.38"/>
+
+    <!-- M WAVEFORM SHAPE (main body) -->
+    <path d="M 22 182
+             L 22 76
+             C 22 64, 32 56, 46 60
+             L 66 92
+             C 82 118, 98 136, 124 112
+             C 150 88, 166 64, 184 62
+             C 202 60, 216 78, 230 102
+             C 244 126, 258 148, 272 122
+             C 284 100, 292 78, 308 78
+             C 318 78, 324 88, 324 100
+             L 324 182
+             L 302 182
+             L 302 120
+             C 288 140, 278 162, 262 144
+             C 246 126, 232 104, 218 124
+             C 204 144, 190 164, 170 160
+             C 150 156, 138 136, 112 144
+             C 96 152, 84 170, 68 186
+             L 44 186 Z"
+          fill="url(#g1)"/>
+
+    <!-- Music Note: head (ellipse, purple) -->
+    <ellipse cx="344" cy="168" rx="24" ry="19"
+             fill="url(#g3)"
+             transform="rotate(-14, 344, 168)"/>
+
+    <!-- Note stem (vertical bar) -->
+    <rect x="362" y="84" width="10" height="92"
+          fill="url(#g3)" rx="5"/>
+
+    <!-- Note flag (curved) -->
+    <path d="M 372 84 C 398 96, 408 120, 386 142"
+          stroke="url(#g3)" stroke-width="10"
+          fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -17,13 +17,20 @@ import {
   setupSidebarEvents,
   setupSidebarToggle,
   setupLikedSongsButtons,
-  setupHomeButton
+  setupHomeButton,
+  renderRecentlyPlayedUI,
+  setupInstallAppModal,
+  setupAccountOverviewPage,
+  setupSettingsPage
 } from './modules/ui.js';
 import { setupSearch } from './modules/search.js';
-import { updateIndexAuthButtons } from './modules/auth-core.js';
+import { updateIndexAuthButtons, verifyAuthentication } from './modules/auth-core.js';
 
 // ==================== MAIN INITIALIZATION ====================
 async function init() {
+  const isAuthenticated = await verifyAuthentication();
+  if (!isAuthenticated) return;
+
   loadLikedSongs();
   setupPlayerEvents();
   setupControlButtons();
@@ -34,10 +41,14 @@ async function init() {
   setupNotifications();
   setupProfileMenu();
   setupSidebarEvents();
+  setupInstallAppModal();
+  setupAccountOverviewPage();
+  setupSettingsPage();
   setupKeyboardShortcuts();
   
   await setupSearch();
   await displayAlbums();
+  renderRecentlyPlayedUI();
   await loadFolderSongs(FOLDERS[0]);
 
   // Set initial volume

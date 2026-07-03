@@ -452,3 +452,30 @@
     color: var(--text-muted);
 }
 
+/* Pending Social Auth Buttons */
+.google-auth-btn.pending,
+.spotify-auth-btn.pending,
+.apple-auth-btn.pending {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.google-auth-btn.pending:hover,
+.spotify-auth-btn.pending:hover,
+.apple-auth-btn.pending:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.google-auth-btn.pending:hover,
+.apple-auth-btn.pending:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-color);
+}
+
+.spotify-auth-btn.pending:hover {
+    background: rgba(29, 185, 84, 0.05);
+    border-color: rgba(29, 185, 84, 0.18);
+}
+
+

@@ -11,9 +11,10 @@
     overflow-y: auto;
     border-radius: 24px;
     border: 1px solid rgba(255, 255, 255, 0.04);
-    box-shadow: 0 30px 80px rgba(0,0,0,0.22);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
     transition: var(--transition);
 }
+
 /* allow children to shrink/grow properly */
 .left {
     min-height: 0;
@@ -26,17 +27,19 @@
     gap: 16px;
     padding: 18px;
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     backdrop-filter: blur(14px);
     position: relative;
 }
 
-.sidebar-brand img {
-    width: 32px;
-    height: 32px;
+.sidebar-brand img,
+.brand-icon {
+    width: 20px;
+    height: 20px;
     object-fit: contain;
-    filter: invert(1);
+    filter: none;
+    flex-shrink: 0;
 }
 
 .sidebar-brand .close {
@@ -74,7 +77,7 @@
     gap: 10px;
     justify-content: center;
     padding-top: 12px;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-footer a {
@@ -166,7 +169,7 @@
     gap: 16px;
     overflow: hidden;
     transition: var(--transition);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .library-icon-only {
@@ -295,7 +298,8 @@
 }
 
 .songList ul li img {
-    display: none !important; /* Hide music icon as requested */
+    display: none !important;
+    /* Hide music icon as requested */
 }
 
 .songList .info {
@@ -307,7 +311,8 @@
 }
 
 .songList .info .song-title {
-    font-size: 12px !important; /* Small font size as requested */
+    font-size: 12px !important;
+    /* Small font size as requested */
     font-weight: 600 !important;
     color: #fff !important;
     white-space: nowrap !important;
@@ -316,7 +321,8 @@
 }
 
 .songList .info .song-artist {
-    font-size: 10px !important; /* Compact subtitle */
+    font-size: 10px !important;
+    /* Compact subtitle */
     color: #a7a7a7 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
@@ -529,4 +535,3 @@
         display: block;
     }
 }
-

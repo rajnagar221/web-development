@@ -3,7 +3,24 @@ import { state } from './state.js';
 import { formatTime, getElement } from './utils.js';
 import { isTrackLiked, getLikedSongObjects, toggleLikeState } from './storage.js';
 import { fetchAlbums } from './api.js';
-import { playMusic, loadFolderSongs } from './audio.js';
+// Late-binding wrappers to break circular dependency with audio.js
+let audioModule = null;
+async function getAudioModule() {
+  if (!audioModule) {
+    audioModule = await import('./audio.js');
+  }
+  return audioModule;
+}
+
+export async function playMusic(track, folder) {
+  const audio = await getAudioModule();
+  return audio.playMusic(track, folder);
+}
+
+export async function loadFolderSongs(folder) {
+  const audio = await getAudioModule();
+  return audio.loadFolderSongs(folder);
+}
 
 // ==================== TOAST ====================
 export function showToast(message, duration = 2400) {
@@ -90,15 +107,42 @@ export function updateCredits(folder, artist) {
   }
 }
 
+// ==================== NOW PLAYING SIDEBAR DATA & CONTROL ====================
+const ARTIST_BIOS = {
+  "ncs": "NoCopyrightSounds is a British music label and organization. Founded in 2011, it showcases royalty-free electronic music from artists globally.",
+  "karan aujla": "Karan Aujla is a globally acclaimed Punjabi singer, rapper, and songwriter. Known for his chart-topping hits like 'Softly' and 'Making Memories'.",
+  "daily mix": "A customized daily mix of your favorite tracks, tailored recommendations, and trending new releases.",
+  "diljit": "Diljit Dosanjh is a legendary Indian singer, actor, and television presenter. He is one of the leading figures in modern Punjabi music and Bollywood.",
+  "honey singh": "Yo Yo Honey Singh is an iconic Indian rapper, music producer, and actor. He revolutionized the Punjabi pop and Bollywood rap scene.",
+  "instagram trending": "A curated compilation of viral hits, trending soundbites, and the most popular background scores from social media reels.",
+  "vibes songs": "Relaxing lo-fi beats, soothing acoustic covers, and atmospheric melodies perfect for late night drives and focused work.",
+  "ap dillhon": "AP Dhillon is a pioneering Indo-Canadian singer and producer. He has popularized a unique blend of Punjabi vocals with synth-pop and western beats.",
+  "talwinder": "Talwiinder is an independent singer-songwriter and producer known for his signature dark, melancholic Punjabi pop and moody electronic soundscapes."
+};
+
+export function getArtistBio(folder) {
+  if (!folder) return "Play a track from your library to see details and bio.";
+  const key = folder.toLowerCase().trim();
+  return ARTIST_BIOS[key] || "Popular tracks, daily mixes, and custom artist compilations.";
+}
+
 export function updateSongInfo(track) {
   const title = decodeURIComponent(track.split("/").pop()).replace(/\.mp3$/i, "");
   const songInfo = getElement(".songinfo");
   if (songInfo) songInfo.textContent = title;
 
   const songArtistEl = getElement(".songartist");
-
   const sidebar = getElement(".rightSidebar");
+  const mainGrid = getElement(".main-grid");
+  const idlePromoCard = getElement("#idlePromoCard");
+  const nowPlayingCard = getElement("#nowPlayingCard");
+
   if (sidebar) sidebar.style.display = "flex";
+  if (mainGrid) mainGrid.classList.add("sidebar-active");
+
+  // Show Now Playing card, hide Idle Promo card when track starts
+  if (idlePromoCard) idlePromoCard.style.display = "none";
+  if (nowPlayingCard) nowPlayingCard.style.display = "flex";
 
   const art = getElement("#playbarArt");
   const sideArt = getElement("#nowPlayingArt");
@@ -107,6 +151,13 @@ export function updateSongInfo(track) {
   const artistImg = getElement("#sidebarArtistImg");
   const artistName = getElement("#sidebarArtistName");
   const sidebarHeaderTitle = getElement("#sidebarHeaderTitle");
+  const artistBio = getElement("#sidebarArtistBio");
+
+  // Enable buttons in now playing card once track starts
+  const shareBtn = getElement(".share-btn");
+  const sidebarFavoriteBtn = getElement("#sidebarFavoriteBtn");
+  if (shareBtn) shareBtn.removeAttribute("disabled");
+  if (sidebarFavoriteBtn) sidebarFavoriteBtn.removeAttribute("disabled");
 
   let resolvedArtist = state.currentFolder || "Unknown artist";
   let coverPath = `songs/${state.currentFolder}/cover.jpg`;
@@ -126,13 +177,22 @@ export function updateSongInfo(track) {
 
   const coverUrl = `${API_BASE_URL}/${coverPath}`;
   if (art) art.src = coverUrl;
-  if (sideArt) sideArt.src = coverUrl;
-  if (artistImg) artistImg.src = coverUrl;
+
+  if (sideArt) {
+    sideArt.src = coverUrl;
+    sideArt.classList.remove("placeholder-art");
+  }
+  if (artistImg) {
+    artistImg.src = coverUrl;
+    artistImg.classList.remove("placeholder-art");
+  }
+
   if (nowTitle) nowTitle.textContent = title;
   if (nowArtist) nowArtist.textContent = resolvedArtist;
   if (artistName) artistName.textContent = resolvedArtist;
   if (sidebarHeaderTitle) sidebarHeaderTitle.textContent = title;
   if (songArtistEl) songArtistEl.textContent = resolvedArtist;
+  if (artistBio) artistBio.textContent = getArtistBio(state.currentFolder);
 
   updatePlaybarLikeButton();
   updateSidebarLikeButton();
@@ -140,6 +200,36 @@ export function updateSongInfo(track) {
 }
 
 export function setupSidebarEvents() {
+  const mainGrid = getElement(".main-grid");
+  const sidebar = getElement(".rightSidebar");
+  if (mainGrid) mainGrid.classList.add("sidebar-active");
+  if (sidebar) sidebar.style.display = "flex";
+
+  // Handle Install App / Download Musify buttons
+  const installAppBtn = getElement("#installAppBtn");
+  const downloadBtn = getElement("#downloadMusifyBtn");
+  const handleInstall = () => showToast("⬇️ Starting Musify Desktop App Download...");
+  
+  if (installAppBtn) installAppBtn.addEventListener("click", handleInstall);
+  if (downloadBtn) downloadBtn.addEventListener("click", handleInstall);
+
+  // Handle all Follow buttons (Main artist & credits list)
+  document.querySelectorAll(".follow-pill-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isFollowing = btn.classList.contains("following");
+      if (isFollowing) {
+        btn.classList.remove("following");
+        btn.textContent = "Follow";
+        showToast("Unfollowed artist");
+      } else {
+        btn.classList.add("following");
+        btn.textContent = "Following";
+        showToast("Following artist ✔");
+      }
+    });
+  });
+
   const sidebarFavoriteBtn = getElement("#sidebarFavoriteBtn");
   if (sidebarFavoriteBtn) {
     sidebarFavoriteBtn.addEventListener("click", (event) => {
@@ -152,8 +242,34 @@ export function setupSidebarEvents() {
   const closeSidebarBtn = getElement(".close-sidebar");
   if (closeSidebarBtn) {
     closeSidebarBtn.addEventListener("click", () => {
+      const idlePromoCard = getElement("#idlePromoCard");
+      const nowPlayingCard = getElement("#nowPlayingCard");
+      if (nowPlayingCard) nowPlayingCard.style.display = "none";
+      if (idlePromoCard) idlePromoCard.style.display = "flex";
+      
       const sidebar = getElement(".rightSidebar");
       if (sidebar) sidebar.style.display = "none";
+      const mainGrid = getElement(".main-grid");
+      if (mainGrid) mainGrid.classList.remove("sidebar-active");
+    });
+  }
+
+  // Toggle button in topbar header-right
+  const toggleBtn = getElement("#nowPlayingToggleBtn");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const sidebar = getElement(".rightSidebar");
+      const mainGrid = getElement(".main-grid");
+      if (sidebar && mainGrid) {
+        const isHidden = window.getComputedStyle(sidebar).display === "none";
+        if (isHidden) {
+          sidebar.style.display = "flex";
+          mainGrid.classList.add("sidebar-active");
+        } else {
+          sidebar.style.display = "none";
+          mainGrid.classList.remove("sidebar-active");
+        }
+      }
     });
   }
 }
@@ -290,10 +406,163 @@ export async function displayAlbums() {
   updateAlbumPlayIcons();
 }
 
+export async function renderAlbumDetailView(folder, albumTitle, albumDescription, coverUrl) {
+  const homeSections = getElement("#homeSections");
+  const albumDetailView = getElement("#albumDetailView");
+  if (!albumDetailView || !homeSections) return;
+
+  // Show loading spinner or clean text first
+  albumDetailView.innerHTML = `<div style="padding: 40px; text-align: center; color: #b3b3b3;">Loading tracks...</div>`;
+  homeSections.style.display = "none";
+  albumDetailView.style.display = "block";
+
+  let songs = [];
+  try {
+    const loadedSongs = await loadFolderSongs(folder);
+    songs = loadedSongs.map(track => ({ folder, track }));
+  } catch (error) {
+    console.error("Failed to load folder songs:", error);
+  }
+
+  if (songs.length === 0) {
+    albumDetailView.innerHTML = `
+      <div class="back-btn-container" id="backToHomeBtn">
+        <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18" style="vertical-align: middle;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+        <span class="back-label">Back to Library</span>
+      </div>
+      <div style="padding: 40px; text-align: center; color: #b3b3b3;">No songs found in this album.</div>
+    `;
+    const backBtn = getElement("#backToHomeBtn");
+    if (backBtn) {
+      backBtn.addEventListener("click", () => {
+        albumDetailView.style.display = "none";
+        homeSections.style.display = "block";
+      });
+    }
+    return;
+  }
+
+  // Render album details and tracklist
+  albumDetailView.innerHTML = `
+    <div class="back-btn-container" id="backToHomeBtn">
+      <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18" style="vertical-align: middle;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+      <span class="back-label">Back to Library</span>
+    </div>
+
+    <div class="album-detail-header">
+      <img src="${coverUrl}" alt="${albumTitle}" class="album-detail-cover" onerror="this.src='songs/ncs/cover.jpg';" />
+      <div class="album-detail-info">
+        <span class="eyebrow-text">PLAYLIST</span>
+        <h1 class="album-detail-title">${albumTitle}</h1>
+        <p class="album-detail-description">${albumDescription}</p>
+        <div class="album-detail-meta">
+          <span class="logo-text-small" style="color: #1db954; font-weight: 700;">Musify</span> • ${songs.length} songs
+        </div>
+      </div>
+    </div>
+
+    <div class="album-actions-bar">
+      <button class="play-btn-large" id="detailPlayBtn" title="Play Playlist">
+        <svg viewBox="0 0 24 24" fill="#000" width="28" height="28" style="margin-left: 2px;"><polygon points="5,3 19,12 5,21"/></svg>
+      </button>
+    </div>
+
+    <div class="tracklist-container">
+      <table class="tracklist-table">
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th class="col-title">Title</th>
+            <th class="col-album">Album</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${songs.map((song, index) => {
+            const title = decodeURIComponent(song.track).replace(/\.mp3$/i, "");
+            const likedClass = isTrackLiked(song.folder, song.track) ? "liked" : "";
+            const isActive = song.track === state.currentTrack && song.folder === state.currentFolder ? "active" : "";
+            return `
+              <tr class="track-row ${isActive}" data-index="${index}">
+                <td class="col-num">${index + 1}</td>
+                <td class="col-title">
+                  <div class="track-info">
+                    <div class="track-name">${title}</div>
+                    <div class="track-artist">${albumTitle}</div>
+                  </div>
+                </td>
+                <td class="col-album">${albumTitle}</td>
+                <td class="col-actions">
+                  <button type="button" class="favorite-btn ${likedClass}" title="Toggle like" onclick="event.stopPropagation();">
+                    <svg viewBox="0 0 24 24" fill="${likedClass ? '#1db954' : 'none'}" stroke="${likedClass ? '#1db954' : '#b3b3b3'}" stroke-width="2" width="16" height="16"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  // Back button event
+  const backBtn = getElement("#backToHomeBtn");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      albumDetailView.style.display = "none";
+      homeSections.style.display = "block";
+    });
+  }
+
+  // Play button event
+  const detailPlayBtn = getElement("#detailPlayBtn");
+  if (detailPlayBtn) {
+    detailPlayBtn.addEventListener("click", () => {
+      if (songs.length > 0) {
+        const isCurrentAlbumActive = state.currentFolder === folder;
+        if (isCurrentAlbumActive && state.currentSong.src) {
+          import('./audio.js').then(m => m.togglePlayback());
+        } else {
+          playMusic(songs[0].track, folder);
+        }
+      }
+    });
+  }
+
+  // Row selection events
+  const rows = albumDetailView.querySelectorAll(".track-row");
+  rows.forEach(row => {
+    const idx = parseInt(row.getAttribute("data-index"), 10);
+    const song = songs[idx];
+
+    row.addEventListener("click", () => {
+      playMusic(song.track, song.folder);
+      rows.forEach(r => r.classList.remove("active"));
+      row.classList.add("active");
+    });
+
+    // Favorite button inside row
+    const favBtn = row.querySelector(".favorite-btn");
+    if (favBtn) {
+      favBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleLikeTrack(song.folder, song.track, true);
+        const isLiked = isTrackLiked(song.folder, song.track);
+        favBtn.classList.toggle("liked", isLiked);
+        favBtn.querySelector("svg").setAttribute("fill", isLiked ? "#1db954" : "none");
+        favBtn.querySelector("svg").setAttribute("stroke", isLiked ? "#1db954" : "#b3b3b3");
+      });
+    }
+  });
+}
+
 export function attachAlbumEvents() {
   Array.from(document.querySelectorAll(".card")).forEach((card) => {
     const playBtn = card.querySelector(".play");
     const folder = card.dataset.folder;
+    const albumTitle = card.querySelector("h2").textContent;
+    const albumDescription = card.querySelector("p").textContent;
+    const coverUrl = card.querySelector("img").src;
 
     if (playBtn) {
       playBtn.addEventListener("click", async (e) => {
@@ -317,8 +586,7 @@ export function attachAlbumEvents() {
 
     card.addEventListener("click", async () => {
       if (!folder) return;
-      const loadedSongs = await loadFolderSongs(folder);
-      if (loadedSongs && loadedSongs.length > 0) playMusic(loadedSongs[0], folder);
+      renderAlbumDetailView(folder, albumTitle, albumDescription, coverUrl);
     });
   });
 }
@@ -402,17 +670,19 @@ export function setupNotifications() {
 }
 
 // ==================== PROFILE MENU ====================
-export function setupProfileMenu() {
+// ==================== PROFILE MENU & EDITOR ====================
+export function refreshProfileDisplay() {
   const profileIcon = getElement("#profileIcon");
-  const profileMenu = getElement("#profileMenu");
+  const profileAvatar = getElement("#profileAvatar");
   const profileUsername = getElement("#profileUsername");
   const profileEmail = getElement("#profileEmail");
-  const profileAvatar = getElement("#profileAvatar");
-  const logoutOption = getElement("#logoutOption");
-  const profileContainer = getElement(".profileContainer");
+  const heroUsername = getElement("#heroUsername");
 
   const username = localStorage.getItem("username") || "User";
   const email = localStorage.getItem("email") || "email@example.com";
+  const profileImage = localStorage.getItem("profile_image");
+
+  // Get initials
   const initials = username
     .split(" ")
     .filter(Boolean)
@@ -420,11 +690,206 @@ export function setupProfileMenu() {
     .slice(0, 2)
     .join("") || "U";
 
-  const profileIconText = getElement("#profileIcon");
-  if (profileIconText) profileIconText.textContent = initials;
+  // Update hero panel username
+  if (heroUsername) {
+    heroUsername.textContent = username;
+  }
+
+  // Update text values
   if (profileUsername) profileUsername.textContent = username;
   if (profileEmail) profileEmail.textContent = email;
-  if (profileAvatar) profileAvatar.textContent = initials;
+
+  // Update profile circles (with custom image or initials)
+  if (profileImage) {
+    if (profileIcon) {
+      profileIcon.innerHTML = `<img src="${profileImage}" alt="${username}" />`;
+    }
+    if (profileAvatar) {
+      profileAvatar.innerHTML = `<img src="${profileImage}" alt="${username}" />`;
+    }
+  } else {
+    if (profileIcon) {
+      profileIcon.textContent = initials;
+      profileIcon.innerHTML = initials; // Clear any old img element
+    }
+    if (profileAvatar) {
+      profileAvatar.textContent = initials;
+      profileAvatar.innerHTML = initials; // Clear any old img element
+    }
+  }
+}
+
+export function setupEditProfileModal() {
+  const profileOptionBtn = getElement("#profileOptionBtn");
+  const profileModal = getElement("#profileModal");
+  const closeProfileModal = getElement("#closeProfileModal");
+  const cancelProfileEditBtn = getElement("#cancelProfileEditBtn");
+  const editProfileForm = getElement("#editProfileForm");
+
+  const profileUsernameInput = getElement("#profileUsernameInput");
+  const profileEmailInput = getElement("#profileEmailInput");
+  const profileImageInput = getElement("#profileImageInput");
+  
+  const modalProfilePreviewImg = getElement("#modalProfilePreviewImg");
+  const modalProfilePreviewInitials = getElement("#modalProfilePreviewInitials");
+  const removeProfileImgBtn = getElement("#removeProfileImgBtn");
+
+  let currentBase64Image = localStorage.getItem("profile_image") || "";
+
+  // Open Modal
+  if (profileOptionBtn && profileModal) {
+    profileOptionBtn.addEventListener("click", () => {
+      // Pre-fill inputs
+      if (profileUsernameInput) profileUsernameInput.value = localStorage.getItem("username") || "User";
+      if (profileEmailInput) profileEmailInput.value = localStorage.getItem("email") || "email@example.com";
+      
+      // Setup preview
+      currentBase64Image = localStorage.getItem("profile_image") || "";
+      updateModalPreview();
+
+      // Show modal
+      profileModal.classList.remove("hidden");
+      
+      // Close profile menu dropdown
+      const profileMenu = getElement("#profileMenu");
+      if (profileMenu) profileMenu.classList.remove("active");
+    });
+  }
+
+  function updateModalPreview() {
+    if (currentBase64Image) {
+      if (modalProfilePreviewImg) {
+        modalProfilePreviewImg.src = currentBase64Image;
+        modalProfilePreviewImg.style.display = "block";
+      }
+      if (modalProfilePreviewInitials) {
+        modalProfilePreviewInitials.style.display = "none";
+      }
+    } else {
+      if (modalProfilePreviewImg) {
+        modalProfilePreviewImg.style.display = "none";
+        modalProfilePreviewImg.src = "";
+      }
+      if (modalProfilePreviewInitials) {
+        const username = profileUsernameInput ? profileUsernameInput.value : "User";
+        const initials = username
+          .split(" ")
+          .filter(Boolean)
+          .map((part) => part[0].toUpperCase())
+          .slice(0, 2)
+          .join("") || "U";
+        modalProfilePreviewInitials.textContent = initials;
+        modalProfilePreviewInitials.style.display = "flex";
+      }
+    }
+  }
+
+  // Handle username keyup to update preview initials on the fly
+  if (profileUsernameInput) {
+    profileUsernameInput.addEventListener("input", () => {
+      if (!currentBase64Image) {
+        updateModalPreview();
+      }
+    });
+  }
+
+  // Close Modal triggers
+  const hideModal = () => {
+    if (profileModal) profileModal.classList.add("hidden");
+  };
+
+  if (closeProfileModal) closeProfileModal.addEventListener("click", hideModal);
+  if (cancelProfileEditBtn) cancelProfileEditBtn.addEventListener("click", hideModal);
+  
+  // Close Modal when clicking outside the card
+  if (profileModal) {
+    profileModal.addEventListener("click", (e) => {
+      if (e.target === profileModal) {
+        hideModal();
+      }
+    });
+  }
+
+  // Handle Image Upload & Conversion to Base64
+  if (profileImageInput) {
+    profileImageInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        showToast("❌ Please select a valid image file.");
+        return;
+      }
+
+      // Limit file size to 2MB to keep localStorage clean and fast
+      if (file.size > 2 * 1024 * 1024) {
+        showToast("❌ Image must be smaller than 2MB.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        currentBase64Image = event.target.result;
+        updateModalPreview();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Remove Photo button
+  if (removeProfileImgBtn) {
+    removeProfileImgBtn.addEventListener("click", () => {
+      currentBase64Image = "";
+      if (profileImageInput) profileImageInput.value = "";
+      updateModalPreview();
+    });
+  }
+
+  // Form Submit
+  if (editProfileForm) {
+    editProfileForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      
+      const newUsername = profileUsernameInput ? profileUsernameInput.value.trim() : "User";
+      const newEmail = profileEmailInput ? profileEmailInput.value.trim() : "email@example.com";
+
+      if (!newUsername) {
+        showToast("❌ Username cannot be empty.");
+        return;
+      }
+
+      // Save to localStorage
+      localStorage.setItem("username", newUsername);
+      localStorage.setItem("email", newEmail);
+      if (currentBase64Image) {
+        localStorage.setItem("profile_image", currentBase64Image);
+      } else {
+        localStorage.removeItem("profile_image");
+      }
+
+      // Refresh page elements
+      refreshProfileDisplay();
+
+      // Show toast message
+      showToast("✅ Profile updated successfully!");
+
+      // Hide modal
+      hideModal();
+    });
+  }
+}
+
+export function setupProfileMenu() {
+  const profileIcon = getElement("#profileIcon");
+  const profileMenu = getElement("#profileMenu");
+  const logoutOption = getElement("#logoutOption");
+  const profileContainer = getElement(".profileContainer");
+
+  // Initial display values on load
+  refreshProfileDisplay();
+  
+  // Set up Edit Profile Modal event listeners
+  setupEditProfileModal();
 
   if (profileIcon && profileMenu) {
     profileIcon.addEventListener("click", (event) => {
@@ -440,6 +905,7 @@ export function setupProfileMenu() {
       localStorage.removeItem("is_logged_in");
       localStorage.removeItem("username");
       localStorage.removeItem("email");
+      localStorage.removeItem("profile_image");
       window.location.href = "login.html";
     });
   }
@@ -496,3 +962,494 @@ window.scrollRow = function (btn, dir) {
   const row = wrapper.querySelector(".horizontal-row, .cardContainer");
   if (row) row.scrollBy({ left: dir * 420, behavior: "smooth" });
 };
+
+// ==================== RECENTLY PLAYED SYSTEM ====================
+export function getRecentlyPlayed() {
+  try {
+    const raw = localStorage.getItem("recentlyPlayed");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (err) {
+    console.warn("Failed to load recently played:", err);
+  }
+  return [
+    { track: "01 - NCS Track", folder: "ncs", title: "NCS Mix", artist: "Alan Walker, Cartoon, Deaf Kev", coverUrl: "songs/ncs/cover.jpg" },
+    { track: "01 - Chill Vibes", folder: "vibes songs", title: "Chill Vibes", artist: "Lo-Fi, Punjabi Aesthetic", coverUrl: "songs/vibes songs/ab67706f000000023da05797a7c490186a98e713.jpg" },
+    { track: "01 - AP Dhillon", folder: "Ap dillhon", title: "AP Dhillon Hits", artist: "Ap Dhillon, Gurinder Gill", coverUrl: "songs/Ap dillhon/ab67706f00000002558eebc8a959a3e4f5acadc4.jpg" },
+    { track: "01 - Karan Aujla", folder: "karan aujla", title: "Karan Aujla Specials", artist: "Karan Aujla, Ikky", coverUrl: "songs/karan aujla/cover.jpg" },
+    { track: "01 - Honey Singh", folder: "honey singh", title: "Yo Yo Honey Singh", artist: "Yo Yo Honey Singh", coverUrl: "songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg" }
+  ];
+}
+
+export function addRecentlyPlayed(track, folder) {
+  if (!track || !folder) return;
+  const list = getRecentlyPlayed();
+
+  let resolvedArtist = folder;
+  let coverPath = `songs/${folder}/cover.jpg`;
+
+  if (state.allAlbums) {
+    const album = state.allAlbums.find((a) => a.folder.toLowerCase() === folder.toLowerCase());
+    if (album) {
+      if (album.description) resolvedArtist = album.description;
+      if (album.cover_image) {
+        coverPath = album.cover_image;
+        if (coverPath.startsWith("/")) coverPath = coverPath.substring(1);
+      }
+    }
+  }
+
+  const cleanTitle = decodeURIComponent(track).replace(/\.mp3$/i, "").replace(/^\d+[\s._-]+/, "");
+
+  const newItem = {
+    track,
+    folder,
+    title: cleanTitle || folder,
+    artist: resolvedArtist,
+    coverUrl: coverPath
+  };
+
+  const filtered = list.filter((item) => !(item.track === track && item.folder === folder));
+  filtered.unshift(newItem);
+
+  const updatedList = filtered.slice(0, 12);
+  try {
+    localStorage.setItem("recentlyPlayed", JSON.stringify(updatedList));
+  } catch (err) {
+    console.warn("Failed to save recently played:", err);
+  }
+
+  renderRecentlyPlayedUI(updatedList);
+}
+
+export function renderRecentlyPlayedUI(items = getRecentlyPlayed()) {
+  const recentsContainer = getElement("#recentsCardContainer");
+  const recentlyPlayedContainer = getElement("#recentlyPlayedCardContainer");
+
+  const buildCardsHTML = (cardItems) => {
+    return cardItems.map((item) => `
+      <div class="card" data-folder="${item.folder}" data-track="${item.track}">
+        <div class="card-image-wrapper">
+          <img src="${item.coverUrl}" alt="${item.title}" onerror="this.src='songs/ncs/cover.jpg';" />
+          <div class="play" onclick="event.stopPropagation();">▶</div>
+          <span class="spotify-overlay-logo">
+            <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
+              <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
+            </svg>
+          </span>
+        </div>
+        <h2>${item.title}</h2>
+        <p>${item.artist}</p>
+      </div>
+    `).join("");
+  };
+
+  const bindCardClicks = (container) => {
+    if (!container) return;
+    container.querySelectorAll(".card").forEach((card) => {
+      card.addEventListener("click", async () => {
+        const folder = card.dataset.folder;
+        const track = card.dataset.track;
+        if (folder) {
+          const { loadFolderSongs, playMusic } = await import('./audio.js');
+          const songs = await loadFolderSongs(folder);
+          const trackToPlay = track && songs.includes(track) ? track : songs[0];
+          if (trackToPlay) playMusic(trackToPlay, folder);
+        }
+      });
+    });
+  };
+
+  if (recentsContainer) {
+    recentsContainer.innerHTML = buildCardsHTML(items.slice(0, 6));
+    bindCardClicks(recentsContainer);
+  }
+
+  if (recentlyPlayedContainer) {
+    recentlyPlayedContainer.innerHTML = buildCardsHTML(items.slice(0, 8));
+    bindCardClicks(recentlyPlayedContainer);
+  }
+}
+
+// ==================== INSTALL APP POPUP MODAL ====================
+export function setupInstallAppModal() {
+  const installAppBtn = getElement("#installAppBtn");
+  const installAppModal = getElement("#installAppModal");
+  const closeInstallAppModalBtn = getElement("#closeInstallAppModalBtn");
+  const modalDownloadAppBtn = getElement("#modalDownloadAppBtn");
+
+  const openModal = () => {
+    if (installAppModal) {
+      installAppModal.classList.remove("hidden");
+      installAppModal.style.display = "flex";
+      installAppModal.setAttribute("aria-hidden", "false");
+    }
+  };
+
+  const closeModal = () => {
+    if (installAppModal) {
+      installAppModal.classList.add("hidden");
+      installAppModal.style.display = "none";
+      installAppModal.setAttribute("aria-hidden", "true");
+    }
+  };
+
+  if (installAppBtn) installAppBtn.addEventListener("click", openModal);
+  if (closeInstallAppModalBtn) closeInstallAppModalBtn.addEventListener("click", closeModal);
+
+  if (modalDownloadAppBtn) {
+    modalDownloadAppBtn.addEventListener("click", () => {
+      triggerDesktopAppDownload();
+      closeModal();
+    });
+  }
+
+  if (installAppModal) {
+    installAppModal.addEventListener("click", (e) => {
+      if (e.target === installAppModal) closeModal();
+    });
+  }
+}
+
+export function triggerDesktopAppDownload() {
+  const content = "Musify Desktop App Setup v2.4.0\nThank you for downloading Musify!";
+  const blob = new Blob([content], { type: "application/octet-stream" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Musify-Setup-v2.4.0.exe";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("⬇️ Starting Musify Desktop App setup download...");
+}
+
+// ==================== SPOTIFY ACCOUNT OVERVIEW PAGE (Screenshots 2, 3, 4, 5) ====================
+export function setupAccountOverviewPage() {
+  const accountOptionBtn = getElement("#accountOptionBtn");
+  const accountOverviewPage = getElement("#accountOverviewPage");
+  const homeSections = getElement("#homeSections");
+  const albumDetailView = getElement("#albumDetailView");
+  const accountBackBtn = getElement("#accountBackBtn");
+
+  const openAccountPage = () => {
+    if (homeSections) homeSections.style.display = "none";
+    if (albumDetailView) albumDetailView.style.display = "none";
+    if (accountOverviewPage) accountOverviewPage.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const closeAccountPage = () => {
+    if (accountOverviewPage) accountOverviewPage.style.display = "none";
+    if (homeSections) homeSections.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  if (accountOptionBtn) accountOptionBtn.addEventListener("click", openAccountPage);
+  if (accountBackBtn) accountBackBtn.addEventListener("click", closeAccountPage);
+
+  if (accountOverviewPage) {
+    accountOverviewPage.querySelectorAll(".box-menu-item").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const action = btn.dataset.action;
+        handleAccountAction(action);
+      });
+    });
+
+    const accExplorePlansBtn = getElement("#accExplorePlansBtn");
+    const accJoinPremiumBtn = getElement("#accJoinPremiumBtn");
+    const premiumPopup = getElement("#premiumPopup");
+
+    const openPremium = () => {
+      if (premiumPopup) {
+        premiumPopup.classList.remove("hidden");
+        premiumPopup.style.display = "flex";
+      }
+    };
+
+    if (accExplorePlansBtn) accExplorePlansBtn.addEventListener("click", openPremium);
+    if (accJoinPremiumBtn) accJoinPremiumBtn.addEventListener("click", openPremium);
+  }
+}
+
+export function handleAccountAction(action) {
+  switch (action) {
+    case "subscription":
+    case "explore-plans":
+      const premiumPopup = getElement("#premiumPopup");
+      if (premiumPopup) {
+        premiumPopup.classList.remove("hidden");
+        premiumPopup.style.display = "flex";
+      }
+      break;
+
+    case "edit-profile":
+      const profileModal = getElement("#profileModal");
+      if (profileModal) {
+        profileModal.classList.remove("hidden");
+        profileModal.style.display = "flex";
+      }
+      break;
+
+    case "recover-playlists":
+      showToast("🔄 Restored 3 deleted playlists to your library!");
+      break;
+
+    case "address":
+      const currentAddress = localStorage.getItem("user_address") || "New Delhi, India";
+      const newAddress = prompt("Enter your account address:", currentAddress);
+      if (newAddress !== null) {
+        localStorage.setItem("user_address", newAddress.trim());
+        showToast("🏠 Address updated successfully!");
+      }
+      break;
+
+    case "payment-history":
+      showToast("📑 Payment History: Free Tier Plan (₹0 billed)");
+      break;
+
+    case "saved-cards":
+      showToast("💳 No saved payment cards. Click Explore Plans to add one.");
+      break;
+
+    case "redeem":
+      const code = prompt("Enter your 12-digit Musify Gift Code:");
+      if (code) {
+        showToast("✨ Gift Code applied! 1 Month Premium activated!");
+      }
+      break;
+
+    case "manage-apps":
+      showToast("🔲 0 third-party apps connected to your account.");
+      break;
+
+    case "notifications":
+      const isMuted = localStorage.getItem("notifications_muted") === "true";
+      localStorage.setItem("notifications_muted", (!isMuted).toString());
+      showToast(isMuted ? "🔔 Notifications enabled!" : "🔕 Notifications muted.");
+      break;
+
+    case "privacy":
+      showToast("👁️ Account Privacy: Listening activity is set to Private.");
+      break;
+
+    case "edit-login":
+      showToast("🪪 Login Methods: Passkey, Email & Google SSO active.");
+      break;
+
+    case "device-password":
+      const pass = prompt("Set a new device PIN / Password:");
+      if (pass) {
+        showToast("📱 Device password updated successfully!");
+      }
+      break;
+
+    case "delete-account":
+      if (confirm("⚠️ Are you sure you want to delete your account? This action cannot be undone.")) {
+        localStorage.clear();
+        showToast("🗑️ Account deleted.");
+        setTimeout(() => window.location.href = "signup.html", 1200);
+      }
+      break;
+
+    case "sign-out-everywhere":
+      if (confirm("➔ Sign out of all devices? You will be logged out here as well.")) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("is_logged_in");
+        showToast("➔ Signed out of all devices.");
+        setTimeout(() => window.location.href = "login.html", 1000);
+      }
+      break;
+
+    case "support":
+      showToast("❓ Opening Musify Support Center...");
+      break;
+
+    default:
+      showToast("⚙️ Action processed.");
+      break;
+  }
+}
+
+// ==================== SETTINGS PAGE LOGIC (Screenshots 1 & 2) ====================
+export function setupSettingsPage() {
+  const settingsOptionBtn = getElement("#settingsOptionBtn");
+  const settingsViewPage = getElement("#settingsViewPage");
+  const homeSections = getElement("#homeSections");
+  const albumDetailView = getElement("#albumDetailView");
+  const accountOverviewPage = getElement("#accountOverviewPage");
+  const settingsBackBtn = getElement("#settingsBackBtn");
+
+  const openSettings = () => {
+    if (homeSections) homeSections.style.display = "none";
+    if (albumDetailView) albumDetailView.style.display = "none";
+    if (accountOverviewPage) accountOverviewPage.style.display = "none";
+    if (settingsViewPage) settingsViewPage.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const closeSettings = () => {
+    if (settingsViewPage) settingsViewPage.style.display = "none";
+    if (homeSections) homeSections.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  if (settingsOptionBtn) settingsOptionBtn.addEventListener("click", openSettings);
+  if (settingsBackBtn) settingsBackBtn.addEventListener("click", closeSettings);
+
+  // 1. Edit Login Methods
+  const editLoginMethodsBtn = getElement("#editLoginMethodsBtn");
+  if (editLoginMethodsBtn) {
+    editLoginMethodsBtn.addEventListener("click", () => {
+      const profileModal = getElement("#profileModal");
+      if (profileModal) {
+        profileModal.classList.remove("hidden");
+        profileModal.style.display = "flex";
+      }
+    });
+  }
+
+  // 2. Language Dropdown
+  const appLanguageSelect = getElement("#appLanguageSelect");
+  if (appLanguageSelect) {
+    const savedLang = localStorage.getItem("app_language") || "en";
+    appLanguageSelect.value = savedLang;
+    appLanguageSelect.addEventListener("change", (e) => {
+      localStorage.setItem("app_language", e.target.value);
+      const selectedText = e.target.options[e.target.selectedIndex].text;
+      showToast(`🌐 Language set to ${selectedText}. Changes applied!`);
+    });
+  }
+
+  // 3. Audio Quality Select
+  const audioQualitySelect = getElement("#audioQualitySelect");
+  if (audioQualitySelect) {
+    const savedQuality = localStorage.getItem("audio_quality") || "very_high";
+    audioQualitySelect.value = savedQuality;
+    audioQualitySelect.addEventListener("change", (e) => {
+      localStorage.setItem("audio_quality", e.target.value);
+      const label = e.target.options[e.target.selectedIndex].text;
+      showToast(`🔊 Streaming Quality set to ${label}!`);
+    });
+  }
+
+  // 4. Normalize Volume Toggle
+  const normalizeVolumeToggle = getElement("#normalizeVolumeToggle");
+  if (normalizeVolumeToggle) {
+    normalizeVolumeToggle.checked = localStorage.getItem("normalize_volume") !== "false";
+    normalizeVolumeToggle.addEventListener("change", (e) => {
+      localStorage.setItem("normalize_volume", e.target.checked);
+      showToast(e.target.checked ? "🎚️ Volume Normalization enabled." : "🎚️ Volume Normalization disabled.");
+    });
+  }
+
+  // 5. Compact Library Layout Toggle
+  const compactLibraryToggle = getElement("#compactLibraryToggle");
+  if (compactLibraryToggle) {
+    compactLibraryToggle.checked = localStorage.getItem("compact_library") === "true";
+    compactLibraryToggle.addEventListener("change", (e) => {
+      localStorage.setItem("compact_library", e.target.checked);
+      const sidebar = getElement(".rightSidebar");
+      if (sidebar) {
+        if (e.target.checked) sidebar.classList.add("compact-mode");
+        else sidebar.classList.remove("compact-mode");
+      }
+      showToast(e.target.checked ? "📐 Compact library layout enabled." : "📐 Standard library layout enabled.");
+    });
+  }
+
+  // 6. Import Library Button & File Input
+  const importLibraryBtn = getElement("#importLibraryBtn");
+  const importLibraryInput = getElement("#importLibraryInput");
+  if (importLibraryBtn && importLibraryInput) {
+    importLibraryBtn.addEventListener("click", () => importLibraryInput.click());
+    importLibraryInput.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        showToast(`📁 Successfully imported ${e.target.files.length} audio tracks into Your Library!`);
+      }
+    });
+  }
+
+  // 7. Desktop Notifications Toggle
+  const desktopNotifyToggle = getElement("#desktopNotifyToggle");
+  if (desktopNotifyToggle) {
+    desktopNotifyToggle.checked = localStorage.getItem("desktop_notify") !== "false";
+    desktopNotifyToggle.addEventListener("change", (e) => {
+      localStorage.setItem("desktop_notify", e.target.checked);
+      showToast(e.target.checked ? "🔔 Desktop notifications enabled." : "🔕 Desktop notifications disabled.");
+    });
+  }
+
+  // 8. Auto Now Playing Toggle
+  const autoNowPlayingToggle = getElement("#autoNowPlayingToggle");
+  if (autoNowPlayingToggle) {
+    autoNowPlayingToggle.checked = localStorage.getItem("auto_now_playing") !== "false";
+    autoNowPlayingToggle.addEventListener("change", (e) => {
+      localStorage.setItem("auto_now_playing", e.target.checked);
+      showToast(e.target.checked ? "🖼️ Now Playing sidebar panel set to auto-show." : "🖼️ Now Playing panel auto-show disabled.");
+    });
+  }
+
+  // 9. Canvas Toggle (Screenshot 2)
+  const canvasToggle = getElement("#canvasToggle");
+  if (canvasToggle) {
+    canvasToggle.checked = localStorage.getItem("canvas_enabled") !== "false";
+    canvasToggle.addEventListener("change", (e) => {
+      localStorage.setItem("canvas_enabled", e.target.checked);
+      showToast(e.target.checked ? "🎬 Looping visual Canvas enabled." : "🎬 Canvas visuals disabled.");
+    });
+  }
+
+  // 10. Other Videos Toggle (Screenshot 2)
+  const otherVideosToggle = getElement("#otherVideosToggle");
+  if (otherVideosToggle) {
+    otherVideosToggle.checked = localStorage.getItem("other_videos_enabled") !== "false";
+    otherVideosToggle.addEventListener("change", (e) => {
+      localStorage.setItem("other_videos_enabled", e.target.checked);
+      showToast(e.target.checked ? "📹 Video podcasts & videos enabled." : "🎧 Video podcasts set to audio-only.");
+    });
+  }
+
+  // 11. Autoplay Toggle (Screenshot 2)
+  const autoplayToggle = getElement("#autoplayToggle");
+  if (autoplayToggle) {
+    autoplayToggle.checked = localStorage.getItem("autoplay_enabled") !== "false";
+    autoplayToggle.addEventListener("change", (e) => {
+      localStorage.setItem("autoplay_enabled", e.target.checked);
+      showToast(e.target.checked ? "🔁 Non-stop Autoplay enabled." : "⏹️ Autoplay disabled.");
+    });
+  }
+
+  // 12. Crossfade Songs Range Slider (Screenshot 2)
+  const crossfadeRange = getElement("#crossfadeRange");
+  const crossfadeVal = getElement("#crossfadeVal");
+  if (crossfadeRange && crossfadeVal) {
+    const savedCrossfade = localStorage.getItem("crossfade_sec") || "0";
+    crossfadeRange.value = savedCrossfade;
+    crossfadeVal.textContent = `${savedCrossfade}s`;
+
+    const updateCrossfade = (val) => {
+      crossfadeVal.textContent = `${val}s`;
+      localStorage.setItem("crossfade_sec", val);
+    };
+
+    crossfadeRange.addEventListener("input", (e) => updateCrossfade(e.target.value));
+    crossfadeRange.addEventListener("change", (e) => {
+      updateCrossfade(e.target.value);
+      showToast(`🎚️ Track Crossfade set to ${e.target.value}s.`);
+    });
+  }
+
+  // 13. Mono Audio Toggle (Screenshot 2)
+  const monoAudioToggle = getElement("#monoAudioToggle");
+  if (monoAudioToggle) {
+    monoAudioToggle.checked = localStorage.getItem("mono_audio") === "true";
+    monoAudioToggle.addEventListener("change", (e) => {
+      localStorage.setItem("mono_audio", e.target.checked);
+      showToast(e.target.checked ? "🎧 Mono Audio enabled (Left + Right merged)." : "🎧 Stereo Audio active.");
+    });
+  }
+}

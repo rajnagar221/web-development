@@ -1,0 +1,143 @@
+User
+ │
+ ▼
+Signup
+ │
+ ▼
+FastAPI
+ │
+ ▼
+Hash Password
+ │
+ ▼
+MongoDB Save
+ │
+ ▼
+Login
+ │
+ ▼
+Verify Password
+ │
+ ▼
+Generate JWT
+ │
+ ▼
+Browser Stores Token
+ │
+ ▼
+Profile Request
+ │
+ ▼
+Bearer Token Sent
+ │
+ ▼
+Verify JWT
+ │
+ ▼
+MongoDB Find User
+ │
+ ▼
+Profile Returned
+
+
+One More Flowchart_Auth
+
+
+                                    USER
+                                      │
+                                      │
+                        Opens React Frontend (Browser)
+                                      │
+                                      ▼
+                            Signup / Login Form
+                                      │
+               ┌──────────────────────┴──────────────────────┐
+               │                                             │
+               ▼                                             ▼
+        POST /signup                                  POST /login
+               │                                             │
+               ▼                                             ▼
+         FastAPI Router                               FastAPI Router
+               │                                             │
+               ▼                                             ▼
+      Receive JSON Data                           Receive JSON Data
+               │                                             │
+               ▼                                             ▼
+      Pydantic Validation                     Read Email/Phone + Password
+               │                                             │
+               ▼                                             ▼
+    Email Already Exists?                     Find User in MongoDB
+          │       │                                   │
+        Yes       No                                 │
+         │        ▼                                  ▼
+         │   Phone Validation                 User Found?
+         │        │                             │        │
+         │        ▼                           No         Yes
+         │ Password Validation                │           │
+         │        │                           ▼           ▼
+         │        ▼                     Return 401   Verify Password
+         │ Hash Password                              │
+         │        │                                  │
+         │        ▼                                  ▼
+         │ Save User in MongoDB              Password Correct?
+         │        │                           │          │
+         │        ▼                          No         Yes
+         │ Signup Success                     │          │
+         │                                   ▼          ▼
+         │                            Return 401   Update last_login
+         │                                               │
+         │                                               ▼
+         │                                      Create JWT Token
+         │                                               │
+         │                                               ▼
+         │                                     Send Token to Browser
+         │                                               │
+         └───────────────────────────────────────────────┘
+                                                         │
+                                                         ▼
+                                        Browser Stores Token
+                                    (LocalStorage / Cookie)
+                                                         │
+                                                         ▼
+                                  User Opens Protected Page
+                                                         │
+                                                         ▼
+                                      GET /profile
+                                                         │
+                                                         ▼
+                              Authorization Header Added
+
+                 Authorization: Bearer eyJhbGciOiJIUzI1Ni...
+
+                                                         │
+                                                         ▼
+                                               FastAPI Receives
+                                                         │
+                                                         ▼
+                                       oauth2_scheme Extract Token
+                                                         │
+                                                         ▼
+                                              decode_token()
+                                                         │
+                                            Verify Signature
+                                                         │
+                                     ┌───────────────────┴───────────────────┐
+                                     │                                       │
+                                  Invalid                                  Valid
+                                     │                                       │
+                                     ▼                                       ▼
+                              Return 401                            Read Payload
+                                                                     │
+                                                                     ▼
+                                                          Extract Email (sub)
+                                                                     │
+                                                                     ▼
+                                                           Find User in MongoDB
+                                                                     │
+                                                                     ▼
+                                                              User Exists?
+                                                             │          │
+                                                            No         Yes
+                                                            │           │
+                                                            ▼           ▼
+                                                     Return 404   Send Profile

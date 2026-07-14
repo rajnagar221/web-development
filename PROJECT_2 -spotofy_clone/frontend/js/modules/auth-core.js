@@ -289,7 +289,7 @@ export async function verifyAuthentication() {
     }
     return true;
   } catch (err) {
-    console.error("Authentication check failed:", err);
+    console.warn("Session expired or invalid token. Redirecting to login...", err.message || err);
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("email");

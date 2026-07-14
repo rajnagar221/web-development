@@ -17,13 +17,14 @@ import { getElement } from './utils.js';
 
 
 export function buildSongUrl(folder, track) {
-  const fileName = track.split("/").pop();
-  return `${STATIC_SONGS_URL}/${encodeURIComponent(folder)}/${encodeURIComponent(fileName)}`;
+  // Not used with iTunes API as track.url is the previewUrl directly, but kept for compatibility just in case
+  return track.url || "";
 }
 
 export function getCurrentSongIndex() {
+  if (!state.currentTrack) return -1;
   return state.displaySongs.findIndex(
-    (item) => item.folder === state.currentFolder && item.track === state.currentTrack
+    (item) => item.folder === state.currentFolder && item.track.id === state.currentTrack.id
   );
 }
 
@@ -32,7 +33,7 @@ export async function loadFolderSongs(folder) {
   try {
     state.songs = await fetchSongs(folder);
   } catch (error) {
-    console.error("Error fetching songs:", error);
+    console.error("Error fetching songs from :", error);
     state.songs = [];
   }
   state.showLikedSongs = false;
@@ -42,7 +43,7 @@ export async function loadFolderSongs(folder) {
 }
 
 export function togglePlayback(track, folder) {
-  if (track && (track !== state.currentTrack || folder !== state.currentFolder)) {
+  if (track && (!state.currentTrack || track.id !== state.currentTrack.id || folder !== state.currentFolder)) {
     playMusic(track, folder);
     return;
   }
@@ -72,7 +73,7 @@ export function playMusic(track, folder = state.currFolder) {
   if (nowPlayingCard) nowPlayingCard.style.display = "flex";
 
   // If same track already playing, just resume
-  if (track === state.currentTrack && folder === state.currentFolder && state.currentSong.src) {
+  if (state.currentTrack && track.id === state.currentTrack.id && folder === state.currentFolder && state.currentSong.src) {
     if (state.currentSong.paused) {
       state.currentSong.play().catch((err) => console.warn("Playback failed:", err));
       updatePlayButton(true);
@@ -89,17 +90,34 @@ export function playMusic(track, folder = state.currFolder) {
   addRecentlyPlayed(track, folder);
 
   // Immediately update UI before load completes
-  updateSongInfo(track);
+  updateSongInfo(track, true);
   updatePlaybarLikeButton();
   updatePlayButton(true);
 
-  state.currentSong.src = buildSongUrl(folder, track);
+  if (track.url) {
+    state.currentSong.src = track.url;
+  } else {
+    // fallback if missing
+    state.currentSong.src = buildSongUrl(folder, track);
+  }
   state.currentSong.volume = (() => {
     const vol = document.getElementById("volumeRange");
     return vol ? Number(vol.value) / 100 : 0.8;
   })();
   state.currentSong.load();
-  state.currentSong.play().catch((err) => console.warn("Playback failed:", err));
+  const playPromise = state.currentSong.play();
+  if (playPromise !== undefined) {
+    playPromise
+      .then(() => {
+        updatePlayButton(true);
+        updateAlbumPlayIcons();
+      })
+      .catch((err) => {
+        console.warn("Playback failed:", err);
+        updatePlayButton(false);
+        updateAlbumPlayIcons();
+      });
+  }
   updateAlbumPlayIcons();
   renderSongList();
 }
@@ -153,8 +171,10 @@ export function setupPlayerEvents() {
   });
 
   state.currentSong.addEventListener("error", () => {
-    console.warn("Audio error, trying next song");
-    playNextSong();
+    console.error("Audio error encountered:", state.currentSong.error);
+    showToast("⚠️ Error: Failed to play song");
+    updatePlayButton(false);
+    updateAlbumPlayIcons();
   });
 }
 

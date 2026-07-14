@@ -16,14 +16,17 @@
     text-decoration: none;
 }
 
-.branding-logo {
-    width: 42px;
-    height: 42px;
-    filter: drop-shadow(0 0 10px rgba(29, 185, 84, 0.4));
-    transition: var(--transition);
+.branding-logo,
+.branding-icon {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(29, 185, 84, 0.5));
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.branding:hover .branding-logo {
+.branding:hover .branding-logo,
+.branding:hover .branding-icon {
     transform: rotate(360deg);
 }
 

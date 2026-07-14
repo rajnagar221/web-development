@@ -37,6 +37,8 @@ def signup(user: SignupModel):
             raise HTTPException(status_code=400, detail="Phone number already registered")
     else:
         normalized_phone = None
+  
+      
 
     # Password validation
     if len(user.password) < 6:
@@ -44,6 +46,7 @@ def signup(user: SignupModel):
 
     # Insert user
     result = users_collection.insert_one({
+        "last name": user.name,
         "username": user.username,
         "email": user.email,
         "phone": normalized_phone,
@@ -51,7 +54,7 @@ def signup(user: SignupModel):
         "created_at": datetime.utcnow(),
         "last_login": None
     })
-
+    
     return {
         "message": "User created successfully",
         "user_id": str(result.inserted_id)
@@ -172,10 +175,9 @@ def apple_login():
 
 @router.get("/profile")
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    try:
-        payload = decode_token(token)
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    payload = decode_token(token)
+    if payload.get("error"):
+        raise HTTPException(status_code=401, detail=payload["error"])
 
     email = payload.get("sub")
     if not email:
@@ -196,12 +198,14 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 def check_login(token: str = Depends(oauth2_scheme)):
     try:
         payload = verify_token(token)
+        if not payload or payload.get("error") or not payload.get("sub"):
+            return {"is_logged_in": False, "message": payload.get("error") if payload else "Invalid token"}
         email = payload.get("sub")
         user = users_collection.find_one({"email": email})
         if not user:
-            return {"is_logged_in": False}
+            return {"is_logged_in": False, "message": "User not found"}
         return {"is_logged_in": True, "username": user.get("username"), "email": email, "message": "User is logged in"}
-    except JWTError:
+    except Exception:
         return {"is_logged_in": False, "message": "Invalid or expired token"}
 
 @router.post("/logout")

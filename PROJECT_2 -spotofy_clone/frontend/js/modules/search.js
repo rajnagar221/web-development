@@ -3,8 +3,34 @@ import { getElement } from './utils.js';
 import { loadFolderSongs, playMusic } from './audio.js';
 import { fetchSongs } from './api.js';
 import { showToast } from './ui.js';
+import { state } from './state.js';
 
 const searchIconSVG = `<svg class="suggestion-icon" viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`;
+
+const ALL_TRACKS_DATABASE = [
+  { track: "tera hone laga hu.mp3", folder: "ncs", title: "Tera Hone Laga Hu", artist: "NCS / Ajab Prem Ki Ghazab" },
+  { track: "01 - Invincible.mp3", folder: "ncs", title: "Invincible", artist: "DEAF KEV" },
+  { track: "02 - Sky High.mp3", folder: "ncs", title: "Sky High", artist: "Elektronomia" },
+  { track: "03 - Mortals.mp3", folder: "ncs", title: "Mortals", artist: "Warriyo feat. Laura Brehm" },
+  { track: "01 - Softly.mp3", folder: "karan aujla", title: "Softly", artist: "Karan Aujla, Ikky" },
+  { track: "02 - Winning Speech.mp3", folder: "karan aujla", title: "Winning Speech", artist: "Karan Aujla" },
+  { track: "03 - Tauba Tauba.mp3", folder: "karan aujla", title: "Tauba Tauba", artist: "Karan Aujla" },
+  { track: "01 - Born to Shine.mp3", folder: "Diljit", title: "Born to Shine", artist: "Diljit Dosanjh" },
+  { track: "02 - G.O.A.T..mp3", folder: "Diljit", title: "G.O.A.T.", artist: "Diljit Dosanjh" },
+  { track: "03 - Lemonade.mp3", folder: "Diljit", title: "Lemonade", artist: "Diljit Dosanjh" },
+  { track: "01 - Blue Eyes.mp3", folder: "honey singh", title: "Blue Eyes", artist: "Yo Yo Honey Singh" },
+  { track: "02 - Desi Kalakaar.mp3", folder: "honey singh", title: "Desi Kalakaar", artist: "Yo Yo Honey Singh" },
+  { track: "03 - Love Dose.mp3", folder: "honey singh", title: "Love Dose", artist: "Yo Yo Honey Singh" },
+  { track: "01 - Brown Munde.mp3", folder: "Ap dillhon", title: "Brown Munde", artist: "AP Dhillon, Gurinder Gill" },
+  { track: "02 - Insane.mp3", folder: "Ap dillhon", title: "Insane", artist: "AP Dhillon" },
+  { track: "03 - With You.mp3", folder: "Ap dillhon", title: "With You", artist: "AP Dhillon" },
+  { track: "01 - Chill Beats.mp3", folder: "vibes songs", title: "Chill Beats", artist: "Lofi Vibes" },
+  { track: "02 - Midnight Lofi.mp3", folder: "vibes songs", title: "Midnight Lofi", artist: "Aesthetic Soundscapes" },
+  { track: "01 - Reel Song 1.mp3", folder: "instagram trending", title: "Reel Song 1", artist: "Instagram Trending" },
+  { track: "02 - Viral Vibe.mp3", folder: "instagram trending", title: "Viral Vibe", artist: "Trending Reels" },
+  { track: "01 - Khayaal.mp3", folder: "talwinder", title: "Khayaal", artist: "Talwiinder" },
+  { track: "02 - Dhundhala.mp3", folder: "talwinder", title: "Dhundhala", artist: "Talwiinder" }
+];
 
 export async function setupSearch() {
   const searchInput = getElement("#searchInput");
@@ -15,7 +41,7 @@ export async function setupSearch() {
 
   if (!searchInput || !searchResults) return;
 
-  // Handle Search Clear Button (X icon inside search input)
+  // Handle Search Clear Button
   if (searchClearBtn) {
     searchClearBtn.addEventListener("click", () => {
       searchInput.value = "";
@@ -49,7 +75,6 @@ export async function setupSearch() {
 
   searchInput.addEventListener("input", async (event) => {
     const query = event.target.value.trim();
-    const lowerQuery = query.toLowerCase();
     searchResults.innerHTML = "";
 
     if (searchClearBtn) {
@@ -63,80 +88,70 @@ export async function setupSearch() {
 
     if (searchContainer) searchContainer.style.display = "block";
 
-    // --- 1. Query Suggestions (4 variations, matching Spotify style) ---
-    const suggestionVariants = [
-      query,
-      `${query} songs`,
-      `${query} playlist`,
-      `best of ${query}`,
-    ];
+    // Show a quick loading state
+    searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">Searching iTunes...</div>`;
 
-    const suggestionsHTML = suggestionVariants.map(text => `
-      <div class="search-suggestion-item" data-query="${text}">
-        ${searchIconSVG}
-        <span class="suggestion-text">${text}</span>
-      </div>
-    `).join('');
+    try {
+      const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=10`);
+      const data = await res.json();
+      const tracks = data.results.filter(item => item.wrapperType === 'track');
 
-    searchResults.innerHTML = suggestionsHTML;
-
-    // Clicking a suggestion fills the input and re-triggers search
-    searchResults.querySelectorAll('.search-suggestion-item').forEach(item => {
-      item.addEventListener('click', () => {
-        searchInput.value = item.dataset.query;
-        searchInput.dispatchEvent(new Event('input'));
-      });
-    });
-
-    // --- 2. Track Results ---
-    const results = [];
-    for (const folder of FOLDERS) {
-      try {
-        const folderSongs = await fetchSongs(folder);
-        if (!folderSongs) continue;
-        folderSongs.forEach((song) => {
-          const songName = decodeURIComponent(song);
-          if (songName.toLowerCase().includes(lowerQuery)) {
-            results.push({ title: songName.replace(/\.mp3$/i, ""), track: song, folder });
-          }
-        });
-      } catch (error) {
-        console.warn(`Search folder failed: ${folder}`, error);
+      if (tracks.length === 0) {
+        searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">No results found for "${query}"</div>`;
+        return;
       }
+
+      searchResults.innerHTML = tracks.map(track => {
+        const title = track.trackName;
+        const artist = track.artistName;
+        const coverUrl = track.artworkUrl100 ? track.artworkUrl100.replace("100x100bb", "150x150bb") : "img/music.svg";
+        const serializedTrack = encodeURIComponent(JSON.stringify({
+          id: track.trackId.toString(),
+          title: title,
+          artist: artist,
+          cover_image: coverUrl,
+          url: track.previewUrl
+        }));
+        
+        return `
+          <div class="search-result-item" data-track="${serializedTrack}" data-folder="${track.collectionId}">
+            <img src="${coverUrl}" alt="${title}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
+            <div class="search-result-info">
+              <div class="search-result-title">${title}</div>
+              <div class="search-result-artist">${artist}</div>
+            </div>
+            <div class="play-btn-small">
+              <svg viewBox="0 0 24 24" fill="#1db954" width="16" height="16"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    } catch (e) {
+      searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">Error searching iTunes</div>`;
     }
 
-    if (results.length === 0) return; // Keep suggestion rows visible
+    searchResults.querySelectorAll('.search-result-item').forEach(item => {
+      item.addEventListener('click', async () => {
+        try {
+          const trackData = JSON.parse(decodeURIComponent(item.dataset.track));
+          const folder = item.dataset.folder; // collectionId
+          
+          // Ensure we have a valid songs list in state or push this one
+          // Since it's a direct search hit, we can just play it directly
+          // We wrap it in an array to let playMusic work properly if it needs to go next/prev
+          state.songs = [trackData];
+          state.displaySongs = [{ folder: folder, track: trackData }];
+          
+          playMusic(trackData, folder);
 
-    // Thin divider before track results
-    const divider = document.createElement('div');
-    divider.style.cssText = 'height:1px;background:rgba(255,255,255,0.08);margin:2px 0;';
-    searchResults.appendChild(divider);
-
-    results.slice(0, 8).forEach((result) => {
-      const coverUrl = `songs/${result.folder}/cover.jpg`;
-      const folderLabel = result.folder.charAt(0).toUpperCase() + result.folder.slice(1);
-      const item = document.createElement("div");
-      item.className = "search-track-row";
-      item.innerHTML = `
-        <div class="search-track-left">
-          <img src="${coverUrl}" alt="${result.title}" class="search-track-thumb" onerror="this.src='songs/ncs/cover.jpg';" />
-          <div class="search-track-details">
-            <div class="search-track-title">${result.title}</div>
-            <div class="search-track-sub">Song • ${folderLabel}</div>
-          </div>
-        </div>
-        <button class="search-add-btn" title="Add to Playlist" onclick="event.stopPropagation();">⊕</button>
-      `;
-
-      item.addEventListener("click", async () => {
-        await loadFolderSongs(result.folder);
-        playMusic(result.track, result.folder);
-        if (searchContainer) searchContainer.style.display = "none";
-        if (searchInput) searchInput.value = "";
-        searchResults.innerHTML = "";
+          if (searchContainer) searchContainer.style.display = "none";
+          if (searchInput) searchInput.value = "";
+          searchResults.innerHTML = "";
+        } catch (e) {
+          console.error("Failed to parse track from search result", e);
+        }
       });
-
-      searchResults.appendChild(item);
     });
   });
 

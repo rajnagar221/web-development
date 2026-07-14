@@ -126,22 +126,25 @@ export function getArtistBio(folder) {
   return ARTIST_BIOS[key] || "Popular tracks, daily mixes, and custom artist compilations.";
 }
 
-export function updateSongInfo(track) {
-  const title = decodeURIComponent(track.split("/").pop()).replace(/\.mp3$/i, "");
+export function updateSongInfo(track, autoOpenSidebar = false) {
+  const title = track.title || "Unknown Title";
   const songInfo = getElement(".songinfo");
   if (songInfo) songInfo.textContent = title;
 
   const songArtistEl = getElement(".songartist");
+  if (songArtistEl) songArtistEl.textContent = track.artist || "Unknown Artist";
+
   const sidebar = getElement(".rightSidebar");
   const mainGrid = getElement(".main-grid");
-  const idlePromoCard = getElement("#idlePromoCard");
   const nowPlayingCard = getElement("#nowPlayingCard");
 
-  if (sidebar) sidebar.style.display = "flex";
-  if (mainGrid) mainGrid.classList.add("sidebar-active");
+  if (autoOpenSidebar) {
+    if (sidebar) sidebar.style.display = "flex";
+    if (mainGrid) mainGrid.classList.add("sidebar-active");
+    const toggleBtn = getElement("#nowPlayingToggleBtn");
+    if (toggleBtn) toggleBtn.style.display = "inline-flex";
+  }
 
-  // Show Now Playing card, hide Idle Promo card when track starts
-  if (idlePromoCard) idlePromoCard.style.display = "none";
   if (nowPlayingCard) nowPlayingCard.style.display = "flex";
 
   const art = getElement("#playbarArt");
@@ -159,40 +162,36 @@ export function updateSongInfo(track) {
   if (shareBtn) shareBtn.removeAttribute("disabled");
   if (sidebarFavoriteBtn) sidebarFavoriteBtn.removeAttribute("disabled");
 
-  let resolvedArtist = state.currentFolder || "Unknown artist";
-  let coverPath = `songs/${state.currentFolder}/cover.jpg`;
+  let resolvedArtist = track.artist || "Unknown Artist";
+  let coverUrl = track.cover_image || "img/music.svg";
 
-  if (state.allAlbums && state.currentFolder) {
-    const album = state.allAlbums.find(
-      (a) => a.folder.toLowerCase() === state.currentFolder.toLowerCase()
-    );
-    if (album) {
-      if (album.description) resolvedArtist = album.description;
-      if (album.cover_image) {
-        coverPath = album.cover_image;
-        if (coverPath.startsWith("/")) coverPath = coverPath.substring(1);
-      }
-    }
-  }
+  const setImageSrcWithFallback = (imgEl, primary) => {
+    if (!imgEl) return;
+    imgEl.onerror = () => {
+      imgEl.src = "img/music.svg";
+    };
+    imgEl.src = primary;
+  };
 
-  const coverUrl = `${API_BASE_URL}/${coverPath}`;
-  if (art) art.src = coverUrl;
+  setImageSrcWithFallback(art, coverUrl);
+  setImageSrcWithFallback(sideArt, coverUrl);
+  setImageSrcWithFallback(artistImg, coverUrl);
 
-  if (sideArt) {
-    sideArt.src = coverUrl;
-    sideArt.classList.remove("placeholder-art");
-  }
-  if (artistImg) {
-    artistImg.src = coverUrl;
-    artistImg.classList.remove("placeholder-art");
-  }
+  if (sideArt) sideArt.classList.remove("placeholder-art");
+  if (artistImg) artistImg.classList.remove("placeholder-art");
 
   if (nowTitle) nowTitle.textContent = title;
   if (nowArtist) nowArtist.textContent = resolvedArtist;
   if (artistName) artistName.textContent = resolvedArtist;
-  if (sidebarHeaderTitle) sidebarHeaderTitle.textContent = title;
-  if (songArtistEl) songArtistEl.textContent = resolvedArtist;
-  if (artistBio) artistBio.textContent = getArtistBio(state.currentFolder);
+  
+  if (sidebarHeaderTitle && state.allAlbums) {
+    const album = state.allAlbums.find((a) => a.folder === state.currentFolder);
+    sidebarHeaderTitle.textContent = album ? album.title : "Now Playing";
+  }
+
+  if (artistBio) {
+    artistBio.textContent = getArtistBio(resolvedArtist);
+  }
 
   updatePlaybarLikeButton();
   updateSidebarLikeButton();
@@ -205,13 +204,7 @@ export function setupSidebarEvents() {
   if (mainGrid) mainGrid.classList.add("sidebar-active");
   if (sidebar) sidebar.style.display = "flex";
 
-  // Handle Install App / Download Musify buttons
-  const installAppBtn = getElement("#installAppBtn");
-  const downloadBtn = getElement("#downloadMusifyBtn");
-  const handleInstall = () => showToast("⬇️ Starting Musify Desktop App Download...");
-  
-  if (installAppBtn) installAppBtn.addEventListener("click", handleInstall);
-  if (downloadBtn) downloadBtn.addEventListener("click", handleInstall);
+
 
   // Handle all Follow buttons (Main artist & credits list)
   document.querySelectorAll(".follow-pill-btn").forEach((btn) => {
@@ -272,6 +265,19 @@ export function setupSidebarEvents() {
       }
     });
   }
+
+  // Close right sidebar close button (mobile)
+  const closeRightBtn = getElement(".close-right");
+  if (closeRightBtn) {
+    closeRightBtn.addEventListener("click", () => {
+      const sidebar = getElement(".rightSidebar");
+      const mainGrid = getElement(".main-grid");
+      if (sidebar && mainGrid) {
+        sidebar.style.display = "none";
+        mainGrid.classList.remove("sidebar-active");
+      }
+    });
+  }
 }
 
 export function toggleLikeTrack(folder, track, shouldRender = true) {
@@ -325,43 +331,35 @@ export function renderSongList() {
 
   songListContainer.innerHTML = currentItems
     .map(({ folder, track }) => {
-      const title = decodeURIComponent(track).replace(/\.mp3$/i, "");
-      const likedClass = isTrackLiked(folder, track) ? "liked" : "";
-      const isActive = track === state.currentTrack && folder === state.currentFolder ? "playing" : "";
+      const title = track.title || "Unknown Title";
+      const artist = track.artist || "Unknown Artist";
+      const likedClass = isTrackLiked(folder, track.id) ? "liked" : "";
+      const isActive = state.currentTrack && track.id === state.currentTrack.id && folder === state.currentFolder ? "playing" : "";
       return `
-        <li data-folder="${folder}" data-file="${track}" class="${isActive}">
+        <li data-folder="${folder}" data-file="${track.id}" class="${isActive}">
           <div class="info">
             <div class="song-title">${title}</div>
-            <div class="song-artist">${folder}</div>
+            <div class="song-artist">${artist}</div>
           </div>
-          <div class="item-actions">
-            <button type="button" class="favorite-btn ${likedClass}" title="Toggle like">
-              <svg viewBox="0 0 24 24" fill="${likedClass ? '#1db954' : 'none'}" stroke="${likedClass ? '#1db954' : '#b3b3b3'}" stroke-width="2" width="14" height="14"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            </button>
-            <div class="playnow">
-              <svg viewBox="0 0 24 24" fill="#1db954" width="14" height="14"><polygon points="5,3 19,12 5,21"/></svg>
-            </div>
+          <div class="play-btn">
+            <svg viewBox="0 0 24 24" fill="#1db954" width="20" height="20">
+              <polygon points="5,3 19,12 5,21"/>
+            </svg>
           </div>
-        </li>`;
+        </li>
+      `;
     })
     .join("");
 
-  Array.from(document.querySelectorAll(".songList li")).forEach((item) => {
-    const track = item.getAttribute("data-file");
-    const folder = item.getAttribute("data-folder");
-
-    item.addEventListener("click", () => {
-      if (track && folder) playMusic(track, folder);
+  Array.from(songListContainer.children).forEach((li) => {
+    li.addEventListener("click", () => {
+      const folder = li.dataset.folder;
+      const fileId = li.dataset.file;
+      const item = currentItems.find(i => i.folder === folder && i.track.id === fileId);
+      if (item) {
+        playMusic(item.track, item.folder);
+      }
     });
-
-    const favButton = item.querySelector(".favorite-btn");
-    if (favButton) {
-      favButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        if (!track || !folder) return;
-        toggleLikeTrack(folder, track);
-      });
-    }
   });
 
   updateLibraryButtons();
@@ -374,25 +372,18 @@ export async function displayAlbums() {
   cardContainer.innerHTML = "";
 
   try {
-    const albums = await fetchAlbums();
+    const albums = await fetchAlbums("arijit singh");
     state.allAlbums = albums;
 
     for (const album of albums) {
-      const imagePath = album.cover_image
-        .split("/")
-        .map((part) => encodeURIComponent(part))
-        .join("/");
-      const imageUrl = `${API_BASE_URL}${imagePath}`;
+      const imageUrl = album.cover_image || "img/music.svg";
       cardContainer.innerHTML += `
         <div data-folder="${album.folder}" class="card">
           <div class="card-image-wrapper">
-            <img src="${imageUrl}" alt="${album.title}" class="card-img" onerror="this.src='songs/ncs/cover.jpg';">
+            <img src="${imageUrl}" alt="${album.title}" class="card-img" onerror="this.src='img/music.svg';">
             <div class="play" onclick="event.stopPropagation();">
               <svg viewBox="0 0 24 24" fill="#000" width="18" height="18"><polygon points="5,3 19,12 5,21"/></svg>
             </div>
-            <span class="spotify-overlay-logo">
-              <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338z"/></svg>
-            </span>
           </div>
           <h2>${album.title}</h2>
           <p>${album.description}</p>
@@ -419,26 +410,13 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
   let songs = [];
   try {
     const loadedSongs = await loadFolderSongs(folder);
-    songs = loadedSongs.map(track => ({ folder, track }));
+    songs = (loadedSongs || []).map(track => ({ folder, track }));
   } catch (error) {
     console.error("Failed to load folder songs:", error);
   }
 
   if (songs.length === 0) {
-    albumDetailView.innerHTML = `
-      <div class="back-btn-container" id="backToHomeBtn">
-        <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18" style="vertical-align: middle;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
-        <span class="back-label">Back to Library</span>
-      </div>
-      <div style="padding: 40px; text-align: center; color: #b3b3b3;">No songs found in this album.</div>
-    `;
-    const backBtn = getElement("#backToHomeBtn");
-    if (backBtn) {
-      backBtn.addEventListener("click", () => {
-        albumDetailView.style.display = "none";
-        homeSections.style.display = "block";
-      });
-    }
+    albumDetailView.innerHTML = `<div style="padding: 40px; text-align: center; color: #b3b3b3;">No tracks found for this album.</div>`;
     return;
   }
 
@@ -478,26 +456,33 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
           </tr>
         </thead>
         <tbody>
-          ${songs.map((song, index) => {
-            const title = decodeURIComponent(song.track).replace(/\.mp3$/i, "");
-            const likedClass = isTrackLiked(song.folder, song.track) ? "liked" : "";
-            const isActive = song.track === state.currentTrack && song.folder === state.currentFolder ? "active" : "";
+          ${songs.map((songItem, index) => {
+            const track = songItem.track;
+            const title = track.title;
+            const artist = track.artist;
+            const likedClass = isTrackLiked(songItem.folder, track.id) ? "liked" : "";
+            const isActive = state.currentTrack && track.id === state.currentTrack.id && songItem.folder === state.currentFolder ? "active" : "";
             return `
-              <tr class="track-row ${isActive}" data-index="${index}">
-                <td class="col-num">${index + 1}</td>
-                <td class="col-title">
-                  <div class="track-info">
-                    <div class="track-name">${title}</div>
-                    <div class="track-artist">${albumTitle}</div>
-                  </div>
-                </td>
-                <td class="col-album">${albumTitle}</td>
-                <td class="col-actions">
-                  <button type="button" class="favorite-btn ${likedClass}" title="Toggle like" onclick="event.stopPropagation();">
-                    <svg viewBox="0 0 24 24" fill="${likedClass ? '#1db954' : 'none'}" stroke="${likedClass ? '#1db954' : '#b3b3b3'}" stroke-width="2" width="16" height="16"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                  </button>
-                </td>
-              </tr>
+            <tr class="track-row ${isActive}" data-index="${index}">
+              <td class="col-num">
+                <span class="num">${index + 1}</span>
+                <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><polygon points="5,3 19,12 5,21"/></svg>
+              </td>
+              <td class="col-title">
+                <div class="track-info">
+                  <div class="track-name">${title}</div>
+                  <div class="track-artist">${artist}</div>
+                </div>
+              </td>
+              <td class="col-album">${albumTitle}</td>
+              <td class="col-actions">
+                <button class="favorite-btn ${likedClass}" title="Save to Liked Songs">
+                  <svg viewBox="0 0 24 24" fill="${likedClass ? '#1db954' : 'none'}" stroke="${likedClass ? '#1db954' : '#b3b3b3'}" stroke-width="2" width="20" height="20">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
             `;
           }).join("")}
         </tbody>
@@ -514,16 +499,21 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     });
   }
 
-  // Play button event
+  // Play button for entire album
   const detailPlayBtn = getElement("#detailPlayBtn");
   if (detailPlayBtn) {
-    detailPlayBtn.addEventListener("click", () => {
+    detailPlayBtn.addEventListener("click", async () => {
       if (songs.length > 0) {
-        const isCurrentAlbumActive = state.currentFolder === folder;
-        if (isCurrentAlbumActive && state.currentSong.src) {
-          import('./audio.js').then(m => m.togglePlayback());
-        } else {
+        if (state.currentFolder !== folder) {
           playMusic(songs[0].track, folder);
+        } else {
+          if (!state.currentSong.src || state.currentSong.paused) {
+             playMusic(state.currentTrack || songs[0].track, folder);
+          } else {
+             state.currentSong.pause();
+             updatePlayButton(false);
+             updateAlbumPlayIcons();
+          }
         }
       }
     });
@@ -546,8 +536,8 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     if (favBtn) {
       favBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        toggleLikeTrack(song.folder, song.track, true);
-        const isLiked = isTrackLiked(song.folder, song.track);
+        toggleLikeTrack(song.folder, song.track.id, true);
+        const isLiked = isTrackLiked(song.folder, song.track.id);
         favBtn.classList.toggle("liked", isLiked);
         favBtn.querySelector("svg").setAttribute("fill", isLiked ? "#1db954" : "none");
         favBtn.querySelector("svg").setAttribute("stroke", isLiked ? "#1db954" : "#b3b3b3");
@@ -601,6 +591,14 @@ export function updateAlbumPlayIcons() {
       ? `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
       : `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18"><polygon points="5,3 19,12 5,21"/></svg>`;
   });
+
+  const detailPlayBtn = getElement("#detailPlayBtn");
+  if (detailPlayBtn) {
+    const isCurrentPlaying = state.currentSong.src && !state.currentSong.paused;
+    detailPlayBtn.innerHTML = isCurrentPlaying
+      ? `<svg viewBox="0 0 24 24" fill="#000" width="28" height="28"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
+      : `<svg viewBox="0 0 24 24" fill="#000" width="28" height="28" style="margin-left: 2px;"><polygon points="5,3 19,12 5,21"/></svg>`;
+  }
 }
 
 // ==================== VOLUME ICON ====================
@@ -1055,7 +1053,14 @@ export function renderRecentlyPlayedUI(items = getRecentlyPlayed()) {
         if (folder) {
           const { loadFolderSongs, playMusic } = await import('./audio.js');
           const songs = await loadFolderSongs(folder);
-          const trackToPlay = track && songs.includes(track) ? track : songs[0];
+          
+          let trackToPlay = songs[0];
+          if (track) {
+            const clean = (name) => name.toLowerCase().replace(/\.mp3$/i, "").trim();
+            const matched = songs.find(s => clean(s) === clean(track));
+            if (matched) trackToPlay = matched;
+          }
+          
           if (trackToPlay) playMusic(trackToPlay, folder);
         }
       });
@@ -1071,6 +1076,15 @@ export function renderRecentlyPlayedUI(items = getRecentlyPlayed()) {
     recentlyPlayedContainer.innerHTML = buildCardsHTML(items.slice(0, 8));
     bindCardClicks(recentlyPlayedContainer);
   }
+}
+
+// PWA Install Prompt Listener
+let deferredPwaPrompt = null;
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPwaPrompt = e;
+  });
 }
 
 // ==================== INSTALL APP POPUP MODAL ====================
@@ -1100,8 +1114,19 @@ export function setupInstallAppModal() {
   if (closeInstallAppModalBtn) closeInstallAppModalBtn.addEventListener("click", closeModal);
 
   if (modalDownloadAppBtn) {
-    modalDownloadAppBtn.addEventListener("click", () => {
-      triggerDesktopAppDownload();
+    modalDownloadAppBtn.addEventListener("click", async () => {
+      if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        const choice = await deferredPwaPrompt.userChoice;
+        if (choice && choice.outcome === "accepted") {
+          showToast("✅ Musify App installed successfully!");
+        } else {
+          showToast("✅ Musify App is ready for Web & PWA!");
+        }
+        deferredPwaPrompt = null;
+      } else {
+        showToast("✅ Musify Web App is ready for installation!");
+      }
       closeModal();
     });
   }
@@ -1114,17 +1139,7 @@ export function setupInstallAppModal() {
 }
 
 export function triggerDesktopAppDownload() {
-  const content = "Musify Desktop App Setup v2.4.0\nThank you for downloading Musify!";
-  const blob = new Blob([content], { type: "application/octet-stream" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "Musify-Setup-v2.4.0.exe";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast("⬇️ Starting Musify Desktop App setup download...");
+  showToast("✅ Musify Web App is ready to use!");
 }
 
 // ==================== SPOTIFY ACCOUNT OVERVIEW PAGE (Screenshots 2, 3, 4, 5) ====================

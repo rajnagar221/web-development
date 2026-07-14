@@ -29,7 +29,9 @@ def get_all_songs(token=Depends(verify_token)):
     if token["error"]:
         raise HTTPException(status_code=401, detail=token["error"])
     songs = list(songs_collection.find({}, {"_id": 0}))
-    return {"songs": songs}
+    return {"songs": songs,
+        "massage" : "hello"}
+    
 
 @router.get("/api/songs/id/{song_id}")
 def get_song(song_id: str, token=Depends(verify_token)):

@@ -32,7 +32,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 def verify_token(credential: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
     """Verifies a token and returns the data"""
     try:
-        payload = jwt.decode(credential, SECRET_KEY, algorithms=[ALGORITHM])
+        token_str = credential.credentials if hasattr(credential, "credentials") else credential
+        payload = jwt.decode(token_str, SECRET_KEY, algorithms=[ALGORITHM])
+        payload["error"] = None
         return payload
     except jwt.ExpiredSignatureError:
         return {"error": "Token expired"}
@@ -51,6 +53,7 @@ def decode_token(credential: str):
     """Decodes a token and returns the data"""
     try:
         payload = jwt.decode(credential, SECRET_KEY, algorithms=[ALGORITHM])
+        payload["error"] = None
         return payload
     except jwt.ExpiredSignatureError:
         return {"error": "Token expired"}

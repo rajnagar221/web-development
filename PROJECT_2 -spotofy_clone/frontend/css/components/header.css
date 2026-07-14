@@ -642,147 +642,7 @@
     background-color: rgba(255, 107, 107, 0.1);
 }
 
-@media (max-width: 600px) {
-    .container {
-        gap: 0;
-    }
-
-    .left {
-        width: 100%;
-        max-height: 100%;
-        border-bottom: none;
-    }
-
-    .library {
-        max-height: 40vh;
-    }
-
-    .cardContainer {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 8px;
-        margin-bottom: 140px;
-    }
-
-    .card {
-        border-radius: 8px;
-    }
-
-    .card h3 {
-        font-size: 12px;
-    }
-
-    .card p {
-        font-size: 11px;
-        margin-bottom: 10px;
-    }
-
-    .header {
-        padding: 10px 12px;
-    }
-
-    .buttons {
-        gap: 8px;
-    }
-
-    .signupbtn,
-    .loginbtn {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-
-    .musifyPlaylists h2 {
-        font-size: 18px;
-        margin-bottom: 12px;
-    }
-
-    .musifyPlaylists {
-        padding: 12px;
-        grid-template-columns: 1fr;
-    }
-
-    .header-right {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .header-search {
-        padding: 8px 12px;
-    }
-
-    .searchContainer {
-        margin: 8px 12px 0;
-    }
-
-    .rightSidebar {
-        width: 100%;
-    }
-
-    .cardContainer {
-        margin-bottom: 16px;
-    }
-
-    .playbar {
-        padding: 12px;
-        gap: 10px;
-    }
-
-    .songbuttons {
-        gap: 10px;
-    }
-
-    .songbuttons img {
-        width: 24px;
-        height: 24px;
-    }
-
-    .nav svg {
-        width: 20px;
-        height: 20px;
-    }
-
-    .timevol {
-        gap: 12px;
-    }
-
-    .volume {
-        gap: 6px;
-    }
-
-    .volume img {
-        width: 16px;
-        height: 16px;
-    }
-
-    .range input {
-        width: 60px;
-    }
-}
-
-@media (max-width: 400px) {
-    .cardContainer {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .header>* {
-        padding: 0;
-    }
-
-    .hamburgerContainer {
-        gap: 8px;
-    }
-
-    .playbar {
-        padding: 10px;
-    }
-
-    .songinfo {
-        font-size: 11px;
-    }
-
-    .songtime {
-        font-size: 10px;
-    }
-}
+/* Obsolete media queries removed to prevent conflicting overrides on smaller viewports */
 
 /* SEARCH RESULT IMPROVEMENTS
    ========================================== */
@@ -824,23 +684,80 @@
 
 @media (max-width: 768px) {
     .header {
-        padding: 12px 16px;
-        flex-wrap: wrap;
-        gap: 10px;
+        position: relative !important;
+        padding: 56px 12px 12px 12px !important; /* Top padding leaves space for absolute top row */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0 !important;
+        background: rgba(0, 0, 0, 0.95) !important;
     }
 
-    .header-left,
-    .header-search,
-    .header-right {
-        width: 100%;
+    #explorePremiumBtn,
+    #installAppBtn {
+        display: none !important; /* Hide bulky desktop buttons */
+    }
+
+    .topbar-left {
+        width: 100% !important;
+        display: block !important;
+    }
+
+    .hamburger {
+        position: absolute !important;
+        left: 12px !important;
+        top: 8px !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    #homeBtn {
+        position: absolute !important;
+        left: 60px !important;
+        top: 8px !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 40px !important;
+        height: 40px !important;
     }
 
     .header-right {
-        justify-content: flex-start;
-        flex-wrap: wrap;
+        position: absolute !important;
+        right: 12px !important;
+        top: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        width: auto !important;
+    }
+
+    .profileIcon, 
+    #notificationsBtn {
+        width: 40px !important;
+        height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .header-search {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-top: 4px !important;
+    }
+
+    .searchInput {
+        height: 40px !important;
     }
 
     .searchContainer {
-        margin: 12px 16px 0;
+        width: 100% !important;
+        margin: 0 !important;
+        left: 0 !important;
     }
 }

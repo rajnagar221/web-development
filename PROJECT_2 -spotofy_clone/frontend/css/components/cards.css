@@ -644,10 +644,39 @@
 }
 
 @media (max-width: 768px) {
+    .main-grid.sidebar-active {
+        grid-template-columns: 1fr !important;
+    }
+
+    .main-left {
+        padding-bottom: 120px !important;
+    }
+
+    .rightSidebar {
+        position: fixed !important;
+        right: -360px !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 300px !important;
+        max-width: 85vw !important;
+        height: 100vh !important;
+        z-index: 1002 !important; /* Keep above main view & playbar */
+        background: #121212 !important;
+        border-radius: 0 !important;
+        padding: 20px !important;
+        padding-bottom: 120px !important; /* Space for mobile playbar controls */
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .main-grid.sidebar-active .rightSidebar {
+        right: 0 !important;
+    }
+
     .cardContainer {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
         gap: 10px;
-        margin-bottom: 120px;
+        margin-bottom: 24px;
     }
 
     .musifyPlaylists {
@@ -661,14 +690,6 @@
 
     .section-header {
         grid-column: 1 / -1;
-    }
-
-    .rightSidebar {
-        order: 2;
-    }
-
-    .cardContainer {
-        margin-bottom: 24px;
     }
 }
 

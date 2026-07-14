@@ -1,30 +1,27 @@
 <svg viewBox="0 0 340 240" xmlns="http://www.w3.org/2000/svg" width="340" height="240">
   <defs>
-    <!-- Main cyan→blue→purple gradient -->
+    <!-- Main green gradient -->
     <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00e5ff"/>
-      <stop offset="35%" stop-color="#4facfe"/>
-      <stop offset="65%" stop-color="#3b6fd4"/>
-      <stop offset="100%" stop-color="#7c3aed"/>
+      <stop offset="0%" stop-color="#1ed760"/>
+      <stop offset="50%" stop-color="#1db954"/>
+      <stop offset="100%" stop-color="#00f5a0"/>
     </linearGradient>
-    <!-- Waves gradient (slightly transparent) -->
+    <!-- Waves gradient (slightly transparent green) -->
     <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="70%">
-      <stop offset="0%" stop-color="#00d4e8" stop-opacity="0.88"/>
-      <stop offset="50%" stop-color="#4f8ff0" stop-opacity="0.80"/>
-      <stop offset="100%" stop-color="#6a35cc" stop-opacity="0.75"/>
+      <stop offset="0%" stop-color="#1db954" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#1ed760" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#00f5a0" stop-opacity="0.65"/>
     </linearGradient>
-    <!-- Purple note -->
+    <!-- Green note -->
     <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#a855f7"/>
-      <stop offset="100%" stop-color="#6d28d9"/>
+      <stop offset="0%" stop-color="#1ed760"/>
+      <stop offset="100%" stop-color="#1db954"/>
     </linearGradient>
     <!-- Drop shadow -->
     <filter id="sh">
-      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#3b82f6" flood-opacity="0.30"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#1db954" flood-opacity="0.35"/>
     </filter>
   </defs>
-
-  <!-- Transparent background -->
 
   <g filter="url(#sh)">
     <!-- WAVE 1 (bottom / widest / most transparent) -->
@@ -88,7 +85,7 @@
              L 44 186 Z"
           fill="url(#g1)"/>
 
-    <!-- Music Note: head (ellipse, purple) -->
+    <!-- Music Note: head (ellipse) -->
     <ellipse cx="344" cy="168" rx="24" ry="19"
              fill="url(#g3)"
              transform="rotate(-14, 344, 168)"/>

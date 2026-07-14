@@ -1,7 +1,6 @@
 import { FOLDERS } from './modules/config.js';
 import { state } from './modules/state.js';
 import { loadLikedSongs } from './modules/storage.js';
-import { fetchExternalMusic } from './modules/api.js';
 import {
   loadFolderSongs,
   setupPlayerEvents,
@@ -49,7 +48,9 @@ async function init() {
   await setupSearch();
   await displayAlbums();
   renderRecentlyPlayedUI();
-  await loadFolderSongs(FOLDERS[0]);
+  if (state.allAlbums && state.allAlbums.length > 0) {
+    await loadFolderSongs(state.allAlbums[0].folder);
+  }
 
   // Set initial volume
   const vol = document.getElementById("volumeRange");
@@ -71,9 +72,6 @@ async function init() {
 
   updateVolumeIcon(state.currentSong.volume);
   updateIndexAuthButtons();
-
-  // Load external music in background
-  fetchExternalMusic();
 }
 
 // Start application
@@ -86,3 +84,12 @@ window.addEventListener("scroll", () => {
   if (window.scrollY > 40) header.classList.add("scrolled");
   else header.classList.remove("scrolled");
 });
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => console.log('Service Worker registered successfully:', reg.scope))
+      .catch((err) => console.warn('Service Worker registration failed:', err));
+  });
+}

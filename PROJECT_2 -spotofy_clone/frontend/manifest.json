@@ -1,0 +1,32 @@
+{
+  "short_name": "Musify",
+  "name": "Musify - Web Player: Music for Everyone",
+  "description": "Stream high quality music, discover playlists, and enjoy personalized sound with Musify.",
+  "icons": [
+    {
+      "src": "img/musify-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "img/logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#081018",
+  "theme_color": "#1DB954",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "categories": [
+    "music",
+    "entertainment"
+  ]
+}

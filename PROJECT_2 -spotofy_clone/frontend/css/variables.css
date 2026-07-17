@@ -3,17 +3,23 @@
 /* ============== Root Variables ============== */
 :root {
     --primary-color: #1DB954;
-    --secondary-color: #071016;
-    --tertiary-color: #11181f;
+    --secondary-color: #0c151c;
+    --tertiary-color: #141f28;
     --accent-color: #1ed760;
     --text-primary: #FFFFFF;
     --text-secondary: #B8C2D1;
     --text-tertiary: #94A3B8;
-    --bg-primary: #081018;
-    --bg-secondary: #101820;
-    --bg-tertiary: #16212b;
+    --bg-primary: #050a0f;
+    --bg-secondary: #0a1118;
+    --bg-tertiary: #131c25;
     --border-color: rgba(255, 255, 255, 0.08);
     --hover-color: #1ed760;
     --play-opacity: 0;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Premium Additions */
+    --glass-bg: rgba(20, 31, 40, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --gradient-primary: linear-gradient(135deg, #1DB954 0%, #178f41 100%);
 }

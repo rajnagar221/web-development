@@ -372,7 +372,7 @@ export async function displayAlbums() {
   cardContainer.innerHTML = "";
 
   try {
-    const albums = await fetchAlbums("arijit singh");
+    const albums = await fetchAlbums();
     state.allAlbums = albums;
 
     for (const album of albums) {
@@ -428,7 +428,7 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     </div>
 
     <div class="album-detail-header">
-      <img src="${coverUrl}" alt="${albumTitle}" class="album-detail-cover" onerror="this.src='songs/ncs/cover.jpg';" />
+      <img src="${coverUrl}" alt="${albumTitle}" class="album-detail-cover" onerror="this.src='img/music.svg';" />
       <div class="album-detail-info">
         <span class="eyebrow-text">PLAYLIST</span>
         <h1 class="album-detail-title">${albumTitle}</h1>
@@ -973,11 +973,11 @@ export function getRecentlyPlayed() {
     console.warn("Failed to load recently played:", err);
   }
   return [
-    { track: "01 - NCS Track", folder: "ncs", title: "NCS Mix", artist: "Alan Walker, Cartoon, Deaf Kev", coverUrl: "songs/ncs/cover.jpg" },
-    { track: "01 - Chill Vibes", folder: "vibes songs", title: "Chill Vibes", artist: "Lo-Fi, Punjabi Aesthetic", coverUrl: "songs/vibes songs/ab67706f000000023da05797a7c490186a98e713.jpg" },
-    { track: "01 - AP Dhillon", folder: "Ap dillhon", title: "AP Dhillon Hits", artist: "Ap Dhillon, Gurinder Gill", coverUrl: "songs/Ap dillhon/ab67706f00000002558eebc8a959a3e4f5acadc4.jpg" },
-    { track: "01 - Karan Aujla", folder: "karan aujla", title: "Karan Aujla Specials", artist: "Karan Aujla, Ikky", coverUrl: "songs/karan aujla/cover.jpg" },
-    { track: "01 - Honey Singh", folder: "honey singh", title: "Yo Yo Honey Singh", artist: "Yo Yo Honey Singh", coverUrl: "songs/honey singh/ab67616100005174bc7e4fffd515b47ff1ebbc1f.jpg" }
+    { track: "01 - NCS Track", folder: "ncs", title: "NCS Mix", artist: "Alan Walker, Cartoon, Deaf Kev", coverUrl: "img/music.svg" },
+    { track: "01 - Chill Vibes", folder: "vibes songs", title: "Chill Vibes", artist: "Lo-Fi, Punjabi Aesthetic", coverUrl: "img/music.svg" },
+    { track: "01 - AP Dhillon", folder: "Ap dillhon", title: "AP Dhillon Hits", artist: "Ap Dhillon, Gurinder Gill", coverUrl: "img/music.svg" },
+    { track: "01 - Karan Aujla", folder: "karan aujla", title: "Karan Aujla Specials", artist: "Karan Aujla, Ikky", coverUrl: "img/music.svg" },
+    { track: "01 - Honey Singh", folder: "honey singh", title: "Yo Yo Honey Singh", artist: "Yo Yo Honey Singh", coverUrl: "img/music.svg" }
   ];
 }
 
@@ -986,7 +986,7 @@ export function addRecentlyPlayed(track, folder) {
   const list = getRecentlyPlayed();
 
   let resolvedArtist = folder;
-  let coverPath = `songs/${folder}/cover.jpg`;
+  let coverPath = `img/music.svg`;
 
   if (state.allAlbums) {
     const album = state.allAlbums.find((a) => a.folder.toLowerCase() === folder.toLowerCase());
@@ -1030,7 +1030,7 @@ export function renderRecentlyPlayedUI(items = getRecentlyPlayed()) {
     return cardItems.map((item) => `
       <div class="card" data-folder="${item.folder}" data-track="${item.track}">
         <div class="card-image-wrapper">
-          <img src="${item.coverUrl}" alt="${item.title}" onerror="this.src='songs/ncs/cover.jpg';" />
+          <img src="${item.coverUrl}" alt="${item.title}" onerror="this.src='img/music.svg';" />
           <div class="play" onclick="event.stopPropagation();">▶</div>
           <span class="spotify-overlay-logo">
             <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">

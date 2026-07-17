@@ -462,23 +462,27 @@
 
 /* ============== Card Styles ============== */
 .card {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--glass-bg);
     border-radius: 28px;
     overflow: hidden;
     cursor: pointer;
     transition: var(--transition);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
     display: flex;
     flex-direction: column;
     position: relative;
     min-height: 0;
     aspect-ratio: 1 / 1;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--glass-shadow);
 }
 
 .card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 24px 72px rgba(0, 0, 0, 0.36);
+    box-shadow: 0 24px 72px rgba(0, 0, 0, 0.45);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .card img {

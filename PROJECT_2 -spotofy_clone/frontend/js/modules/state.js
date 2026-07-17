@@ -1,5 +1,6 @@
 export const state = {
   currentSong: new Audio(),
+  wavesurfer: null,
   songs: [],
   displaySongs: [],
   currFolder: "",

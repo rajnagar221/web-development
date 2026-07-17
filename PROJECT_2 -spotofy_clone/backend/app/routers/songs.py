@@ -23,14 +23,32 @@ def add_song(song: SongModel, token=Depends(verify_token)):
     result = songs_collection.insert_one(song_data)
     return {"message": "Song added successfully", "song_id": str(result.inserted_id)}
 
+from typing import Optional
+
 @router.get("/api/songs")
-def get_all_songs(token=Depends(verify_token)):
-    """Gets all songs"""
+def get_all_songs(
+    title: Optional[str] = None,
+    artist: Optional[str] = None,
+    album: Optional[str] = None,
+    folder: Optional[str] = None,
+    token=Depends(verify_token)
+):
+    """Gets all songs with optional filtering"""
     if token["error"]:
         raise HTTPException(status_code=401, detail=token["error"])
-    songs = list(songs_collection.find({}, {"_id": 0}))
-    return {"songs": songs,
-        "massage" : "hello"}
+        
+    query = {}
+    if title:
+        query["title"] = {"$regex": f".*{re.escape(title)}.*", "$options": "i"}
+    if artist:
+        query["artist"] = {"$regex": f".*{re.escape(artist)}.*", "$options": "i"}
+    if album:
+        query["album"] = {"$regex": f".*{re.escape(album)}.*", "$options": "i"}
+    if folder:
+        query["folder"] = {"$regex": f".*{re.escape(folder)}.*", "$options": "i"}
+        
+    songs = list(songs_collection.find(query, {"_id": 0}))
+    return {"songs": songs}
     
 
 @router.get("/api/songs/id/{song_id}")

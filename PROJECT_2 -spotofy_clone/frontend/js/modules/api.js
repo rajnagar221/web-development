@@ -38,27 +38,48 @@ export async function fetchDeezerArtistAlbums(artistId) {
   }
 }
 
-// Map Deezer album format to UI compatible format
-export async function fetchAlbums(searchTerm = "arijit") {
-  const albumsData = await fetchDeezerSearch(searchTerm, 'album');
-  return albumsData.map(album => ({
-    folder: album.id.toString(), // We use Deezer album ID as the folder
-    title: album.title,
-    description: album.artist ? album.artist.name : "Unknown Artist",
-    cover_image: album.cover_medium || album.cover || "img/music.svg"
-  }));
+export async function fetchAlbums(searchTerm = "") {
+  try {
+    let url = `${API_BASE_URL}/api/albums`;
+    if (searchTerm) {
+      url += `?name=${encodeURIComponent(searchTerm)}`;
+    }
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error("Failed to fetch local albums");
+    const data = await response.json();
+    return (data.albums || []).map(album => ({
+      folder: album.folder,
+      title: album.title,
+      description: album.description || "Unknown",
+      cover_image: album.cover_image || "img/music.svg"
+    }));
+  } catch (err) {
+    console.error("Local albums fetch error:", err);
+    return [];
+  }
 }
 
-// Map Deezer album tracks to UI compatible format
-export async function fetchSongs(albumId) {
-  const albumData = await fetchDeezerAlbum(albumId);
-  if (!albumData || !albumData.tracks || !albumData.tracks.data) return [];
-  
-  return albumData.tracks.data.map(track => ({
-    id: track.id.toString(),
-    title: track.title,
-    artist: track.artist ? track.artist.name : "Unknown Artist",
-    cover_image: albumData.cover_medium || albumData.cover || "img/music.svg",
-    url: track.preview // Deezer provides 30s previews
-  }));
+export async function fetchSongs(folder) {
+  try {
+    const url = `${API_BASE_URL}/api/songs?folder=${encodeURIComponent(folder)}`;
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error("Failed to fetch local songs");
+    const data = await response.json();
+    
+    return (data.songs || []).map(song => ({
+      id: song._id || song.title,
+      title: song.title,
+      artist: song.artist || "Unknown Artist",
+      cover_image: song.cover_image || "img/music.svg",
+      url: song.file_path, // local URL path to the song
+      folder: song.folder
+    }));
+  } catch (err) {
+    console.error("Local songs fetch error:", err);
+    return [];
+  }
 }

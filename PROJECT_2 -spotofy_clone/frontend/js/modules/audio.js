@@ -100,11 +100,18 @@ export function playMusic(track, folder = state.currFolder) {
     // fallback if missing
     state.currentSong.src = buildSongUrl(folder, track);
   }
+  
+  if (state.wavesurfer) {
+    state.wavesurfer.load(state.currentSong.src);
+  } else {
+    state.currentSong.load();
+  }
+
   state.currentSong.volume = (() => {
     const vol = document.getElementById("volumeRange");
     return vol ? Number(vol.value) / 100 : 0.8;
   })();
-  state.currentSong.load();
+
   const playPromise = state.currentSong.play();
   if (playPromise !== undefined) {
     playPromise
@@ -149,6 +156,20 @@ export function playNextSong() {
 
 // ==================== PLAYER EVENTS ====================
 export function setupPlayerEvents() {
+  if (window.WaveSurfer) {
+    state.wavesurfer = window.WaveSurfer.create({
+      container: '#waveform',
+      waveColor: 'rgba(255, 255, 255, 0.4)',
+      progressColor: '#1db954',
+      cursorColor: '#1ed760',
+      media: state.currentSong,
+      height: 30,
+      barWidth: 2,
+      barRadius: 2,
+      barGap: 1
+    });
+  }
+
   state.currentSong.addEventListener("timeupdate", updateTimeDisplay);
 
   state.currentSong.addEventListener("play", () => {
@@ -247,36 +268,9 @@ export function setupControlButtons() {
     });
   }
 
-  // ---- Seekbar click ----
+  // Seekbar drag (WaveSurfer handles seeking natively)
   if (seekbar) {
-    seekbar.addEventListener("click", (event) => {
-      if (isNaN(state.currentSong.duration) || !state.currentSong.duration) return;
-      const rect = seekbar.getBoundingClientRect();
-      const percent = (event.clientX - rect.left) / seekbar.clientWidth;
-      state.currentSong.currentTime = state.currentSong.duration * Math.max(0, Math.min(1, percent));
-      updateTimeDisplay();
-    });
-
-    // Seekbar drag
-    const circle = getElement(".circle");
-    if (circle) {
-      let dragging = false;
-      circle.addEventListener("pointerdown", (e) => {
-        dragging = true;
-        e.target.setPointerCapture(e.pointerId);
-      });
-      window.addEventListener("pointerup", () => { dragging = false; });
-      window.addEventListener("pointermove", (e) => {
-        if (!dragging) return;
-        const rect = seekbar.getBoundingClientRect();
-        let pct = (e.clientX - rect.left) / rect.width;
-        pct = Math.max(0, Math.min(1, pct));
-        if (!isNaN(state.currentSong.duration) && state.currentSong.duration) {
-          state.currentSong.currentTime = state.currentSong.duration * pct;
-          updateTimeDisplay();
-        }
-      });
-    }
+    seekbar.style.display = 'none'; // Hide old seekbar just in case it wasn't removed properly
   }
 
   // ---- Volume ----

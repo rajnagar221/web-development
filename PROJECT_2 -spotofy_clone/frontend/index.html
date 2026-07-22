@@ -39,8 +39,7 @@
         <div class="library-filter-pills">
           <button id="likedSongsBtn" class="libraryBtn liked">❤ Liked Songs</button>
           <button id="allSongsBtn" class="libraryBtn">All Songs</button>
-          <button class="libraryBtn">Daily Mix</button>
-          <button class="libraryBtn">Favorites</button>
+          <button id="dailyMixBtn" class="libraryBtn">Shubh Hits</button>
         </div>
 
         <div class="heading">
@@ -125,152 +124,96 @@
             <div class="hero-panel">
               <div class="section-header">
                 <div class="section-title-wrapper">
-                  <p class="eyebrow-text">Made For</p>
-                  <h2 id="heroUsername">Rajnagar</h2>
-                </div>
-              </div>
-
-              <div class="row-wrapper">
-                <div id="topCardsSection" class="horizontal-row hero-card-row">
-                  <div class="card" data-folder="karan aujla">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 01" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 01</h2>
-                    <p>Yashraj, Karan Aujla, Cheema Y and more</p>
-                  </div>
-
-                  <div class="card" data-folder="ncs">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 02" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 02</h2>
-                    <p>NoCopyrightSounds - Alan Walker, Cartoon, Deaf Kev</p>
-                  </div>
-
-                  <div class="card" data-folder="daily mix">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 03" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 03</h2>
-                    <p>Karan Aujla, Diljit Dosanjh, Shubh, Talwinder</p>
-                  </div>
-
-                  <div class="card" data-folder="Diljit">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 04" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 04</h2>
-                    <p>Diljit Dosanjh, Intense, Jatinder Shah and more</p>
-                  </div>
-
-                  <div class="card" data-folder="honey singh">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 05" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 05</h2>
-                    <p>Yo Yo Honey Singh, Alfaaz, Mafia Mundeer classics</p>
-                  </div>
-
-                  <div class="card" data-folder="talwinder">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 06" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 06</h2>
-                    <p>Talwinder, NDS, Sanjoy - deep vibes & melodies</p>
-                  </div>
-
-                  <div class="card" data-folder="vibes songs">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 07" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 07</h2>
-                    <p>Late night drives, lo-fi beats, and aesthetic tunes</p>
-                  </div>
-
-                  <div class="card" data-folder="Ap dillhon">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 08" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 08</h2>
-                    <p>AP Dhillon, Gurinder Gill, Shinda Kahlon hits</p>
-                  </div>
-
-                  <div class="card" data-folder="instagram trending">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 09" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 09</h2>
-                    <p>Trending Reels tracks, viral Punjabi hits and pop</p>
-                  </div>
-
-                  <div class="card" data-folder="karan aujla">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix 10" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Daily Mix 10</h2>
-                    <p>Karan Aujla, Tru-Skool, Deep Jandu and more</p>
-                  </div>
-                </div>
-              </div>
-
-
-              <div class="section-header" style="margin-top: 14px;">
-                <div class="section-title-wrapper">
-                  <p class="eyebrow-text">Based on your recent listening</p>
-                  <h2>Recents</h2>
+                  <h2>Recent</h2>
                 </div>
               </div>
 
               <div class="row-wrapper">
                 <div class="cardContainer" id="recentsCardContainer">
-                  <div class="card" data-folder="ncs">
+                  <div class="card" data-folder="karan aujla">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Rajnagar" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg" alt="Karan Aujla" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
-                    <h2>NCS Mix</h2>
+                    <h2>Karan Aujla Hits</h2>
+                    <p>Karan Aujla, Ikky & Deep Jandu</p>
+                  </div>
+
+                  <div class="card" data-folder="ncs">
+                    <div class="card-image-wrapper">
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg" alt="NCS Mix" onerror="this.src='img/music.svg';" />
+                      <div class="play" onclick="event.stopPropagation();">▶</div>
+                    </div>
+                    <h2>Electronic NCS Mix</h2>
                     <p>Alan Walker, Cartoon, Deaf Kev</p>
                   </div>
 
                   <div class="card" data-folder="daily mix">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Rajnagar" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/48/4f/3c/484f3c19-fdab-1fa8-fdb4-c7de79852d12/197189603969.jpg/500x500bb.jpg" alt="Shubh Essentials" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
-                    <h2>Daily Mix 03</h2>
-                    <p>Diljit, Karan Aujla, Shubh, Talwinder</p>
+                    <h2>Shubh Essentials</h2>
+                    <p>Shubh, Arjan Dhillon & Top Punjabi Hits</p>
                   </div>
 
                   <div class="card" data-folder="Diljit">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Rajnagar" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" alt="Diljit Dosanjh" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
-                    <h2>Diljit Dosanjh Mix</h2>
-                    <p>Diljit Dosanjh, Jatinder Shah, Intense</p>
+                    <h2>Diljit Dosanjh Essentials</h2>
+                    <p>Diljit Dosanjh, Intense, Jatinder Shah</p>
                   </div>
 
                   <div class="card" data-folder="honey singh">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Rajnagar" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" alt="Honey Singh" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Yo Yo Honey Singh</h2>
                     <p>Honey Singh, Alfaaz, Mafia Mundeer</p>
                   </div>
+
+                  <div class="card" data-folder="talwinder">
+                    <div class="card-image-wrapper">
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg" alt="Talwinder" onerror="this.src='img/music.svg';" />
+                      <div class="play" onclick="event.stopPropagation();">▶</div>
+                    </div>
+                    <h2>Talwinder Melodies</h2>
+                    <p>Talwinder, NDS, Sanjoy - deep vibes</p>
+                  </div>
+
+                  <div class="card" data-folder="vibes songs">
+                    <div class="card-image-wrapper">
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/3f/d2/f9/3fd2f999-c2c2-4fe6-ecc3-1d30f38904bd/859777326048_cover.jpg/500x500bb.jpg" alt="Lo-Fi Vibes" onerror="this.src='img/music.svg';" />
+                      <div class="play" onclick="event.stopPropagation();">▶</div>
+                    </div>
+                    <h2>Chill Punjabi Lo-Fi</h2>
+                    <p>Late night drives & aesthetic tunes</p>
+                  </div>
+
+                  <div class="card" data-folder="Ap dillhon">
+                    <div class="card-image-wrapper">
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg" alt="AP Dhillon" onerror="this.src='img/music.svg';" />
+                      <div class="play" onclick="event.stopPropagation();">▶</div>
+                    </div>
+                    <h2>AP Dhillon & Gurinder Gill</h2>
+                    <p>AP Dhillon, Gurinder Gill, Shinda Kahlon</p>
+                  </div>
+
+                  <div class="card" data-folder="instagram trending">
+                    <div class="card-image-wrapper">
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg" alt="Reels Trending" onerror="this.src='img/music.svg';" />
+                      <div class="play" onclick="event.stopPropagation();">▶</div>
+                    </div>
+                    <h2>Reels Viral Hits</h2>
+                    <p>Trending Reels tracks, viral Punjabi hits</p>
+                  </div>
                 </div>
               </div>
+
+
 
               <!-- ROW 3: Popular Albums -->
               <div class="section-header" style="margin-top: 14px;">
@@ -280,61 +223,11 @@
                 <a href="#" class="show-all-link">Show all</a>
               </div>
               <div class="row-wrapper">
-                <div class="cardContainer horizontal-row">
+                <div class="cardContainer horizontal-row" id="popularAlbumsContainer">
                   <!-- Albums injected here by displayAlbums() -->
                 </div>
-              </div>   
+              </div>
 
-              <!-- ROW 4: Recently Played -->
-              <div class="section-header" style="margin-top: 14px;">
-                <div class="section-title-wrapper">
-                  <h2>Recently Played</h2>
-                </div>
-              </div>
-              <div class="row-wrapper">
-                <div class="horizontal-row" id="recentlyPlayedCardContainer">
-                  <div class="card" data-folder="vibes songs">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Vibes" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Chill Vibes</h2>
-                    <p>Lo-Fi, Punjabi Aesthetic, Late Night</p>
-                  </div>
-                  <div class="card" data-folder="Ap dillhon">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="AP Dhillon" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>AP Dhillon Hits</h2>
-                    <p>Ap Dhillon, Gurinder Gill, Shinda Kahlon</p>
-                  </div>
-                  <div class="card" data-folder="instagram trending">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Trending" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Reels Trending</h2>
-                    <p>Viral reels soundtracks, trending pop</p>
-                  </div>
-                  <div class="card" data-folder="ncs">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="NCS" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Electronic Mix</h2>
-                    <p>High-energy gaming tracks</p>
-                  </div>
-                  <div class="card" data-folder="daily mix">
-                    <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix" />
-                      <div class="play" onclick="event.stopPropagation();">▶</div>
-                    </div>
-                    <h2>Chill Punjabi</h2>
-                    <p>Punjabi aesthetic playlists</p>
-                  </div>
-                </div>
-              </div>
 
               <!-- ROW 5: Trending Now -->
               <div class="section-header" style="margin-top: 14px;">
@@ -346,7 +239,7 @@
                 <div class="horizontal-row">
                   <div class="card" data-folder="karan aujla">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Karan Aujla" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg" alt="Karan Aujla" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Softly Hits</h2>
@@ -354,7 +247,7 @@
                   </div>
                   <div class="card" data-folder="honey singh">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Honey Singh" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" alt="Honey Singh" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Desi Kalakaar</h2>
@@ -362,7 +255,7 @@
                   </div>
                   <div class="card" data-folder="Diljit">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Diljit" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" alt="Diljit" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Lover Radio</h2>
@@ -370,7 +263,7 @@
                   </div>
                   <div class="card" data-folder="vibes songs">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Vibes" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/3f/d2/f9/3fd2f999-c2c2-4fe6-ecc3-1d30f38904bd/859777326048_cover.jpg/500x500bb.jpg" alt="Vibes" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Aesthetic Lo-Fi</h2>
@@ -378,7 +271,7 @@
                   </div>
                   <div class="card" data-folder="ncs">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="NCS" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg" alt="NCS" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>EDM Gaming</h2>
@@ -397,7 +290,7 @@
                 <div class="horizontal-row">
                   <div class="card" data-folder="talwinder">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Talwinder" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg" alt="Talwinder" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Talwinder Radio</h2>
@@ -405,7 +298,7 @@
                   </div>
                   <div class="card" data-folder="Ap dillhon">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="AP Dhillon" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg" alt="AP Dhillon" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>AP Dhillon Radio</h2>
@@ -413,7 +306,7 @@
                   </div>
                   <div class="card" data-folder="instagram trending">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Trending" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg" alt="Trending" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Reels Viral Radio</h2>
@@ -421,15 +314,15 @@
                   </div>
                   <div class="card" data-folder="daily mix">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/48/4f/3c/484f3c19-fdab-1fa8-fdb4-c7de79852d12/197189603969.jpg/500x500bb.jpg" alt="Shubh Radio" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
-                    <h2>Acoustic Mix Radio</h2>
-                    <p>Pure vocals and soft beats</p>
+                    <h2>Shubh & Top Hits Radio</h2>
+                    <p>Top class Punjabi rap, trap and melody</p>
                   </div>
                   <div class="card" data-folder="Diljit">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Diljit" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" alt="Diljit" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Diljit Dosanjh Radio</h2>
@@ -448,7 +341,7 @@
                 <div class="horizontal-row">
                   <div class="card" data-folder="ncs">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="NCS Podcast" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg" alt="NCS Podcast" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Gaming & Beats Podcast</h2>
@@ -456,7 +349,7 @@
                   </div>
                   <div class="card" data-folder="vibes songs">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Vibes Podcast" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/3f/d2/f9/3fd2f999-c2c2-4fe6-ecc3-1d30f38904bd/859777326048_cover.jpg/500x500bb.jpg" alt="Vibes Podcast" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Aesthetic Talk Podcast</h2>
@@ -464,11 +357,11 @@
                   </div>
                   <div class="card" data-folder="daily mix">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Daily Mix Podcast" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/48/4f/3c/484f3c19-fdab-1fa8-fdb4-c7de79852d12/197189603969.jpg/500x500bb.jpg" alt="Shubh Podcast" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
-                    <h2>Weekly Mix Podcast</h2>
-                    <p>New music recommendations, artists & shows</p>
+                    <h2>Shubh & Punjabi Artists Talk</h2>
+                    <p>Exclusive stories & breakdown of hit tracks</p>
                   </div>
                 </div>
               </div>
@@ -483,7 +376,7 @@
                 <div class="horizontal-row">
                   <div class="card" data-folder="karan aujla">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Artist 1" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg" alt="Artist 1" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Karan Aujla</h2>
@@ -491,7 +384,7 @@
                   </div>
                   <div class="card" data-folder="Diljit">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Artist 2" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" alt="Artist 2" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Diljit Dosanjh</h2>
@@ -499,7 +392,7 @@
                   </div>
                   <div class="card" data-folder="honey singh">
                     <div class="card-image-wrapper">
-                      <img src="img/music.svg" alt="Artist 3" />
+                      <img src="https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" alt="Artist 3" onerror="this.src='img/music.svg';" />
                       <div class="play" onclick="event.stopPropagation();">▶</div>
                     </div>
                     <h2>Yo Yo Honey Singh</h2>
@@ -912,7 +805,7 @@
               <div class="header-right-actions">
                 <button class="close-right iconBtn" aria-label="Close panel">✕</button>
                 <button class="iconBtn" title="Options">•••</button>
-                <button class="iconBtn" title="Fullscreen">⤢</button>
+                <button class="iconBtn" id="fullscreenNowPlayingBtn" title="Fullscreen">⤢</button>
               </div>
             </div>
 
@@ -1135,8 +1028,7 @@
 
   <div class="playbar" aria-label="Player controls">
     <div class="playbar-left">
-      <img id="playbarArt" class="playbar-art" src="img/music.svg" alt="art"
-        onerror="this.src='img/music.svg';" />
+      <img id="playbarArt" class="playbar-art" src="img/music.svg" alt="art" onerror="this.src='img/music.svg';" />
       <div class="songmeta">
         <div class="songinfo">No track playing</div>
         <div class="songartist">—</div>

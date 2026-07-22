@@ -9,6 +9,7 @@ import {
 } from './modules/audio.js';
 import {
   displayAlbums,
+  attachAlbumEvents,
   updateVolumeIcon,
   setupPremiumPopup,
   setupNotifications,
@@ -17,7 +18,6 @@ import {
   setupSidebarToggle,
   setupLikedSongsButtons,
   setupHomeButton,
-  renderRecentlyPlayedUI,
   setupInstallAppModal,
   setupAccountOverviewPage,
   setupSettingsPage
@@ -47,7 +47,7 @@ async function init() {
   
   await setupSearch();
   await displayAlbums();
-  renderRecentlyPlayedUI();
+  attachAlbumEvents();
   if (state.allAlbums && state.allAlbums.length > 0) {
     await loadFolderSongs(state.allAlbums[0].folder);
   }

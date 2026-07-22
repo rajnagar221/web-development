@@ -10,8 +10,7 @@ import {
   renderSongList,
   updateVolumeIcon,
   showToast,
-  toggleLikeTrack,
-  addRecentlyPlayed
+  toggleLikeTrack
 } from './ui.js';
 import { getElement } from './utils.js';
 
@@ -85,9 +84,6 @@ export function playMusic(track, folder = state.currFolder) {
   state.currentTrack = track;
   state.currentFolder = folder;
   state.currFolder = folder;
-
-  // Add to recent songs live
-  addRecentlyPlayed(track, folder);
 
   // Immediately update UI before load completes
   updateSongInfo(track, true);

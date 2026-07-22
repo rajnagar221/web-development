@@ -13,3 +13,25 @@
 @import url('components/popups.css');
 @import url('components/loader.css');
 
+
+/* Fullscreen mode for Now Playing Card */
+.now-playing-card.fullscreen-mode {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 10000 !important;
+  background: #121212 !important;
+  padding: 40px !important;
+  box-sizing: border-box;
+}
+.now-playing-card.fullscreen-mode .now-playing-art-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.now-playing-card.fullscreen-mode .now-playing-art {
+  height: auto;
+  max-height: 50vh;
+  object-fit: contain;
+}

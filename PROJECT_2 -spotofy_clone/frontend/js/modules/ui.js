@@ -111,7 +111,7 @@ export function updateCredits(folder, artist) {
 const ARTIST_BIOS = {
   "ncs": "NoCopyrightSounds is a British music label and organization. Founded in 2011, it showcases royalty-free electronic music from artists globally.",
   "karan aujla": "Karan Aujla is a globally acclaimed Punjabi singer, rapper, and songwriter. Known for his chart-topping hits like 'Softly' and 'Making Memories'.",
-  "daily mix": "A customized daily mix of your favorite tracks, tailored recommendations, and trending new releases.",
+  "daily mix": "Shubh is a top-class Indo-Canadian Punjabi rapper and singer known worldwide for blockbuster hits like 'Cheques', 'Baller', 'Still Rollin', and 'No Love'.",
   "diljit": "Diljit Dosanjh is a legendary Indian singer, actor, and television presenter. He is one of the leading figures in modern Punjabi music and Bollywood.",
   "honey singh": "Yo Yo Honey Singh is an iconic Indian rapper, music producer, and actor. He revolutionized the Punjabi pop and Bollywood rap scene.",
   "instagram trending": "A curated compilation of viral hits, trending soundbites, and the most popular background scores from social media reels.",
@@ -183,7 +183,7 @@ export function updateSongInfo(track, autoOpenSidebar = false) {
   if (nowTitle) nowTitle.textContent = title;
   if (nowArtist) nowArtist.textContent = resolvedArtist;
   if (artistName) artistName.textContent = resolvedArtist;
-  
+
   if (sidebarHeaderTitle && state.allAlbums) {
     const album = state.allAlbums.find((a) => a.folder === state.currentFolder);
     sidebarHeaderTitle.textContent = album ? album.title : "Now Playing";
@@ -239,7 +239,7 @@ export function setupSidebarEvents() {
       const nowPlayingCard = getElement("#nowPlayingCard");
       if (nowPlayingCard) nowPlayingCard.style.display = "none";
       if (idlePromoCard) idlePromoCard.style.display = "flex";
-      
+
       const sidebar = getElement(".rightSidebar");
       if (sidebar) sidebar.style.display = "none";
       const mainGrid = getElement(".main-grid");
@@ -276,6 +276,15 @@ export function setupSidebarEvents() {
         sidebar.style.display = "none";
         mainGrid.classList.remove("sidebar-active");
       }
+    });
+  }
+
+  // Fullscreen button for Now Playing Card
+  const fullscreenBtn = getElement("#fullscreenNowPlayingBtn");
+  const nowPlayingCard = getElement("#nowPlayingCard");
+  if (fullscreenBtn && nowPlayingCard) {
+    fullscreenBtn.addEventListener("click", () => {
+      nowPlayingCard.classList.toggle("fullscreen-mode");
     });
   }
 }
@@ -367,7 +376,7 @@ export function renderSongList() {
 
 // ==================== ALBUMS ====================
 export async function displayAlbums() {
-  const cardContainer = getElement(".cardContainer");
+  const cardContainer = getElement("#popularAlbumsContainer");
   if (!cardContainer) return;
   cardContainer.innerHTML = "";
 
@@ -416,7 +425,32 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
   }
 
   if (songs.length === 0) {
-    albumDetailView.innerHTML = `<div style="padding: 40px; text-align: center; color: #b3b3b3;">No tracks found for this album.</div>`;
+    albumDetailView.innerHTML = `
+    <div class="back-btn-container" id="backToHomeBtn">
+      <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18" style="vertical-align: middle;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+      <span class="back-label">Back to Library</span>
+    </div>
+
+    <div class="album-detail-header">
+      <img src="${coverUrl}" alt="${albumTitle}" class="album-detail-cover" onerror="this.src='img/music.svg';" />
+      <div class="album-detail-info">
+        <span class="eyebrow-text">PLAYLIST</span>
+        <h1 class="album-detail-title">${albumTitle}</h1>
+        <p class="album-detail-description">${albumDescription}</p>
+        <div class="album-detail-meta">
+          <span class="logo-text-small" style="color: #1db954; font-weight: 700;">Musify</span> • 0 songs
+        </div>
+      </div>
+    </div>
+    <div style="padding: 40px; text-align: center; color: #b3b3b3;">No tracks found for this album.</div>`;
+
+    const backBtn = getElement("#backToHomeBtn");
+    if (backBtn) {
+      backBtn.addEventListener("click", () => {
+        albumDetailView.style.display = "none";
+        homeSections.style.display = "block";
+      });
+    }
     return;
   }
 
@@ -457,12 +491,12 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
         </thead>
         <tbody>
           ${songs.map((songItem, index) => {
-            const track = songItem.track;
-            const title = track.title;
-            const artist = track.artist;
-            const likedClass = isTrackLiked(songItem.folder, track.id) ? "liked" : "";
-            const isActive = state.currentTrack && track.id === state.currentTrack.id && songItem.folder === state.currentFolder ? "active" : "";
-            return `
+    const track = songItem.track;
+    const title = track.title;
+    const artist = track.artist;
+    const likedClass = isTrackLiked(songItem.folder, track.id) ? "liked" : "";
+    const isActive = state.currentTrack && track.id === state.currentTrack.id && songItem.folder === state.currentFolder ? "active" : "";
+    return `
             <tr class="track-row ${isActive}" data-index="${index}">
               <td class="col-num">
                 <span class="num">${index + 1}</span>
@@ -484,7 +518,7 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
               </td>
             </tr>
             `;
-          }).join("")}
+  }).join("")}
         </tbody>
       </table>
     </div>
@@ -508,11 +542,11 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
           playMusic(songs[0].track, folder);
         } else {
           if (!state.currentSong.src || state.currentSong.paused) {
-             playMusic(state.currentTrack || songs[0].track, folder);
+            playMusic(state.currentTrack || songs[0].track, folder);
           } else {
-             state.currentSong.pause();
-             updatePlayButton(false);
-             updateAlbumPlayIcons();
+            state.currentSong.pause();
+            updatePlayButton(false);
+            updateAlbumPlayIcons();
           }
         }
       }
@@ -548,19 +582,41 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
 
 export function attachAlbumEvents() {
   Array.from(document.querySelectorAll(".card")).forEach((card) => {
+    if (card.dataset.listenerBound) return;
+    card.dataset.listenerBound = "true";
+
     const playBtn = card.querySelector(".play");
     const folder = card.dataset.folder;
-    const albumTitle = card.querySelector("h2").textContent;
-    const albumDescription = card.querySelector("p").textContent;
-    const coverUrl = card.querySelector("img").src;
+    let albumTitle = card.querySelector("h2") ? card.querySelector("h2").textContent.trim() : "";
+    let albumDescription = card.querySelector("p") ? card.querySelector("p").textContent.trim() : "";
+    let coverUrl = card.querySelector("img") ? card.querySelector("img").src : "img/music.svg";
+
+    if (folder && state.allAlbums) {
+      const matchedAlbum = state.allAlbums.find(a => a.folder.toLowerCase() === folder.toLowerCase());
+      if (matchedAlbum) {
+        if (matchedAlbum.title) {
+          albumTitle = matchedAlbum.title;
+        }
+        if (matchedAlbum.description) {
+          albumDescription = matchedAlbum.description;
+        }
+        if (matchedAlbum.cover_image && matchedAlbum.cover_image !== "img/music.svg") {
+          const imgEl = card.querySelector("img");
+          if (imgEl && imgEl.src.includes("img/music.svg")) {
+            imgEl.src = matchedAlbum.cover_image;
+          }
+          coverUrl = matchedAlbum.cover_image;
+        }
+      }
+    }
 
     if (playBtn) {
       playBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
         if (!folder) return;
         if (folder !== state.currFolder) {
-          await loadFolderSongs(folder);
-          if (state.songs.length > 0) playMusic(state.songs[0], folder);
+          const loaded = await loadFolderSongs(folder);
+          if (loaded && loaded.length > 0) playMusic(loaded[0], folder);
         } else {
           if (!state.currentSong.src || state.currentSong.paused) {
             if (!state.songs.length) await loadFolderSongs(folder);
@@ -674,7 +730,6 @@ export function refreshProfileDisplay() {
   const profileAvatar = getElement("#profileAvatar");
   const profileUsername = getElement("#profileUsername");
   const profileEmail = getElement("#profileEmail");
-  const heroUsername = getElement("#heroUsername");
 
   const username = localStorage.getItem("username") || "User";
   const email = localStorage.getItem("email") || "email@example.com";
@@ -687,11 +742,6 @@ export function refreshProfileDisplay() {
     .map((part) => part[0].toUpperCase())
     .slice(0, 2)
     .join("") || "U";
-
-  // Update hero panel username
-  if (heroUsername) {
-    heroUsername.textContent = username;
-  }
 
   // Update text values
   if (profileUsername) profileUsername.textContent = username;
@@ -727,7 +777,7 @@ export function setupEditProfileModal() {
   const profileUsernameInput = getElement("#profileUsernameInput");
   const profileEmailInput = getElement("#profileEmailInput");
   const profileImageInput = getElement("#profileImageInput");
-  
+
   const modalProfilePreviewImg = getElement("#modalProfilePreviewImg");
   const modalProfilePreviewInitials = getElement("#modalProfilePreviewInitials");
   const removeProfileImgBtn = getElement("#removeProfileImgBtn");
@@ -740,14 +790,14 @@ export function setupEditProfileModal() {
       // Pre-fill inputs
       if (profileUsernameInput) profileUsernameInput.value = localStorage.getItem("username") || "User";
       if (profileEmailInput) profileEmailInput.value = localStorage.getItem("email") || "email@example.com";
-      
+
       // Setup preview
       currentBase64Image = localStorage.getItem("profile_image") || "";
       updateModalPreview();
 
       // Show modal
       profileModal.classList.remove("hidden");
-      
+
       // Close profile menu dropdown
       const profileMenu = getElement("#profileMenu");
       if (profileMenu) profileMenu.classList.remove("active");
@@ -798,7 +848,7 @@ export function setupEditProfileModal() {
 
   if (closeProfileModal) closeProfileModal.addEventListener("click", hideModal);
   if (cancelProfileEditBtn) cancelProfileEditBtn.addEventListener("click", hideModal);
-  
+
   // Close Modal when clicking outside the card
   if (profileModal) {
     profileModal.addEventListener("click", (e) => {
@@ -847,7 +897,7 @@ export function setupEditProfileModal() {
   if (editProfileForm) {
     editProfileForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      
+
       const newUsername = profileUsernameInput ? profileUsernameInput.value.trim() : "User";
       const newEmail = profileEmailInput ? profileEmailInput.value.trim() : "email@example.com";
 
@@ -885,7 +935,7 @@ export function setupProfileMenu() {
 
   // Initial display values on load
   refreshProfileDisplay();
-  
+
   // Set up Edit Profile Modal event listeners
   setupEditProfileModal();
 
@@ -929,6 +979,7 @@ export function setupSidebarToggle() {
 export function setupLikedSongsButtons() {
   const likedSongsBtn = getElement("#likedSongsBtn");
   const allSongsBtn = getElement("#allSongsBtn");
+  const dailyMixBtn = getElement("#dailyMixBtn");
 
   if (likedSongsBtn) {
     likedSongsBtn.addEventListener("click", () => {
@@ -943,6 +994,17 @@ export function setupLikedSongsButtons() {
       state.showLikedSongs = false;
       state.displaySongs = state.songs.map((track) => ({ folder: state.currFolder, track }));
       renderSongList();
+    });
+  }
+
+  if (dailyMixBtn) {
+    dailyMixBtn.addEventListener("click", async () => {
+      state.showLikedSongs = false;
+      await loadFolderSongs("daily mix");
+      const matchedAlbum = state.allAlbums ? state.allAlbums.find(a => a.folder === "daily mix") : null;
+      if (matchedAlbum) {
+        renderAlbumDetailView("daily mix", matchedAlbum.title, matchedAlbum.description, matchedAlbum.cover_image);
+      }
     });
   }
 }
@@ -963,119 +1025,15 @@ window.scrollRow = function (btn, dir) {
 
 // ==================== RECENTLY PLAYED SYSTEM ====================
 export function getRecentlyPlayed() {
-  try {
-    const raw = localStorage.getItem("recentlyPlayed");
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (err) {
-    console.warn("Failed to load recently played:", err);
-  }
-  return [
-    { track: "01 - NCS Track", folder: "ncs", title: "NCS Mix", artist: "Alan Walker, Cartoon, Deaf Kev", coverUrl: "img/music.svg" },
-    { track: "01 - Chill Vibes", folder: "vibes songs", title: "Chill Vibes", artist: "Lo-Fi, Punjabi Aesthetic", coverUrl: "img/music.svg" },
-    { track: "01 - AP Dhillon", folder: "Ap dillhon", title: "AP Dhillon Hits", artist: "Ap Dhillon, Gurinder Gill", coverUrl: "img/music.svg" },
-    { track: "01 - Karan Aujla", folder: "karan aujla", title: "Karan Aujla Specials", artist: "Karan Aujla, Ikky", coverUrl: "img/music.svg" },
-    { track: "01 - Honey Singh", folder: "honey singh", title: "Yo Yo Honey Singh", artist: "Yo Yo Honey Singh", coverUrl: "img/music.svg" }
-  ];
+  return [];
 }
 
 export function addRecentlyPlayed(track, folder) {
-  if (!track || !folder) return;
-  const list = getRecentlyPlayed();
-
-  let resolvedArtist = folder;
-  let coverPath = `img/music.svg`;
-
-  if (state.allAlbums) {
-    const album = state.allAlbums.find((a) => a.folder.toLowerCase() === folder.toLowerCase());
-    if (album) {
-      if (album.description) resolvedArtist = album.description;
-      if (album.cover_image) {
-        coverPath = album.cover_image;
-        if (coverPath.startsWith("/")) coverPath = coverPath.substring(1);
-      }
-    }
-  }
-
-  const cleanTitle = decodeURIComponent(track).replace(/\.mp3$/i, "").replace(/^\d+[\s._-]+/, "");
-
-  const newItem = {
-    track,
-    folder,
-    title: cleanTitle || folder,
-    artist: resolvedArtist,
-    coverUrl: coverPath
-  };
-
-  const filtered = list.filter((item) => !(item.track === track && item.folder === folder));
-  filtered.unshift(newItem);
-
-  const updatedList = filtered.slice(0, 12);
-  try {
-    localStorage.setItem("recentlyPlayed", JSON.stringify(updatedList));
-  } catch (err) {
-    console.warn("Failed to save recently played:", err);
-  }
-
-  renderRecentlyPlayedUI(updatedList);
+  // Recently played feature disabled
 }
 
-export function renderRecentlyPlayedUI(items = getRecentlyPlayed()) {
-  const recentsContainer = getElement("#recentsCardContainer");
-  const recentlyPlayedContainer = getElement("#recentlyPlayedCardContainer");
-
-  const buildCardsHTML = (cardItems) => {
-    return cardItems.map((item) => `
-      <div class="card" data-folder="${item.folder}" data-track="${item.track}">
-        <div class="card-image-wrapper">
-          <img src="${item.coverUrl}" alt="${item.title}" onerror="this.src='img/music.svg';" />
-          <div class="play" onclick="event.stopPropagation();">▶</div>
-          <span class="spotify-overlay-logo">
-            <svg viewBox="0 0 24 24" fill="#1DB954" width="14" height="14">
-              <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-1.007-.333.075-.664-.135-.74-.467-.075-.332.136-.663.468-.74 3.86-.88 7.153-.51 9.82 1.13.292.18.382.566.205.86-.002 0 0 .001 0 0zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.108-.847.52-.972 3.67-1.114 8.24-.57 11.35 1.344.366.226.486.707.26 1.07h-.002zm.107-2.846C14.524 8.762 9.018 8.58 5.836 9.545c-.51.155-1.044-.137-1.2-.647-.156-.51.137-1.044.647-1.2 3.676-1.115 9.742-.907 13.684 1.433.46.273.61.87.338 1.33-.273.46-.87.61-1.33.338h-.01z" />
-            </svg>
-          </span>
-        </div>
-        <h2>${item.title}</h2>
-        <p>${item.artist}</p>
-      </div>
-    `).join("");
-  };
-
-  const bindCardClicks = (container) => {
-    if (!container) return;
-    container.querySelectorAll(".card").forEach((card) => {
-      card.addEventListener("click", async () => {
-        const folder = card.dataset.folder;
-        const track = card.dataset.track;
-        if (folder) {
-          const { loadFolderSongs, playMusic } = await import('./audio.js');
-          const songs = await loadFolderSongs(folder);
-          
-          let trackToPlay = songs[0];
-          if (track) {
-            const clean = (name) => name.toLowerCase().replace(/\.mp3$/i, "").trim();
-            const matched = songs.find(s => clean(s) === clean(track));
-            if (matched) trackToPlay = matched;
-          }
-          
-          if (trackToPlay) playMusic(trackToPlay, folder);
-        }
-      });
-    });
-  };
-
-  if (recentsContainer) {
-    recentsContainer.innerHTML = buildCardsHTML(items.slice(0, 6));
-    bindCardClicks(recentsContainer);
-  }
-
-  if (recentlyPlayedContainer) {
-    recentlyPlayedContainer.innerHTML = buildCardsHTML(items.slice(0, 8));
-    bindCardClicks(recentlyPlayedContainer);
-  }
+export function renderRecentlyPlayedUI(items = []) {
+  // Recently played feature disabled - preserves static home layout
 }
 
 // PWA Install Prompt Listener

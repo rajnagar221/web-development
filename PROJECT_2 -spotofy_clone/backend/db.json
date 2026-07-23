@@ -9,7 +9,7 @@
         },
         {
             "_id": "2d74b274-8542-4ef0-8709-8809ec399f06",
-            "folder": "Diljit",
+            "folder": "diljit",
             "title": "Diljit Dosanjh Essentials",
             "description": "Lover, GOAT & Punjabi Blockbusters",
             "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg"
@@ -23,7 +23,7 @@
         },
         {
             "_id": "bea3a0ba-a0c3-4526-85d1-4df364e45637",
-            "folder": "Ap dillhon",
+            "folder": "ap dillhon",
             "title": "AP Dhillon & Gurinder Gill",
             "description": "Brown Munde, Excuses & Insane Hits",
             "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg"
@@ -58,10 +58,10 @@
         },
         {
             "_id": "7ec82657-4b6d-48f2-9b63-71c511c0cd9b",
-            "folder": "daily mix",
-            "title": "Shubh Essentials",
-            "description": "Top class hits by Shubh, Arjan Dhillon & Punjabi blockbusters",
-            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/48/4f/3c/484f3c19-fdab-1fa8-fdb4-c7de79852d12/197189603969.jpg/500x500bb.jpg"
+            "folder": "arijit singh",
+            "title": "Arijit Singh Hits",
+            "description": "Arijit Singh, Pritam, Shreya Ghoshal",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/a4/09/a4/a409a4eb-485a-0d85-efc2-127db835e589/8902894541701_cover.jpg/500x500bb.jpg"
         }
     ],
     "songs": [
@@ -71,7 +71,7 @@
             "artist": "Karan Aujla, IKKY",
             "album": "Making Memories",
             "duration": 155,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/538/727114725cd7ec508b1df0a7e4515e5e_320.mp4",
             "file_path": "https://aac.saavncdn.com/538/727114725cd7ec508b1df0a7e4515e5e_320.mp4",
             "folder": "karan aujla"
@@ -82,7 +82,7 @@
             "artist": "Karan Aujla, MXRCI, Seshnolan",
             "album": "Winning Speech",
             "duration": 227,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/089/64beffa430e4c948223ec6bfcc3a13f0_320.mp4",
             "file_path": "https://aac.saavncdn.com/089/64beffa430e4c948223ec6bfcc3a13f0_320.mp4",
             "folder": "karan aujla"
@@ -93,7 +93,7 @@
             "artist": "Karan Aujla",
             "album": "Bad Newz",
             "duration": 207,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/992/5d44da8bc1d78fb72d18b701d758fd1f_320.mp4",
             "file_path": "https://aac.saavncdn.com/992/5d44da8bc1d78fb72d18b701d758fd1f_320.mp4",
             "folder": "karan aujla"
@@ -104,7 +104,7 @@
             "artist": "Karan Aujla, IKKY, Ikwinder Sahota, Milan D'Agostini",
             "album": "P-POP CULTURE",
             "duration": 180,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/621/59d7b22aeaa69bd8158c1852e0b556d3_320.mp4",
             "file_path": "https://aac.saavncdn.com/621/59d7b22aeaa69bd8158c1852e0b556d3_320.mp4",
             "folder": "karan aujla"
@@ -115,7 +115,7 @@
             "artist": "Karan Aujla, Jay Trak",
             "album": "Wavy",
             "duration": 161,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/178/9af31095a56a0a124dee89ef89ffee5a_320.mp4",
             "file_path": "https://aac.saavncdn.com/178/9af31095a56a0a124dee89ef89ffee5a_320.mp4",
             "folder": "karan aujla"
@@ -126,54 +126,10 @@
             "artist": "Karan Aujla, IKKY, Ikwinder Sahota, Milan D'Agostini",
             "album": "P-POP CULTURE",
             "duration": 160,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/621/895e14c38bf774a0122eef2528b39272_320.mp4",
             "file_path": "https://aac.saavncdn.com/621/895e14c38bf774a0122eef2528b39272_320.mp4",
             "folder": "karan aujla"
-        },
-        {
-            "id": "6BV_9WZ_",
-            "title": "Still Rollin",
-            "artist": "Shubh",
-            "album": "Still Rollin",
-            "duration": 174,
-            "cover_image": "img/music.svg",
-            "url": "https://aac.saavncdn.com/704/7a1f8e1c5d1b963d3dadc711ee005d69_320.mp4",
-            "file_path": "https://aac.saavncdn.com/704/7a1f8e1c5d1b963d3dadc711ee005d69_320.mp4",
-            "folder": "daily mix"
-        },
-        {
-            "id": "FoOWz-cQ",
-            "title": "Cheques",
-            "artist": "Shubh",
-            "album": "Still Rollin",
-            "duration": 183,
-            "cover_image": "img/music.svg",
-            "url": "https://aac.saavncdn.com/704/1d43cfc150d1aef7c597c2a9bec1fa48_320.mp4",
-            "file_path": "https://aac.saavncdn.com/704/1d43cfc150d1aef7c597c2a9bec1fa48_320.mp4",
-            "folder": "daily mix"
-        },
-        {
-            "id": "WarSRDtF",
-            "title": "Baller",
-            "artist": "Shubh, IKKY",
-            "album": "Baller",
-            "duration": 148,
-            "cover_image": "img/music.svg",
-            "url": "https://aac.saavncdn.com/489/c05a843e0d1f5c7bf3b29076f8322649_320.mp4",
-            "file_path": "https://aac.saavncdn.com/489/c05a843e0d1f5c7bf3b29076f8322649_320.mp4",
-            "folder": "daily mix"
-        },
-        {
-            "id": "T6HEwHnO",
-            "title": "NO LOVE",
-            "artist": "Shubh",
-            "album": "NO LOVE",
-            "duration": 170,
-            "cover_image": "img/music.svg",
-            "url": "https://aac.saavncdn.com/972/d6b77308db70f7d63f16ddeff68c9a2c_320.mp4",
-            "file_path": "https://aac.saavncdn.com/972/d6b77308db70f7d63f16ddeff68c9a2c_320.mp4",
-            "folder": "daily mix"
         },
         {
             "id": "M7k5t7vw",
@@ -181,7 +137,7 @@
             "artist": "Diljit Dosanjh",
             "album": "MoonChild Era",
             "duration": 190,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/209/88cd9a1cc0af8768d67272876bb09851_320.mp4",
             "file_path": "https://aac.saavncdn.com/209/88cd9a1cc0af8768d67272876bb09851_320.mp4",
             "folder": "diljit"
@@ -192,7 +148,7 @@
             "artist": "Diljit Dosanjh",
             "album": "G.O.A.T.",
             "duration": 224,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/597/ce842951d6cde3c4355046ca5e250809_320.mp4",
             "file_path": "https://aac.saavncdn.com/597/ce842951d6cde3c4355046ca5e250809_320.mp4",
             "folder": "diljit"
@@ -203,7 +159,7 @@
             "artist": "Diljit Dosanjh",
             "album": "Drive Thru",
             "duration": 167,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/467/c1f149509d4ee7d20c0c4474090ab5f1_320.mp4",
             "file_path": "https://aac.saavncdn.com/467/c1f149509d4ee7d20c0c4474090ab5f1_320.mp4",
             "folder": "diljit"
@@ -214,7 +170,7 @@
             "artist": "Diljit Dosanjh",
             "album": "G.O.A.T.",
             "duration": 214,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/597/f1efd650819d3f427bd10e8b9addcd40_320.mp4",
             "file_path": "https://aac.saavncdn.com/597/f1efd650819d3f427bd10e8b9addcd40_320.mp4",
             "folder": "diljit"
@@ -225,7 +181,7 @@
             "artist": "R.S. Chauhan",
             "album": "YoYo",
             "duration": 164,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/144/ab475350ef2b43b75a24d3d720aaa7a4_320.mp4",
             "file_path": "https://aac.saavncdn.com/144/ab475350ef2b43b75a24d3d720aaa7a4_320.mp4",
             "folder": "honey singh"
@@ -236,7 +192,7 @@
             "artist": "Yo Yo Honey Singh",
             "album": "Desi Kalakaar",
             "duration": 257,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/304/f31ba5ffe986d0feb95b3059ad05f4d5_320.mp4",
             "file_path": "https://aac.saavncdn.com/304/f31ba5ffe986d0feb95b3059ad05f4d5_320.mp4",
             "folder": "honey singh"
@@ -247,7 +203,7 @@
             "artist": "Yo Yo Honey Singh",
             "album": "Desi Kalakaar",
             "duration": 227,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/304/ed6b172300cca9a418be31a511728f81_320.mp4",
             "file_path": "https://aac.saavncdn.com/304/ed6b172300cca9a418be31a511728f81_320.mp4",
             "folder": "honey singh"
@@ -258,7 +214,7 @@
             "artist": "AP Dhillon, Gminxr, Gurinder Gill, Shinda Kahlon",
             "album": "Brown Munde",
             "duration": 254,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/973/76216adb3df5ef476f948891b40efb7a_320.mp4",
             "file_path": "https://aac.saavncdn.com/973/76216adb3df5ef476f948891b40efb7a_320.mp4",
             "folder": "ap dillhon"
@@ -269,7 +225,7 @@
             "artist": "AP Dhillon, Shinda Kahlon, Gurinder Gill, Gminxr",
             "album": "Insane",
             "duration": 207,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/851/23ba415310e4b119a8452cba3cbbf509_320.mp4",
             "file_path": "https://aac.saavncdn.com/851/23ba415310e4b119a8452cba3cbbf509_320.mp4",
             "folder": "ap dillhon"
@@ -280,7 +236,7 @@
             "artist": "AP Dhillon",
             "album": "First of a Kind (From the Amazon Original Series)",
             "duration": 154,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/671/50b256cc8e60dc8b0243f5e0767e8467_320.mp4",
             "file_path": "https://aac.saavncdn.com/671/50b256cc8e60dc8b0243f5e0767e8467_320.mp4",
             "folder": "ap dillhon"
@@ -291,7 +247,7 @@
             "artist": "Alan Walker",
             "album": "Faded",
             "duration": 212,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/981/ddf4f57d94d268001967dc60725c52ca_320.mp4",
             "file_path": "https://aac.saavncdn.com/981/ddf4f57d94d268001967dc60725c52ca_320.mp4",
             "folder": "ncs"
@@ -302,7 +258,7 @@
             "artist": "Alan Walker",
             "album": "The Spectre",
             "duration": 193,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/532/b84681ac81c18c5f2ec5eb9a991dd688_320.mp4",
             "file_path": "https://aac.saavncdn.com/532/b84681ac81c18c5f2ec5eb9a991dd688_320.mp4",
             "folder": "ncs"
@@ -313,7 +269,7 @@
             "artist": "Deaf Kev",
             "album": "NCS: The Best of 2015",
             "duration": 279,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/701/df5e8e1e5ec446af9d91d50fb9c845dd_320.mp4",
             "file_path": "https://aac.saavncdn.com/701/df5e8e1e5ec446af9d91d50fb9c845dd_320.mp4",
             "folder": "ncs"
@@ -324,7 +280,7 @@
             "artist": "Elektronomia",
             "album": "The Sky High",
             "duration": 280,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/104/9c2d855888ed8cdb9d17e302c238a79a_320.mp4",
             "file_path": "https://aac.saavncdn.com/104/9c2d855888ed8cdb9d17e302c238a79a_320.mp4",
             "folder": "ncs"
@@ -335,7 +291,7 @@
             "artist": "Talwiinder, Nds",
             "album": "Khayaal",
             "duration": 162,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/482/c9b917787fdd221283bcb11884f4184d_320.mp4",
             "file_path": "https://aac.saavncdn.com/482/c9b917787fdd221283bcb11884f4184d_320.mp4",
             "folder": "talwinder"
@@ -346,7 +302,7 @@
             "artist": "Yashraj, Dropped Out, Talwiinder",
             "album": "Dhundhala",
             "duration": 182,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/965/212f0dd59e13c060347033940b6fc552_320.mp4",
             "file_path": "https://aac.saavncdn.com/965/212f0dd59e13c060347033940b6fc552_320.mp4",
             "folder": "talwinder"
@@ -357,7 +313,7 @@
             "artist": "Aiden Yoo",
             "album": "softly lofi",
             "duration": 89,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/3f/d2/f9/3fd2f999-c2c2-4fe6-ecc3-1d30f38904bd/859777326048_cover.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/621/50001be791999fcce90dcb3449494985_320.mp4",
             "file_path": "https://aac.saavncdn.com/621/50001be791999fcce90dcb3449494985_320.mp4",
             "folder": "vibes songs"
@@ -368,7 +324,7 @@
             "artist": "Unico Vibe A1",
             "album": "Pasoori (Lofi Mix)",
             "duration": 153,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/3f/d2/f9/3fd2f999-c2c2-4fe6-ecc3-1d30f38904bd/859777326048_cover.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/534/75e8cece32fe2949149c721b86a201a7_320.mp4",
             "file_path": "https://aac.saavncdn.com/534/75e8cece32fe2949149c721b86a201a7_320.mp4",
             "folder": "vibes songs"
@@ -379,7 +335,7 @@
             "artist": "Karan Aujla",
             "album": "Bad Newz",
             "duration": 207,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/992/5d44da8bc1d78fb72d18b701d758fd1f_320.mp4",
             "file_path": "https://aac.saavncdn.com/992/5d44da8bc1d78fb72d18b701d758fd1f_320.mp4",
             "folder": "instagram trending"
@@ -390,7 +346,7 @@
             "artist": "Hanumankind, Kalmi",
             "album": "Big Dawgs",
             "duration": 191,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/883/c0a119218206e3e43e2496dc0f2d8d7e_320.mp4",
             "file_path": "https://aac.saavncdn.com/883/c0a119218206e3e43e2496dc0f2d8d7e_320.mp4",
             "folder": "instagram trending"
@@ -401,10 +357,32 @@
             "artist": "Karan Aujla, MXRCI, Seshnolan",
             "album": "Winning Speech",
             "duration": 227,
-            "cover_image": "img/music.svg",
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg",
             "url": "https://aac.saavncdn.com/089/64beffa430e4c948223ec6bfcc3a13f0_320.mp4",
             "file_path": "https://aac.saavncdn.com/089/64beffa430e4c948223ec6bfcc3a13f0_320.mp4",
             "folder": "instagram trending"
+        },
+        {
+            "id": "arijit1",
+            "title": "Chaleya",
+            "artist": "Arijit Singh, Shilpa Rao",
+            "album": "Jawan",
+            "duration": 200,
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/a4/09/a4/a409a4eb-485a-0d85-efc2-127db835e589/8902894541701_cover.jpg/500x500bb.jpg",
+            "url": "https://aac.saavncdn.com/348/182e01df0ecb4b39b56317bc2d2e1967_320.mp4",
+            "file_path": "https://aac.saavncdn.com/348/182e01df0ecb4b39b56317bc2d2e1967_320.mp4",
+            "folder": "arijit singh"
+        },
+        {
+            "id": "arijit2",
+            "title": "Tum Hi Ho",
+            "artist": "Arijit Singh",
+            "album": "Aashiqui 2",
+            "duration": 262,
+            "cover_image": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/a4/09/a4/a409a4eb-485a-0d85-efc2-127db835e589/8902894541701_cover.jpg/500x500bb.jpg",
+            "url": "https://aac.saavncdn.com/152/e0e0a5ccfb83e58c9735d6480b0051ec_320.mp4",
+            "file_path": "https://aac.saavncdn.com/152/e0e0a5ccfb83e58c9735d6480b0051ec_320.mp4",
+            "folder": "arijit singh"
         }
     ],
     "playlists": [

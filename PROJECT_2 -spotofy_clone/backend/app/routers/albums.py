@@ -19,13 +19,15 @@ def get_albums(
     if token["error"]:
         raise HTTPException(status_code=401, detail=token["error"])
     
-    query = {}
+    albums = list(albums_collection.find({}, {"_id": 0}))
     if name:
-        query["name"] = {"$regex": f".*{re.escape(name)}.*", "$options": "i"}
+        pattern = re.compile(re.escape(name), re.IGNORECASE)
+        albums = [a for a in albums if pattern.search(str(a.get("title") or a.get("name") or ""))]
     if genre:
-        query["genre"] = {"$regex": f".*{re.escape(genre)}.*", "$options": "i"}
+        pattern = re.compile(re.escape(genre), re.IGNORECASE)
+        albums = [a for a in albums if pattern.search(str(a.get("genre") or ""))]
     if artist:
-        query["artist"] = {"$regex": f".*{re.escape(artist)}.*", "$options": "i"}
+        pattern = re.compile(re.escape(artist), re.IGNORECASE)
+        albums = [a for a in albums if pattern.search(str(a.get("artist") or ""))]
         
-    albums = list(albums_collection.find(query, {"_id": 0}))   
     return {"albums": albums}

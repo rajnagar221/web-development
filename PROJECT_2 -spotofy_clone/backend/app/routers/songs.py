@@ -37,17 +37,24 @@ def get_all_songs(
     if token["error"]:
         raise HTTPException(status_code=401, detail=token["error"])
         
-    query = {}
+    songs = list(songs_collection.find({}, {"_id": 0}))
+    
     if title:
-        query["title"] = {"$regex": f".*{re.escape(title)}.*", "$options": "i"}
+        pattern = re.compile(re.escape(title), re.IGNORECASE)
+        songs = [s for s in songs if pattern.search(str(s.get("title") or ""))]
     if artist:
-        query["artist"] = {"$regex": f".*{re.escape(artist)}.*", "$options": "i"}
+        pattern = re.compile(re.escape(artist), re.IGNORECASE)
+        songs = [s for s in songs if pattern.search(str(s.get("artist") or ""))]
     if album:
-        query["album"] = {"$regex": f".*{re.escape(album)}.*", "$options": "i"}
+        pattern = re.compile(re.escape(album), re.IGNORECASE)
+        songs = [s for s in songs if pattern.search(str(s.get("album") or ""))]
     if folder:
-        query["folder"] = {"$regex": f".*{re.escape(folder)}.*", "$options": "i"}
-        
-    songs = list(songs_collection.find(query, {"_id": 0}))
+        pattern = re.compile(re.escape(folder), re.IGNORECASE)
+        songs = [
+            s for s in songs 
+            if pattern.search(str(s.get("folder") or "")) or pattern.search(str(s.get("album") or ""))
+        ]
+
     return {"songs": songs}
     
 
@@ -68,16 +75,17 @@ def get_song(song_id: str, token=Depends(verify_token)):
     return song
 
 @router.get("/api/songs/{folder}")
-def get_songs_by_folder(folder: str,token=Depends(verify_token)):
-    """Gets songs by folder"""
+def get_songs_by_folder(folder: str, token=Depends(verify_token)):
+    """Gets songs by folder or album name"""
     if token["error"]:
         raise HTTPException(status_code=401, detail=token["error"])
-    query = {
-        "$or": [
-            {"folder": {"$regex": f"^{re.escape(folder)}$", "$options": "i"}},
-            {"album": {"$regex": f"^{re.escape(folder)}$", "$options": "i"}},
-            {"file_path": {"$regex": f"/{re.escape(folder)}/", "$options": "i"}},
-        ]
-    }
-    songs = list(songs_collection.find(query, {"file_path": 1, "_id": 0}))
-    return {"songs": [os.path.basename(song["file_path"]) for song in songs if song.get("file_path")]}
+    songs = list(songs_collection.find({}, {"_id": 0}))
+    pattern = re.compile(re.escape(folder), re.IGNORECASE)
+    filtered = [
+        s for s in songs
+        if pattern.search(str(s.get("folder") or "")) or
+           pattern.search(str(s.get("album") or "")) or
+           pattern.search(str(s.get("file_path") or ""))
+    ]
+    return {"songs": filtered}
+

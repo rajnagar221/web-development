@@ -111,7 +111,7 @@ export function updateCredits(folder, artist) {
 const ARTIST_BIOS = {
   "ncs": "NoCopyrightSounds is a British music label and organization. Founded in 2011, it showcases royalty-free electronic music from artists globally.",
   "karan aujla": "Karan Aujla is a globally acclaimed Punjabi singer, rapper, and songwriter. Known for his chart-topping hits like 'Softly' and 'Making Memories'.",
-  "daily mix": "Shubh is a top-class Indo-Canadian Punjabi rapper and singer known worldwide for blockbuster hits like 'Cheques', 'Baller', 'Still Rollin', and 'No Love'.",
+  "arijit singh": "Arijit Singh is a legendary Indian singer and composer. Known for his soulful and romantic Bollywood hits, he is one of the most successful singers in the history of Indian music.",
   "diljit": "Diljit Dosanjh is a legendary Indian singer, actor, and television presenter. He is one of the leading figures in modern Punjabi music and Bollywood.",
   "honey singh": "Yo Yo Honey Singh is an iconic Indian rapper, music producer, and actor. He revolutionized the Punjabi pop and Bollywood rap scene.",
   "instagram trending": "A curated compilation of viral hits, trending soundbites, and the most popular background scores from social media reels.",
@@ -319,10 +319,10 @@ export function updateTimeDisplay() {
 export function updateLibraryButtons() {
   const likedBtn = getElement("#likedSongsBtn");
   const allBtn = getElement("#allSongsBtn");
-  const dailyBtn = getElement("#dailyMixBtn");
+  const arijitBtn = getElement("#arijitSinghBtn");
   if (likedBtn) likedBtn.classList.toggle("active", Boolean(state.showLikedSongs));
-  if (allBtn) allBtn.classList.toggle("active", !state.showLikedSongs && state.currFolder !== "daily mix");
-  if (dailyBtn) dailyBtn.classList.toggle("active", !state.showLikedSongs && state.currFolder === "daily mix");
+  if (allBtn) allBtn.classList.toggle("active", !state.showLikedSongs && state.currFolder !== "arijit singh");
+  if (arijitBtn) arijitBtn.classList.toggle("active", !state.showLikedSongs && state.currFolder === "arijit singh");
 }
 
 export function renderSongList() {
@@ -419,7 +419,12 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
   let songs = [];
   try {
     const loadedSongs = await loadFolderSongs(folder);
-    songs = (loadedSongs || []).map(track => ({ folder, track }));
+    songs = (loadedSongs || []).map(track => {
+      if (!track.cover_image || track.cover_image === "img/music.svg") {
+        track.cover_image = coverUrl;
+      }
+      return { folder, track };
+    });
   } catch (error) {
     console.error("Failed to load folder songs:", error);
   }
@@ -494,6 +499,7 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     const track = songItem.track;
     const title = track.title;
     const artist = track.artist;
+    const thumb = track.cover_image || coverUrl;
     const likedClass = isTrackLiked(songItem.folder, track.id) ? "liked" : "";
     const isActive = state.currentTrack && track.id === state.currentTrack.id && songItem.folder === state.currentFolder ? "active" : "";
     return `
@@ -503,12 +509,15 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
                 <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><polygon points="5,3 19,12 5,21"/></svg>
               </td>
               <td class="col-title">
-                <div class="track-info">
-                  <div class="track-name">${title}</div>
-                  <div class="track-artist">${artist}</div>
+                <div class="track-info" style="display: flex; align-items: center; gap: 12px;">
+                  <img src="${thumb}" alt="${title}" class="track-thumb" onerror="this.src='img/music.svg';" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />
+                  <div>
+                    <div class="track-name">${title}</div>
+                    <div class="track-artist">${artist}</div>
+                  </div>
                 </div>
               </td>
-              <td class="col-album">${albumTitle}</td>
+              <td class="col-album">${track.album || albumTitle}</td>
               <td class="col-actions">
                 <button class="favorite-btn ${likedClass}" title="Save to Liked Songs">
                   <svg viewBox="0 0 24 24" fill="${likedClass ? '#1db954' : 'none'}" stroke="${likedClass ? '#1db954' : '#b3b3b3'}" stroke-width="2" width="20" height="20">
@@ -621,9 +630,13 @@ export function attachAlbumEvents() {
           const loaded = await loadFolderSongs(folder);
           if (loaded && loaded.length > 0) playMusic(loaded[0], folder);
         } else {
-          if (!state.currentSong.src || state.currentSong.paused) {
+          if (!state.currentSong.src) {
             if (!state.songs.length) await loadFolderSongs(folder);
             if (state.songs.length > 0) playMusic(state.songs[0], folder);
+          } else if (state.currentSong.paused) {
+            state.currentSong.play().catch(e => console.warn(e));
+            updatePlayButton(true);
+            updateAlbumPlayIcons();
           } else {
             state.currentSong.pause();
             updatePlayButton(false);
@@ -982,7 +995,7 @@ export function setupSidebarToggle() {
 export function setupLikedSongsButtons() {
   const likedSongsBtn = getElement("#likedSongsBtn");
   const allSongsBtn = getElement("#allSongsBtn");
-  const dailyMixBtn = getElement("#dailyMixBtn");
+  const arijitSinghBtn = getElement("#arijitSinghBtn");
 
   if (likedSongsBtn) {
     likedSongsBtn.addEventListener("click", () => {
@@ -1018,15 +1031,15 @@ export function setupLikedSongsButtons() {
     });
   }
 
-  if (dailyMixBtn) {
-    dailyMixBtn.addEventListener("click", async () => {
+  if (arijitSinghBtn) {
+    arijitSinghBtn.addEventListener("click", async () => {
       state.showLikedSongs = false;
-      await loadFolderSongs("daily mix");
-      const matchedAlbum = state.allAlbums ? state.allAlbums.find(a => a.folder && a.folder.toLowerCase() === "daily mix") : null;
-      const title = matchedAlbum ? matchedAlbum.title : "Shubh Essentials";
-      const desc = matchedAlbum ? matchedAlbum.description : "Top class hits by Shubh, Arjan Dhillon & Punjabi blockbusters";
-      const cover = matchedAlbum ? matchedAlbum.cover_image : "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/48/4f/3c/484f3c19-fdab-1fa8-fdb4-c7de79852d12/197189603969.jpg/500x500bb.jpg";
-      renderAlbumDetailView("daily mix", title, desc, cover);
+      await loadFolderSongs("arijit singh");
+      const matchedAlbum = state.allAlbums ? state.allAlbums.find(a => a.folder && a.folder.toLowerCase() === "arijit singh") : null;
+      const title = matchedAlbum ? matchedAlbum.title : "Arijit Singh Hits";
+      const desc = matchedAlbum ? matchedAlbum.description : "Arijit Singh, Pritam, Shreya Ghoshal";
+      const cover = matchedAlbum ? matchedAlbum.cover_image : "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/a4/09/a4/a409a4eb-485a-0d85-efc2-127db835e589/8902894541701_cover.jpg/500x500bb.jpg";
+      renderAlbumDetailView("arijit singh", title, desc, cover);
     });
   }
 }

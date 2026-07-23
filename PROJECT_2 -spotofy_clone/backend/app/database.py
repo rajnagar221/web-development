@@ -90,7 +90,10 @@ class JSONCollection:
                     return False
             else:
                 doc_val = doc.get(k)
-                if isinstance(v, dict):
+                if isinstance(v, re.Pattern) or hasattr(v, 'search'):
+                    if not v.search(str(doc_val or "")):
+                        return False
+                elif isinstance(v, dict):
                     if "$regex" in v:
                         pattern = v["$regex"]
                         flags = 0
@@ -99,7 +102,7 @@ class JSONCollection:
                         if not re.search(pattern, str(doc_val or ""), flags):
                             return False
                 else:
-                    if doc_val != v:
+                    if str(doc_val or "").lower() != str(v or "").lower():
                         return False
         return True
 

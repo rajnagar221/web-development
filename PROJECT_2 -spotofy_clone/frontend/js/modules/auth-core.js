@@ -256,40 +256,16 @@ export function updateIndexAuthButtons() {
 }
 
 export async function verifyAuthentication() {
-  let token = localStorage.getItem("token");
   const loader = document.getElementById("appLoader");
+  if (loader) loader.remove();
 
+  let token = localStorage.getItem("token");
   if (!token) {
     localStorage.setItem("token", "guest-demo-token");
     localStorage.setItem("username", "Guest Listener");
     localStorage.setItem("email", "guest@musify.com");
     localStorage.setItem("is_logged_in", "true");
-    token = "guest-demo-token";
   }
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/check-login`, {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-
-    if (loader) {
-      loader.classList.add("fade-out");
-      setTimeout(() => {
-        loader.remove();
-      }, 500);
-    }
-    return true;
-  } catch (err) {
-    console.warn("Backend check note:", err.message || err);
-    if (loader) {
-      loader.classList.add("fade-out");
-      setTimeout(() => {
-        loader.remove();
-      }, 500);
-    }
-    return true;
-  }
+  return true;
 }
 

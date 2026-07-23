@@ -104,7 +104,7 @@ export function playMusic(track, folder = state.currFolder) {
 
   state.currentSong.volume = (() => {
     const vol = document.getElementById("volumeRange");
-    return vol ? Number(vol.value) / 100 : 0.8;
+    return vol ? Number(vol.value) / 100 : 1.0;
   })();
 
   const playPromise = state.currentSong.play();
@@ -151,21 +151,19 @@ export function playNextSong() {
 
 // ==================== PLAYER EVENTS ====================
 export function setupPlayerEvents() {
-  if (window.WaveSurfer) {
-    state.wavesurfer = window.WaveSurfer.create({
-      container: '#waveform',
-      waveColor: 'rgba(255, 255, 255, 0.4)',
-      progressColor: '#1db954',
-      cursorColor: '#1ed760',
-      media: state.currentSong,
-      height: 30,
-      barWidth: 2,
-      barRadius: 2,
-      barGap: 1
-    });
-  }
+  const seekbar = getElement("#spotifySeekbar");
 
   state.currentSong.addEventListener("timeupdate", updateTimeDisplay);
+
+  if (seekbar) {
+    seekbar.addEventListener("input", (e) => {
+      if (state.currentSong.duration) {
+        const val = parseFloat(e.target.value);
+        state.currentSong.currentTime = (val / 100) * state.currentSong.duration;
+        updateTimeDisplay();
+      }
+    });
+  }
 
   state.currentSong.addEventListener("play", () => {
     updateAlbumPlayIcons();
@@ -295,7 +293,7 @@ export function setupControlButtons() {
           volumeRange.value = 0;
           updateVolumeIcon(0);
         } else {
-          const lastVol = parseFloat(queueBtn.dataset.lastVol || "0.8");
+          const lastVol = parseFloat(queueBtn.dataset.lastVol || "1.0");
           state.currentSong.volume = lastVol;
           volumeRange.value = lastVol * 100;
           updateVolumeIcon(lastVol);

@@ -13,18 +13,13 @@
 
 .main-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    /* Collapsed by default unless sidebar is active */
+    grid-template-columns: minmax(0, 1fr) 340px !important;
     gap: 18px;
     padding: 20px 24px 24px;
     min-height: 100%;
     max-height: 100%;
     overflow: hidden;
     transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.main-grid.sidebar-active {
-    grid-template-columns: 1fr !important;
 }
 
 
@@ -35,6 +30,7 @@
     gap: 24px;
     overflow-y: auto;
     min-height: 0;
+    padding-bottom: 140px !important;
 }
 
 .hero-panel {
@@ -174,12 +170,14 @@
 }
 
 .rightSidebar {
-    display: none !important;
+    display: flex;
+    flex-direction: column;
 }
 
 #nowPlayingToggleBtn {
-    display: none;
-    /* Hidden by default until a song plays */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .liked-widget-header {
@@ -684,14 +682,150 @@
     }
 }
 
-/* ============== Album Detail View ============== */
-.back-btn-container {
+/* ============== Album Detail View (Matches Spotify Reference Image) ============== */
+.album-detail-view {
+    position: relative !important;
+    width: 100% !important;
+    min-height: 100% !important;
+    padding-bottom: 140px !important;
+    background: #121212 !important;
+    border-radius: 8px !important;
+    overflow-y: visible !important;
+    box-sizing: border-box !important;
+}
+
+.spotify-album-hero {
+    padding: 20px 24px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+}
+
+.album-hero-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.spotify-album-cover {
+    width: 170px;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    flex-shrink: 0;
+}
+
+.spotify-album-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #fff;
+}
+
+.album-eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: capitalize;
+    color: #fff;
+}
+
+.spotify-album-title {
+    font-size: 42px;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: #fff;
+}
+
+.spotify-album-meta {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 24px;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e0e0e0;
+    flex-wrap: wrap;
+}
+
+.bullet-dot {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.spotify-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: #121212;
+}
+
+.action-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.mini-art-pill {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+.mini-art-pill img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.action-icon-btn {
+    background: transparent;
+    border: none;
     cursor: pointer;
-    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b3b3b3;
+    padding: 4px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.action-icon-btn:hover {
+    color: #fff;
+    transform: scale(1.08);
+}
+
+.action-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.back-btn-container {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: transparent !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    padding: 10px 0 !important;
+    margin-bottom: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 .back-btn-container:hover .back-label {
@@ -705,11 +839,124 @@
     transition: color 0.2s ease;
 }
 
-.album-detail-header {
+.tracklist-container {
+    padding: 0 24px 140px 24px;
+    background: #121212;
+}
+
+.tracklist-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tracklist-table th {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #b3b3b3;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.tracklist-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.track-row {
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.track-row:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.track-row.active .track-name {
+    color: #1db954 !important;
+}
+
+.track-info-cell {
     display: flex;
-    gap: 24px;
-    align-items: flex-end;
-    margin-bottom: 24px;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.track-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.track-artist {
+    font-size: 13px;
+    color: #b3b3b3;
+}
+
+/* ============== Track Row Number & Play Icon Toggle (Spotify Style) ============== */
+.col-num {
+    width: 48px;
+    text-align: center;
+    position: relative;
+    color: #b3b3b3;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.col-num .num {
+    display: inline-block;
+}
+
+.col-num .play-icon,
+.col-num .pause-icon {
+    display: none;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+/* On hover over ANY non-active track row: hide number, show play icon */
+.track-row:hover .col-num .num {
+    display: none !important;
+}
+
+.track-row:hover .col-num .play-icon {
+    display: inline-block !important;
+}
+
+/* If track is currently playing (active): */
+.track-row.active .col-num .num {
+    color: #1db954 !important;
+}
+
+.track-row.active:hover .col-num .num {
+    display: none !important;
+}
+
+.track-row.active:hover .col-num .pause-icon {
+    display: inline-block !important;
+}
+
+.track-row.active:hover .col-num .play-icon {
+    display: none !important;
+}
+
+/* Hover actions on the right side of the row (Reference Image 2) */
+.col-duration-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+.row-hover-icons {
+    display: none;
+    align-items: center;
+    gap: 12px;
+}
+
+.track-row:hover .row-hover-icons {
+    display: flex !important;
 }
 
 .album-detail-cover {
@@ -907,14 +1154,22 @@
     }
 }
 
-/* ============== Album Detail View ============== */
+/* ============== Album Detail View (Compact & Transparent) ============== */
 .back-btn-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 24px;
-    cursor: pointer;
-    width: fit-content;
+    position: relative !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 4px 0 !important;
+    margin-bottom: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    width: fit-content !important;
+    box-sizing: border-box !important;
 }
 
 .back-btn-container:hover .back-label {
@@ -1085,18 +1340,21 @@
 
 /* ============== Idle Promo Card & Right Sidebar Widgets ============== */
 .rightSidebar {
-    display: flex !important;
-    /* Always visible column */
+    display: none !important;
     flex-direction: column;
     gap: 16px;
     background: #121212 !important;
     border-radius: 12px !important;
     padding: 16px !important;
+    padding-bottom: 90px !important;
     height: 100% !important;
     overflow-y: auto !important;
-    /* Enable vertical scroll for Now Playing card */
     border: 1px solid rgba(255, 255, 255, 0.05) !important;
     min-height: 0;
+}
+
+.main-grid.sidebar-active .rightSidebar {
+    display: flex !important;
 }
 
 .rightSidebar::-webkit-scrollbar {

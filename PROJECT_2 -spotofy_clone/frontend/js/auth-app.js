@@ -8,7 +8,7 @@ import {
   showAuthToast
 } from './modules/auth-core.js';
 
-document.addEventListener("DOMContentLoaded", function () {
+function initAuth() {
   const loginForm = document.getElementById("loginForm");
   const signupForm = document.getElementById("signupForm");
   const googleButtons = document.querySelectorAll(".google-auth-btn");
@@ -94,13 +94,22 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   checkDashboardLogin();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAuth);
+} else {
+  initAuth();
+}
 
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
-      .then((reg) => console.log('Service Worker registered successfully:', reg.scope))
+      .then((reg) => {
+        console.log('Service Worker registered successfully:', reg.scope);
+        reg.update();
+      })
       .catch((err) => console.warn('Service Worker registration failed:', err));
   });
 }

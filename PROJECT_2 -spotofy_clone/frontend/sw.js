@@ -1,4 +1,4 @@
-const CACHE_NAME = 'musify-v2';
+const CACHE_NAME = 'musify-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -40,7 +40,6 @@ const ASSETS = [
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // Use cache.addAll with catch to prevent install failure if some resource is temporarily missing
       return cache.addAll(ASSETS).catch(err => {
         console.warn('Pre-caching some assets failed: ', err);
       });
@@ -63,23 +62,20 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Fetch Event
+// Fetch Event - Network First Strategy with Cache Fallback
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
-  // Skip caching for API requests or backend requests
+  // Skip caching for API requests or backend auth endpoints
   if (url.origin !== self.location.origin || url.pathname.includes('/api/') || url.pathname.includes('/login') || url.pathname.includes('/signup')) {
     e.respondWith(fetch(e.request));
     return;
   }
 
-  // Cache-first for static local assets
+  // Network-first for static local assets (ensures normal F5 loads updated scripts/styles)
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(e.request).then((networkResponse) => {
+    fetch(e.request)
+      .then((networkResponse) => {
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
         }
@@ -88,12 +84,16 @@ self.addEventListener('fetch', (e) => {
           cache.put(e.request, responseToCache);
         });
         return networkResponse;
-      });
-    }).catch(() => {
-      // Offline fallback
-      if (e.request.mode === 'navigate') {
-        return caches.match('./index.html');
-      }
-    })
+      })
+      .catch(() => {
+        return caches.match(e.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          if (e.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
+      })
   );
 });

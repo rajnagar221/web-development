@@ -1,5 +1,5 @@
 import { API_BASE_URL } from './config.js';
-import { state } from './state.js';
+import { state, saveFollowedArtists } from './state.js';
 import { formatTime, getElement } from './utils.js';
 import { isTrackLiked, getLikedSongObjects, toggleLikeState } from './storage.js';
 import { fetchAlbums } from './api.js';
@@ -59,8 +59,8 @@ export function updatePlaybarLikeButton() {
   const isLiked = hasTrack && isTrackLiked(state.currentFolder, state.currentTrack);
   button.classList.toggle("liked", isLiked);
   button.innerHTML = isLiked
-    ? `<svg viewBox="0 0 24 24" fill="#1db954" width="16" height="16"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
-    : `<svg viewBox="0 0 24 24" fill="none" stroke="#b3b3b3" stroke-width="2" width="16" height="16"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+    ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="#1db954" stroke="#1db954" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
+    : `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#b3b3b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
 }
 
 export function updateSidebarLikeButton() {
@@ -78,32 +78,101 @@ export function updateSidebarLikeButton() {
 }
 
 export function updateCredits(folder, artist) {
-  const creditArtist1 = getElement("#creditArtist1");
-  const creditRole1 = getElement("#creditRole1");
-  const creditArtist2 = getElement("#creditArtist2");
-  const creditRole2 = getElement("#creditRole2");
-  if (!creditArtist1) return;
+  const creditsList = getElement("#creditsList");
+  if (!creditsList) return;
 
-  const artists = artist.split(",").map((a) => a.trim());
-  if (artists.length > 0) {
-    creditArtist1.textContent = artists[0];
-    creditRole1.textContent = "Main Artist";
+  creditsList.innerHTML = "";
+
+  const rawArtists = (artist || "Unknown Artist").split(",").map(a => a.trim()).filter(Boolean);
+  const parsedCredits = [];
+
+  if (rawArtists.length > 0) {
+    parsedCredits.push({ name: rawArtists[0], role: "Main Artist • Composer", isFollowing: true });
   }
-  if (artists.length > 1) {
-    creditArtist2.textContent = artists[1];
-    creditRole2.textContent = "Main Artist";
-    if (creditArtist2.parentNode) creditArtist2.parentNode.style.display = "flex";
-  } else {
-    if (folder && folder.toLowerCase().includes("karan aujla")) {
-      creditArtist2.textContent = "Ikky";
-      creditRole2.textContent = "Producer";
-    } else if (folder && folder.toLowerCase().includes("ncs")) {
-      creditArtist2.textContent = "Alan Walker";
-      creditRole2.textContent = "Producer / Composer";
-    } else {
-      creditArtist2.textContent = "Various Artists";
-      creditRole2.textContent = "Collaborator";
+  if (rawArtists.length > 1) {
+    parsedCredits.push({ name: rawArtists[1], role: "Main Artist • Video Writer", isFollowing: false });
+  }
+  if (rawArtists.length > 2) {
+    for (let i = 2; i < rawArtists.length; i++) {
+      parsedCredits.push({ name: rawArtists[i], role: "Main Artist", isFollowing: false });
     }
+  }
+
+  if (parsedCredits.length === 1) {
+    const fKey = (folder || "").toLowerCase();
+    if (fKey.includes("karan aujla")) {
+      parsedCredits.push({ name: "Ikky", role: "Producer • Composer", isFollowing: false });
+    } else if (fKey.includes("honey singh")) {
+      parsedCredits.push({ name: "Lil Golu", role: "Lyricist • Producer", isFollowing: false });
+    } else if (fKey.includes("ap dhillon") || fKey.includes("ap dillhon")) {
+      parsedCredits.push({ name: "Gurinder Gill", role: "Featured Artist", isFollowing: false });
+    } else if (fKey.includes("ncs")) {
+      parsedCredits.push({ name: "Alan Walker", role: "Producer • Remix", isFollowing: false });
+    } else {
+      parsedCredits.push({ name: "Musify Producer", role: "Composer • Producer", isFollowing: false });
+    }
+  }
+
+  parsedCredits.forEach(credit => {
+    const key = credit.name.toLowerCase().trim();
+    const isFollowing = state.followedArtists.has(key);
+
+    const item = document.createElement("div");
+    item.className = "credit-item";
+    item.innerHTML = `
+      <div class="credit-info">
+        <span class="credit-name">${credit.name}</span>
+        <span class="credit-role">${credit.role}</span>
+      </div>
+      <button class="follow-pill-btn ${isFollowing ? 'following' : ''}" data-artist="${credit.name}">
+        ${isFollowing ? 'Following' : 'Follow'}
+      </button>
+    `;
+
+    const followBtn = item.querySelector(".follow-pill-btn");
+    if (followBtn) {
+      followBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleFollowArtist(credit.name, credit.name);
+      });
+    }
+
+    creditsList.appendChild(item);
+  });
+}
+
+export function updateNextInQueue() {
+  const nextQueueCard = getElement("#nextQueueCard");
+  const nextArt = getElement("#nextQueueArt");
+  const nextTitle = getElement("#nextQueueTitle");
+  const nextArtist = getElement("#nextQueueArtist");
+
+  if (!nextQueueCard || !state.displaySongs || state.displaySongs.length === 0) return;
+
+  let currentIndex = -1;
+  if (state.currentTrack) {
+    currentIndex = state.displaySongs.findIndex(
+      (item) => item.track.id === state.currentTrack.id
+    );
+  }
+
+  let nextIndex = currentIndex + 1;
+  if (nextIndex >= state.displaySongs.length) {
+    nextIndex = 0;
+  }
+
+  const nextSongObj = state.displaySongs[nextIndex];
+  if (nextSongObj && nextSongObj.track) {
+    const track = nextSongObj.track;
+    if (nextArt) nextArt.src = track.cover_image || "img/music.svg";
+    if (nextTitle) nextTitle.textContent = track.title || "Next Track";
+    if (nextArtist) nextArtist.textContent = track.artist || "Unknown Artist";
+
+    nextQueueCard.onclick = () => {
+      import('./audio.js').then(module => {
+        module.playMusic(track, nextSongObj.folder);
+      });
+    };
   }
 }
 
@@ -126,7 +195,7 @@ export function getArtistBio(folder) {
   return ARTIST_BIOS[key] || "Popular tracks, daily mixes, and custom artist compilations.";
 }
 
-export function updateSongInfo(track, autoOpenSidebar = false) {
+export function updateSongInfo(track, autoOpenSidebar = true) {
   const title = track.title || "Unknown Title";
   const songInfo = getElement(".songinfo");
   if (songInfo) songInfo.textContent = title;
@@ -136,26 +205,17 @@ export function updateSongInfo(track, autoOpenSidebar = false) {
 
   const sidebar = getElement(".rightSidebar");
   const mainGrid = getElement(".main-grid");
-  const nowPlayingCard = getElement("#nowPlayingCard");
 
-  // rightSidebar panel disabled
-
-  // nowPlayingCard hidden by default unless toggled
+  if (autoOpenSidebar && sidebar && mainGrid) {
+    sidebar.style.display = "flex";
+    mainGrid.classList.add("sidebar-active");
+  }
 
   const art = getElement("#playbarArt");
   const sideArt = getElement("#nowPlayingArt");
   const nowTitle = getElement("#nowPlayingTitle");
   const nowArtist = getElement("#nowPlayingArtist");
-  const artistImg = getElement("#sidebarArtistImg");
-  const artistName = getElement("#sidebarArtistName");
   const sidebarHeaderTitle = getElement("#sidebarHeaderTitle");
-  const artistBio = getElement("#sidebarArtistBio");
-
-  // Enable buttons in now playing card once track starts
-  const shareBtn = getElement(".share-btn");
-  const sidebarFavoriteBtn = getElement("#sidebarFavoriteBtn");
-  if (shareBtn) shareBtn.removeAttribute("disabled");
-  if (sidebarFavoriteBtn) sidebarFavoriteBtn.removeAttribute("disabled");
 
   let resolvedArtist = track.artist || "Unknown Artist";
   let coverUrl = track.cover_image || "img/music.svg";
@@ -170,27 +230,27 @@ export function updateSongInfo(track, autoOpenSidebar = false) {
 
   setImageSrcWithFallback(art, coverUrl);
   setImageSrcWithFallback(sideArt, coverUrl);
-  setImageSrcWithFallback(artistImg, coverUrl);
-
-  if (sideArt) sideArt.classList.remove("placeholder-art");
-  if (artistImg) artistImg.classList.remove("placeholder-art");
 
   if (nowTitle) nowTitle.textContent = title;
   if (nowArtist) nowArtist.textContent = resolvedArtist;
-  if (artistName) artistName.textContent = resolvedArtist;
 
-  if (sidebarHeaderTitle && state.allAlbums) {
-    const album = state.allAlbums.find((a) => a.folder === state.currentFolder);
-    sidebarHeaderTitle.textContent = album ? album.title : "Now Playing";
-  }
-
-  if (artistBio) {
-    artistBio.textContent = getArtistBio(resolvedArtist);
+  if (sidebarHeaderTitle) {
+    let headerText = "Now Playing";
+    if (state.allAlbums) {
+      const album = state.allAlbums.find((a) => a.folder === state.currentFolder);
+      if (album) {
+        headerText = `${album.title}`;
+      } else if (state.currentFolder) {
+        headerText = `${state.currentFolder.charAt(0).toUpperCase() + state.currentFolder.slice(1)} Popular`;
+      }
+    }
+    sidebarHeaderTitle.textContent = headerText;
   }
 
   updatePlaybarLikeButton();
   updateSidebarLikeButton();
   updateCredits(state.currentFolder, resolvedArtist);
+  updateNextInQueue();
 }
 
 export function setupSidebarEvents() {
@@ -203,16 +263,9 @@ export function setupSidebarEvents() {
   document.querySelectorAll(".follow-pill-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const isFollowing = btn.classList.contains("following");
-      if (isFollowing) {
-        btn.classList.remove("following");
-        btn.textContent = "Follow";
-        showToast("Unfollowed artist");
-      } else {
-        btn.classList.add("following");
-        btn.textContent = "Following";
-        showToast("Following artist ✔");
-      }
+      const parent = btn.closest(".credit-item, .artist-card, .album-header");
+      const name = parent ? parent.innerText.split("\n")[0] : state.currentFolder;
+      toggleFollowArtist(state.currentFolder || name, name);
     });
   });
 
@@ -225,35 +278,46 @@ export function setupSidebarEvents() {
     });
   }
 
-  const closeSidebarBtn = getElement(".close-sidebar");
-  if (closeSidebarBtn) {
-    closeSidebarBtn.addEventListener("click", () => {
-      const idlePromoCard = getElement("#idlePromoCard");
-      const nowPlayingCard = getElement("#nowPlayingCard");
-      if (nowPlayingCard) nowPlayingCard.style.display = "none";
-      if (idlePromoCard) idlePromoCard.style.display = "flex";
+  const sidebarDownloadBtn = getElement("#sidebarDownloadBtn");
+  const idleDownloadBtn = getElement("#idleDownloadBtn");
+  const openInstallModal = (e) => {
+    if (e) e.stopPropagation();
+    const modal = getElement("#installAppModal");
+    if (modal) modal.classList.remove("hidden");
+  };
 
-      const sidebar = getElement(".rightSidebar");
-      if (sidebar) sidebar.style.display = "none";
-      const mainGrid = getElement(".main-grid");
-      if (mainGrid) mainGrid.classList.remove("sidebar-active");
+  if (sidebarDownloadBtn) sidebarDownloadBtn.addEventListener("click", openInstallModal);
+  if (idleDownloadBtn) idleDownloadBtn.addEventListener("click", openInstallModal);
+
+  const closeInstallModalBtn = getElement("#closeInstallAppModalBtn");
+  if (closeInstallModalBtn) {
+    closeInstallModalBtn.addEventListener("click", () => {
+      const modal = getElement("#installAppModal");
+      if (modal) modal.classList.add("hidden");
     });
   }
 
-  // Toggle button in topbar header-right
+  const closeSidebarBtn = getElement(".close-sidebar");
+  if (closeSidebarBtn) {
+    closeSidebarBtn.style.display = "none";
+  }
+
+  // Toggle button in topbar / playbar (Spotify Sidebar View icon [ > | ])
   const toggleBtn = getElement("#nowPlayingToggleBtn");
   if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
       const sidebar = getElement(".rightSidebar");
       const mainGrid = getElement(".main-grid");
       if (sidebar && mainGrid) {
-        const isHidden = window.getComputedStyle(sidebar).display === "none";
+        const isHidden = !mainGrid.classList.contains("sidebar-active");
         if (isHidden) {
           sidebar.style.display = "flex";
           mainGrid.classList.add("sidebar-active");
+          toggleBtn.classList.add("active");
         } else {
           sidebar.style.display = "none";
           mainGrid.classList.remove("sidebar-active");
+          toggleBtn.classList.remove("active");
         }
       }
     });
@@ -298,7 +362,7 @@ export function toggleLikeTrack(folder, track, shouldRender = true) {
 // ==================== TIME DISPLAY ====================
 export function updateTimeDisplay() {
   const current = formatTime(state.currentSong.currentTime);
-  const total = isNaN(state.currentSong.duration) ? "00:00" : formatTime(state.currentSong.duration);
+  const total = isNaN(state.currentSong.duration) || !state.currentSong.duration ? "0:00" : formatTime(state.currentSong.duration);
 
   const currentSmall = getElement(".current-time");
   const durationSmall = getElement(".duration");
@@ -308,21 +372,22 @@ export function updateTimeDisplay() {
   if (isNaN(state.currentSong.duration) || !state.currentSong.duration) return;
   const pct = (state.currentSong.currentTime / state.currentSong.duration) * 100;
 
-  const progressCircle = getElement(".circle");
-  if (progressCircle) progressCircle.style.left = `${pct}%`;
-
-  const progressBar = getElement(".seekbar .progress");
-  if (progressBar) progressBar.style.width = `${pct}%`;
+  const seekbar = getElement("#spotifySeekbar");
+  if (seekbar) {
+    seekbar.value = pct;
+    seekbar.style.setProperty("--pct", `${pct}%`);
+    seekbar.style.background = `linear-gradient(to right, #ffffff ${pct}%, rgba(255, 255, 255, 0.25) ${pct}%)`;
+  }
 }
 
 // ==================== LIBRARY ====================
 export function updateLibraryButtons() {
   const likedBtn = getElement("#likedSongsBtn");
   const allBtn = getElement("#allSongsBtn");
-  const arijitBtn = getElement("#arijitSinghBtn");
+  const followingBtn = getElement("#followingBtn");
   if (likedBtn) likedBtn.classList.toggle("active", Boolean(state.showLikedSongs));
-  if (allBtn) allBtn.classList.toggle("active", !state.showLikedSongs && state.currFolder !== "arijit singh");
-  if (arijitBtn) arijitBtn.classList.toggle("active", !state.showLikedSongs && state.currFolder === "arijit singh");
+  if (allBtn) allBtn.classList.toggle("active", !state.showLikedSongs && !state.showFollowing);
+  if (followingBtn) followingBtn.classList.toggle("active", Boolean(state.showFollowing));
 }
 
 export function renderSongList() {
@@ -459,29 +524,55 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     return;
   }
 
-  // Render album details and tracklist
+  // Render album details and tracklist matching exact Spotify Reference Image
   albumDetailView.innerHTML = `
-    <div class="back-btn-container" id="backToHomeBtn">
-      <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18" style="vertical-align: middle;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
-      <span class="back-label">Back to Library</span>
-    </div>
+    <div class="spotify-album-hero" style="background: linear-gradient(180deg, #700f12 0%, #121212 100%);">
+      <div class="back-btn-container" id="backToHomeBtn">
+        <svg viewBox="0 0 24 24" fill="#fff" width="18" height="18" style="vertical-align: middle;"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+        <span class="back-label" style="color: #fff; font-weight: 600;">Back to Library</span>
+      </div>
 
-    <div class="album-detail-header">
-      <img src="${coverUrl}" alt="${albumTitle}" class="album-detail-cover" onerror="this.src='img/music.svg';" />
-      <div class="album-detail-info">
-        <span class="eyebrow-text">PLAYLIST</span>
-        <h1 class="album-detail-title">${albumTitle}</h1>
-        <p class="album-detail-description">${albumDescription}</p>
-        <div class="album-detail-meta">
-          <span class="logo-text-small" style="color: #1db954; font-weight: 700;">Musify</span> • ${songs.length} songs
+      <div class="album-hero-content">
+        <img src="${coverUrl}" alt="${albumTitle}" class="spotify-album-cover" onerror="this.src='img/music.svg';" />
+        <div class="spotify-album-info">
+          <span class="album-eyebrow">Album</span>
+          <h1 class="spotify-album-title">${albumTitle}</h1>
+          <div class="spotify-album-meta">
+            <span class="spotify-album-artists" style="font-weight: 700;">${albumDescription}</span>
+            <span class="bullet-dot">•</span>
+            <span>2024</span>
+            <span class="bullet-dot">•</span>
+            <span>${songs.length} songs</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="album-actions-bar">
-      <button class="play-btn-large" id="detailPlayBtn" title="Play Playlist">
-        <svg viewBox="0 0 24 24" fill="#000" width="28" height="28" style="margin-left: 2px;"><polygon points="5,3 19,12 5,21"/></svg>
-      </button>
+    <div class="spotify-action-bar">
+      <div class="action-bar-left">
+        <button class="play-btn-large" id="detailPlayBtn" title="Play Playlist">
+          <svg viewBox="0 0 24 24" fill="#000" width="28" height="28" style="margin-left: 2px;"><polygon points="5,3 19,12 5,21"/></svg>
+        </button>
+        <div class="mini-art-pill">
+          <img src="${coverUrl}" alt="mini art" onerror="this.src='img/music.svg';" />
+        </div>
+        <button class="action-icon-btn" title="Shuffle">
+          <svg viewBox="0 0 24 24" fill="#b3b3b3" width="22" height="22"><path d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+        </button>
+        <button class="action-icon-btn" title="Save to Your Library">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#b3b3b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </button>
+        <button class="action-icon-btn" title="Download">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#b3b3b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8m-4-4l4 4 4-4"/></svg>
+        </button>
+        <button class="action-icon-btn" title="More options">
+          <svg viewBox="0 0 24 24" fill="#b3b3b3" width="24" height="24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </button>
+      </div>
+      <div class="action-bar-right">
+        <span style="font-size: 13px; color: #b3b3b3; font-weight: 600;">List</span>
+        <svg viewBox="0 0 24 24" fill="#b3b3b3" width="20" height="20"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+      </div>
     </div>
 
     <div class="tracklist-container">
@@ -490,46 +581,57 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
           <tr>
             <th class="col-num">#</th>
             <th class="col-title">Title</th>
-            <th class="col-album">Album</th>
-            <th class="col-actions"></th>
+            <th class="col-duration" style="text-align: right; padding-right: 24px;">
+              <svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16" style="vertical-align: middle;"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            </th>
           </tr>
         </thead>
         <tbody>
           ${songs.map((songItem, index) => {
-    const track = songItem.track;
-    const title = track.title;
-    const artist = track.artist;
-    const thumb = track.cover_image || coverUrl;
-    const likedClass = isTrackLiked(songItem.folder, track.id) ? "liked" : "";
-    const isActive = state.currentTrack && track.id === state.currentTrack.id && songItem.folder === state.currentFolder ? "active" : "";
-    return `
+            const track = songItem.track;
+            const title = track.title;
+            const artist = track.artist;
+            const duration = track.duration ? formatTime(track.duration) : "4:15";
+            const likedClass = isTrackLiked(songItem.folder, track.id) ? "liked" : "";
+            const isPlaying = state.currentSong && !state.currentSong.paused;
+            const isCurrent = state.currentTrack && track.id === state.currentTrack.id && songItem.folder === state.currentFolder;
+            const isActive = isCurrent ? "active" : "";
+            return `
             <tr class="track-row ${isActive}" data-index="${index}">
               <td class="col-num">
                 <span class="num">${index + 1}</span>
-                <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><polygon points="5,3 19,12 5,21"/></svg>
+                <svg class="play-icon" viewBox="0 0 24 24" fill="#fff" width="16" height="16"><polygon points="5,3 19,12 5,21"/></svg>
+                <svg class="pause-icon" viewBox="0 0 24 24" fill="#1db954" width="16" height="16"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
               </td>
               <td class="col-title">
-                <div class="track-info" style="display: flex; align-items: center; gap: 12px;">
-                  <img src="${thumb}" alt="${title}" class="track-thumb" onerror="this.src='img/music.svg';" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />
-                  <div>
-                    <div class="track-name">${title}</div>
-                    <div class="track-artist">${artist}</div>
+                <div class="track-info-cell">
+                  <div class="track-name" style="${isCurrent ? 'color: #1db954 !important;' : ''}">${title}</div>
+                  <div class="track-artist">${artist}</div>
+                </div>
+              </td>
+              <td class="col-duration" style="text-align: right; padding-right: 24px; color: #b3b3b3; font-size: 14px;">
+                <div class="col-duration-wrap">
+                  <div class="row-hover-icons">
+                    <button class="action-icon-btn ${likedClass}" title="Save to Liked Songs" style="padding: 2px;">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="${likedClass ? '#1db954' : 'none'}" stroke="${likedClass ? '#1db954' : '#b3b3b3'}" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <span class="duration-text">${duration}</span>
+                  <div class="row-hover-icons">
+                    <button class="action-icon-btn" title="More options" style="padding: 2px;">
+                      <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+                    </button>
                   </div>
                 </div>
               </td>
-              <td class="col-album">${track.album || albumTitle}</td>
-              <td class="col-actions">
-                <button class="favorite-btn ${likedClass}" title="Save to Liked Songs">
-                  <svg viewBox="0 0 24 24" fill="${likedClass ? '#1db954' : 'none'}" stroke="${likedClass ? '#1db954' : '#b3b3b3'}" stroke-width="2" width="20" height="20">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                  </svg>
-                </button>
-              </td>
             </tr>
             `;
-  }).join("")}
+          }).join("")}
         </tbody>
       </table>
+      <div class="tracklist-bottom-spacer" style="height: 120px; width: 100%;"></div>
     </div>
   `;
 
@@ -1013,6 +1115,7 @@ export function setupLikedSongsButtons() {
   if (allSongsBtn) {
     allSongsBtn.addEventListener("click", async () => {
       state.showLikedSongs = false;
+      state.showFollowing = false;
       if (!state.currFolder) {
         if (state.allAlbums && state.allAlbums.length > 0) {
           await loadFolderSongs(state.allAlbums[0].folder);
@@ -1031,23 +1134,139 @@ export function setupLikedSongsButtons() {
     });
   }
 
-  if (arijitSinghBtn) {
-    arijitSinghBtn.addEventListener("click", async () => {
+  const followingBtn = getElement("#followingBtn");
+  if (followingBtn) {
+    followingBtn.addEventListener("click", () => {
       state.showLikedSongs = false;
-      await loadFolderSongs("arijit singh");
-      const matchedAlbum = state.allAlbums ? state.allAlbums.find(a => a.folder && a.folder.toLowerCase() === "arijit singh") : null;
-      const title = matchedAlbum ? matchedAlbum.title : "Arijit Singh Hits";
-      const desc = matchedAlbum ? matchedAlbum.description : "Arijit Singh, Pritam, Shreya Ghoshal";
-      const cover = matchedAlbum ? matchedAlbum.cover_image : "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/a4/09/a4/a409a4eb-485a-0d85-efc2-127db835e589/8902894541701_cover.jpg/500x500bb.jpg";
-      renderAlbumDetailView("arijit singh", title, desc, cover);
+      state.showFollowing = true;
+      renderFollowingList();
+
+      const albumDetailView = getElement("#albumDetailView");
+      const homeSections = getElement("#homeSections");
+      if (albumDetailView) albumDetailView.style.display = "none";
+      if (homeSections) homeSections.style.display = "block";
     });
   }
 }
 
+export function toggleFollowArtist(artistKey, artistName = "") {
+  if (!artistKey) return false;
+  const key = artistKey.toLowerCase().trim();
+  const isFollowing = state.followedArtists.has(key);
+
+  if (isFollowing) {
+    state.followedArtists.delete(key);
+    saveFollowedArtists();
+    showToast(`Unfollowed ${artistName || key}`);
+  } else {
+    state.followedArtists.add(key);
+    saveFollowedArtists();
+    showToast(`Following ${artistName || key}`);
+  }
+
+  // Real-time update UI buttons across the entire page (Credits box, sidebar, headers)
+  document.querySelectorAll(".follow-pill-btn").forEach((btn) => {
+    const dataArtist = (btn.getAttribute("data-artist") || "").toLowerCase().trim();
+    const parent = btn.closest(".credit-item, .artist-card, .album-header");
+    const nameText = parent ? parent.innerText.toLowerCase() : "";
+
+    if (dataArtist === key || nameText.includes(key)) {
+      if (state.followedArtists.has(key)) {
+        btn.classList.add("following");
+        btn.textContent = "Following";
+      } else {
+        btn.classList.remove("following");
+        btn.textContent = "Follow";
+      }
+    }
+  });
+
+  // Always update Left Sidebar Following List in real-time
+  renderFollowingList();
+
+  return !isFollowing;
+}
+
+export function renderFollowingList() {
+  const songListContainer = getElement(".songList ul");
+  if (!songListContainer) return;
+
+  const ALL_ARTISTS_MAP = {
+    "karan aujla": { folder: "karan aujla", name: "Karan Aujla", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg" },
+    "ikky": { folder: "karan aujla", name: "IKKY", subtitle: "Producer • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg" },
+    "diljit": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" },
+    "diljit dosanjh": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" },
+    "honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" },
+    "yo yo honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" },
+    "talwinder": { folder: "talwinder", name: "Talwiinder", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg" },
+    "ap dillhon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg" },
+    "ap dhillon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg" },
+    "pritam": { folder: "karan aujla", name: "Pritam", subtitle: "Composer • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" },
+    "ncs": { folder: "ncs", name: "NCS Music", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg" },
+    "vibes songs": { folder: "vibes songs", name: "Chill Punjabi Lo-Fi", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/3f/d2/f9/3fd2f999-c2c2-4fe6-ecc3-1d30f38904bd/859777326048_cover.jpg/500x500bb.jpg" },
+    "instagram trending": { folder: "instagram trending", name: "Reels Viral", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg" }
+  };
+
+  const followedKeys = Array.from(state.followedArtists);
+  const followedList = followedKeys
+    .map(k => ALL_ARTISTS_MAP[k] || { folder: k, name: k.charAt(0).toUpperCase() + k.slice(1), subtitle: "Artist • Followed", cover: "img/music.svg" });
+
+  if (followedList.length === 0) {
+    songListContainer.innerHTML = `<li class="empty-song-list" style="padding: 16px; color: #b3b3b3; font-size: 13px; text-align: center;">No followed artists yet. Follow artists to see them here!</li>`;
+    updateLibraryButtons();
+    return;
+  }
+
+  songListContainer.innerHTML = followedList.map((artist) => `
+    <li class="song-item artist-following-item" data-folder="${artist.folder}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; cursor: pointer; border-radius: 8px; transition: background 0.2s ease;">
+      <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+        <img src="${artist.cover}" alt="${artist.name}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" onerror="this.src='img/music.svg';" />
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: 700; color: #fff; font-size: 14px;">${artist.name}</span>
+          <span style="font-size: 12px; color: #1db954; font-weight: 600;">${artist.subtitle}</span>
+        </div>
+      </div>
+      <button class="unfollow-btn iconBtn" data-folder="${artist.folder}" data-name="${artist.name}" title="Unfollow artist" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #1db954; font-size: 12px; font-weight: 700; cursor: pointer; padding: 4px 10px; border-radius: 20px;">
+        Following
+      </button>
+    </li>
+  `).join("");
+
+  songListContainer.querySelectorAll(".artist-following-item").forEach((item) => {
+    item.addEventListener("click", async (e) => {
+      if (e.target.classList.contains("unfollow-btn")) return;
+      const folder = item.getAttribute("data-folder");
+      state.showFollowing = false;
+      await loadFolderSongs(folder);
+      renderSongList();
+    });
+  });
+
+  songListContainer.querySelectorAll(".unfollow-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const folder = btn.getAttribute("data-folder");
+      const name = btn.getAttribute("data-name");
+      toggleFollowArtist(folder, name);
+    });
+  });
+
+  updateLibraryButtons();
+}
+
+
 // ==================== HOME BUTTON ====================
 export function setupHomeButton() {
   const homeBtn = document.getElementById("homeBtn");
-  if (homeBtn) homeBtn.addEventListener("click", () => window.location.reload());
+  if (homeBtn) {
+    homeBtn.addEventListener("click", (e) => {
+      if (e) e.preventDefault();
+      const albumDetailView = getElement("#albumDetailView");
+      const homeSections = getElement("#homeSections");
+      if (albumDetailView) albumDetailView.style.display = "none";
+      if (homeSections) homeSections.style.display = "block";
+    });
+  }
 }
 
 // ==================== SCROLL ROW FUNCTION ====================

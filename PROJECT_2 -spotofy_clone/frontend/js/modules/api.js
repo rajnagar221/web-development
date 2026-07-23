@@ -46,8 +46,7 @@ const FALLBACK_ALBUMS = [
   { folder: "talwinder", title: "Talwinder Melodies", description: "Deep Vibe, Dhundhala & Aesthetic Hits", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg" },
   { folder: "ncs", title: "Electronic NCS Mix", description: "Faded, Specter & High Energy Gaming Beats", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg" },
   { folder: "vibes songs", title: "Chill Punjabi Lo-Fi", description: "Relaxing Beats, Late Night Punjabi Vibes", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/3f/d2/f9/3fd2f999-c2c2-4fe6-ecc3-1d30f38904bd/859777326048_cover.jpg/500x500bb.jpg" },
-  { folder: "instagram trending", title: "Reels Viral Hits", description: "Soundtracks trending on Reels & TikTok", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg" },
-  { folder: "arijit singh", title: "Arijit Singh Hits", description: "Arijit Singh, Pritam, Shreya Ghoshal", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/a4/09/a4/a409a4eb-485a-0d85-efc2-127db835e589/8902894541701_cover.jpg/500x500bb.jpg" }
+  { folder: "instagram trending", title: "Reels Viral Hits", description: "Soundtracks trending on Reels & TikTok", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg" }
 ];
 
 const FALLBACK_SONGS_MAP = {

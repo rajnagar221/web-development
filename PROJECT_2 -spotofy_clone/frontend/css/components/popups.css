@@ -824,27 +824,124 @@
     /* Safari and Chrome */
 }
 
-/* Redesigned Sidebar Title & Credits Styles */
+/* Redesigned Sidebar Title, Credits & Queue Styles (Matches Reference Screenshots) */
+.rightSidebar {
+    background: #121212 !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    padding-bottom: 140px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    overflow-y: auto !important;
+    height: 100% !important;
+    width: 340px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-sizing: border-box !important;
+}
+
+.rightSidebar .sidebar-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 4px !important;
+}
+
 .sidebar-header-title {
-    font-size: 14px !important;
+    font-size: 16px !important;
     font-weight: 700 !important;
     color: #fff !important;
     margin: 0 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-    max-width: 160px !important;
+    max-width: 220px !important;
+}
+
+.now-playing-panel-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+.now-playing-art-container {
+    width: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+    background: #282828 !important;
+}
+
+.now-playing-art-container img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.now-playing-info-bar {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-top: 4px !important;
+}
+
+.now-playing-info-bar .info-text {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+}
+
+.now-playing-title {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.now-playing-artist {
+    font-size: 14px !important;
+    color: #b3b3b3 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.add-playlist-btn {
+    background: transparent !important;
+    border: none !important;
+    color: #b3b3b3 !important;
+    cursor: pointer !important;
+    padding: 6px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+}
+
+.add-playlist-btn:hover {
+    color: #fff !important;
+    transform: scale(1.1) !important;
 }
 
 .credits-panel {
     background: #181818 !important;
-    border-radius: 12px !important;
+    border-radius: 8px !important;
     padding: 16px !important;
-    margin-top: 12px !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 .credits-header {
@@ -862,10 +959,12 @@
 }
 
 .credits-header .show-all-credits {
-    font-size: 12px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
     color: #b3b3b3 !important;
-    text-decoration: none !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
 }
 
 .credits-header .show-all-credits:hover {
@@ -876,25 +975,152 @@
 .credits-list {
     display: flex !important;
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 10px !important;
 }
 
 .credit-item {
     display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    padding: 6px 0 !important;
+}
+
+.credit-info {
+    display: flex !important;
     flex-direction: column !important;
     gap: 2px !important;
+    flex: 1 !important;
+    overflow: hidden !important;
 }
 
 .credit-name {
     font-size: 14px !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     color: #fff !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
 }
-
 
 .credit-role {
     font-size: 12px !important;
     color: #b3b3b3 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.follow-pill-btn {
+    background: transparent !important;
+    border: 1px solid #727272 !important;
+    color: #fff !important;
+    border-radius: 20px !important;
+    padding: 4px 16px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+}
+
+.follow-pill-btn:hover {
+    border-color: #fff !important;
+    transform: scale(1.04) !important;
+}
+
+.follow-pill-btn.following {
+    background: #fff !important;
+    color: #000 !important;
+    border-color: #fff !important;
+}
+
+.queue-panel {
+    background: #181818 !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.queue-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+.queue-header h3 {
+    margin: 0 !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+}
+
+.queue-header .open-queue-link {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #b3b3b3 !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.queue-header .open-queue-link:hover {
+    color: #fff !important;
+    text-decoration: underline !important;
+}
+
+.next-queue-card {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    padding: 8px 10px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: background 0.2s ease !important;
+}
+
+.next-queue-card:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.next-queue-card img {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 4px !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+}
+
+.next-queue-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+}
+
+.next-queue-info h4 {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.next-queue-info p {
+    font-size: 12px !important;
+    color: #b3b3b3 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
 }
 
 /* ==========================================

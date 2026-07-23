@@ -138,14 +138,9 @@ export function updateSongInfo(track, autoOpenSidebar = false) {
   const mainGrid = getElement(".main-grid");
   const nowPlayingCard = getElement("#nowPlayingCard");
 
-  if (autoOpenSidebar) {
-    if (sidebar) sidebar.style.display = "flex";
-    if (mainGrid) mainGrid.classList.add("sidebar-active");
-    const toggleBtn = getElement("#nowPlayingToggleBtn");
-    if (toggleBtn) toggleBtn.style.display = "inline-flex";
-  }
+  // rightSidebar panel disabled
 
-  if (nowPlayingCard) nowPlayingCard.style.display = "flex";
+  // nowPlayingCard hidden by default unless toggled
 
   const art = getElement("#playbarArt");
   const sideArt = getElement("#nowPlayingArt");
@@ -200,9 +195,7 @@ export function updateSongInfo(track, autoOpenSidebar = false) {
 
 export function setupSidebarEvents() {
   const mainGrid = getElement(".main-grid");
-  const sidebar = getElement(".rightSidebar");
-  if (mainGrid) mainGrid.classList.add("sidebar-active");
-  if (sidebar) sidebar.style.display = "flex";
+  if (mainGrid) mainGrid.classList.remove("sidebar-active");
 
 
 
@@ -294,7 +287,12 @@ export function toggleLikeTrack(folder, track, shouldRender = true) {
   showToast(added ? "Added to Liked Songs ❤" : "Removed from Liked Songs");
   updatePlaybarLikeButton();
   updateSidebarLikeButton();
-  if (shouldRender) renderSongList();
+  if (shouldRender) {
+    if (state.showLikedSongs) {
+      state.displaySongs = getLikedSongObjects();
+    }
+    renderSongList();
+  }
 }
 
 // ==================== TIME DISPLAY ====================
@@ -321,8 +319,10 @@ export function updateTimeDisplay() {
 export function updateLibraryButtons() {
   const likedBtn = getElement("#likedSongsBtn");
   const allBtn = getElement("#allSongsBtn");
-  if (likedBtn) likedBtn.classList.toggle("active", state.showLikedSongs);
-  if (allBtn) allBtn.classList.toggle("active", !state.showLikedSongs);
+  const dailyBtn = getElement("#dailyMixBtn");
+  if (likedBtn) likedBtn.classList.toggle("active", Boolean(state.showLikedSongs));
+  if (allBtn) allBtn.classList.toggle("active", !state.showLikedSongs && state.currFolder !== "daily mix");
+  if (dailyBtn) dailyBtn.classList.toggle("active", !state.showLikedSongs && state.currFolder === "daily mix");
 }
 
 export function renderSongList() {
@@ -512,7 +512,7 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
               <td class="col-actions">
                 <button class="favorite-btn ${likedClass}" title="Save to Liked Songs">
                   <svg viewBox="0 0 24 24" fill="${likedClass ? '#1db954' : 'none'}" stroke="${likedClass ? '#1db954' : '#b3b3b3'}" stroke-width="2" width="20" height="20">
-                    <path d="M12 5v14M5 12h14" />
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                   </svg>
                 </button>
               </td>
@@ -570,11 +570,14 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     if (favBtn) {
       favBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        toggleLikeTrack(song.folder, song.track.id, true);
-        const isLiked = isTrackLiked(song.folder, song.track.id);
+        toggleLikeTrack(song.folder, song.track, true);
+        const isLiked = isTrackLiked(song.folder, song.track);
         favBtn.classList.toggle("liked", isLiked);
-        favBtn.querySelector("svg").setAttribute("fill", isLiked ? "#1db954" : "none");
-        favBtn.querySelector("svg").setAttribute("stroke", isLiked ? "#1db954" : "#b3b3b3");
+        const svgEl = favBtn.querySelector("svg");
+        if (svgEl) {
+          svgEl.setAttribute("fill", isLiked ? "#1db954" : "none");
+          svgEl.setAttribute("stroke", isLiked ? "#1db954" : "#b3b3b3");
+        }
       });
     }
   });
@@ -986,14 +989,32 @@ export function setupLikedSongsButtons() {
       state.showLikedSongs = true;
       state.displaySongs = getLikedSongObjects();
       renderSongList();
+
+      const albumDetailView = getElement("#albumDetailView");
+      const homeSections = getElement("#homeSections");
+      if (albumDetailView) albumDetailView.style.display = "none";
+      if (homeSections) homeSections.style.display = "block";
     });
   }
 
   if (allSongsBtn) {
-    allSongsBtn.addEventListener("click", () => {
+    allSongsBtn.addEventListener("click", async () => {
       state.showLikedSongs = false;
-      state.displaySongs = state.songs.map((track) => ({ folder: state.currFolder, track }));
-      renderSongList();
+      if (!state.currFolder) {
+        if (state.allAlbums && state.allAlbums.length > 0) {
+          await loadFolderSongs(state.allAlbums[0].folder);
+        } else {
+          await loadFolderSongs("karan aujla");
+        }
+      } else {
+        state.displaySongs = state.songs.map((track) => ({ folder: state.currFolder, track }));
+        renderSongList();
+      }
+
+      const albumDetailView = getElement("#albumDetailView");
+      const homeSections = getElement("#homeSections");
+      if (albumDetailView) albumDetailView.style.display = "none";
+      if (homeSections) homeSections.style.display = "block";
     });
   }
 
@@ -1001,10 +1022,11 @@ export function setupLikedSongsButtons() {
     dailyMixBtn.addEventListener("click", async () => {
       state.showLikedSongs = false;
       await loadFolderSongs("daily mix");
-      const matchedAlbum = state.allAlbums ? state.allAlbums.find(a => a.folder === "daily mix") : null;
-      if (matchedAlbum) {
-        renderAlbumDetailView("daily mix", matchedAlbum.title, matchedAlbum.description, matchedAlbum.cover_image);
-      }
+      const matchedAlbum = state.allAlbums ? state.allAlbums.find(a => a.folder && a.folder.toLowerCase() === "daily mix") : null;
+      const title = matchedAlbum ? matchedAlbum.title : "Shubh Essentials";
+      const desc = matchedAlbum ? matchedAlbum.description : "Top class hits by Shubh, Arjan Dhillon & Punjabi blockbusters";
+      const cover = matchedAlbum ? matchedAlbum.cover_image : "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/48/4f/3c/484f3c19-fdab-1fa8-fdb4-c7de79852d12/197189603969.jpg/500x500bb.jpg";
+      renderAlbumDetailView("daily mix", title, desc, cover);
     });
   }
 }

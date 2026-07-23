@@ -68,8 +68,7 @@ export function togglePlayback(track, folder) {
 export function playMusic(track, folder = state.currFolder) {
   if (!track || !folder) return;
 
-  const nowPlayingCard = document.querySelector("#nowPlayingCard");
-  if (nowPlayingCard) nowPlayingCard.style.display = "flex";
+  // nowPlayingCard display handled via user toggle
 
   // If same track already playing, just resume
   if (state.currentTrack && track.id === state.currentTrack.id && folder === state.currentFolder && state.currentSong.src) {

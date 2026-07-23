@@ -24,8 +24,7 @@
 }
 
 .main-grid.sidebar-active {
-    grid-template-columns: minmax(0, 1fr) 320px;
-    /* Expands to show sidebar */
+    grid-template-columns: 1fr !important;
 }
 
 
@@ -175,19 +174,7 @@
 }
 
 .rightSidebar {
-    display: none;
-    /* Hidden by default until a song plays */
-    flex-direction: column;
-    gap: 20px;
-    margin-top: 0;
-    background: #121212 !important;
-    /* Premium Spotify dark grey background */
-    border-radius: 12px !important;
-    padding: 16px !important;
-    height: 100% !important;
-    overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    min-height: 0;
+    display: none !important;
 }
 
 #nowPlayingToggleBtn {
@@ -674,7 +661,7 @@
     }
 
     .main-grid.sidebar-active .rightSidebar {
-        right: 0 !important;
+        display: none !important;
     }
 
     .cardContainer {

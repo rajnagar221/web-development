@@ -1,4 +1,4 @@
-import { FOLDERS } from './config.js';
+import { FOLDERS, API_BASE_URL } from './config.js';
 import { getElement } from './utils.js';
 import { loadFolderSongs, playMusic } from './audio.js';
 import { fetchSongs } from './api.js';
@@ -89,12 +89,34 @@ export async function setupSearch() {
     if (searchContainer) searchContainer.style.display = "block";
 
     // Show a quick loading state
-    searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">Searching iTunes...</div>`;
+    searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">Searching full tracks...</div>`;
 
     try {
-      const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=10`);
-      const data = await res.json();
-      const tracks = data.results.filter(item => item.wrapperType === 'track');
+      let tracks = [];
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/fullsongs/search?query=${encodeURIComponent(query)}`);
+        if (res.ok) {
+          const data = await res.json();
+          tracks = data.songs || [];
+        }
+      } catch (backendErr) {
+        console.warn("Backend fullsongs search unavailable, trying direct search:", backendErr);
+      }
+
+      // Fallback to iTunes if backend returns empty
+      if (tracks.length === 0) {
+        const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=10`);
+        const data = await res.json();
+        const itunesTracks = data.results.filter(item => item.wrapperType === 'track');
+        tracks = itunesTracks.map(track => ({
+          id: track.trackId.toString(),
+          title: track.trackName,
+          artist: track.artistName,
+          cover_image: track.artworkUrl100 ? track.artworkUrl100.replace("100x100bb", "150x150bb") : "img/music.svg",
+          url: track.previewUrl,
+          folder: track.collectionId
+        }));
+      }
 
       if (tracks.length === 0) {
         searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">No results found for "${query}"</div>`;
@@ -102,19 +124,13 @@ export async function setupSearch() {
       }
 
       searchResults.innerHTML = tracks.map(track => {
-        const title = track.trackName;
-        const artist = track.artistName;
-        const coverUrl = track.artworkUrl100 ? track.artworkUrl100.replace("100x100bb", "150x150bb") : "img/music.svg";
-        const serializedTrack = encodeURIComponent(JSON.stringify({
-          id: track.trackId.toString(),
-          title: title,
-          artist: artist,
-          cover_image: coverUrl,
-          url: track.previewUrl
-        }));
+        const title = track.title;
+        const artist = track.artist;
+        const coverUrl = track.cover_image || "img/music.svg";
+        const serializedTrack = encodeURIComponent(JSON.stringify(track));
         
         return `
-          <div class="search-result-item" data-track="${serializedTrack}" data-folder="${track.collectionId}">
+          <div class="search-result-item" data-track="${serializedTrack}" data-folder="${track.folder || 'search'}">
             <img src="${coverUrl}" alt="${title}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
             <div class="search-result-info">
               <div class="search-result-title">${title}</div>
@@ -128,7 +144,7 @@ export async function setupSearch() {
       }).join('');
 
     } catch (e) {
-      searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">Error searching iTunes</div>`;
+      searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">Error searching songs</div>`;
     }
 
     searchResults.querySelectorAll('.search-result-item').forEach(item => {

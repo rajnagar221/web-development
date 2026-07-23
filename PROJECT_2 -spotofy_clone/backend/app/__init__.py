@@ -10,6 +10,7 @@ from app.routers.albums import router as albums_router
 from app.routers.playlists import router as playlists_router
 from app.routers.search import router as search_router
 from app.routers.deezer import router as deezer_router
+from app.routers.saavn import router as saavn_router
 
 app = FastAPI()
 
@@ -29,6 +30,7 @@ app.include_router(albums_router)
 app.include_router(playlists_router)
 app.include_router(search_router)
 app.include_router(deezer_router)
+app.include_router(saavn_router)
 
 @app.get("/")
 def health():   

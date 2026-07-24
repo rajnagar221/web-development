@@ -1,12 +1,8 @@
-from fastapi import Body
-from app.jwt_config import decode_token
-from app import config
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Depends
-from jose import JWTError, jwt
 from app.database import users_collection
 from app.models import SignupModel, LoginModel
-from app.jwt_config import create_access_token, decode_token,verify_token
+from app.jwt_config import create_access_token, decode_token, verify_token
 
 from app.auth import (
     hash_password,
@@ -20,6 +16,7 @@ UTC = timezone.utc
 router = APIRouter()
 
 @router.post("/signup")
+@router.post("/api/signup")
 def signup(user: SignupModel):
     # Check email
     existing_email = users_collection.find_one({"email": user.email})
@@ -37,8 +34,6 @@ def signup(user: SignupModel):
             raise HTTPException(status_code=400, detail="Phone number already registered")
     else:
         normalized_phone = None
-  
-      
 
     # Password validation
     if len(user.password) < 6:
@@ -46,7 +41,7 @@ def signup(user: SignupModel):
 
     # Insert user
     result = users_collection.insert_one({
-        "last name": user.name,
+        "last name": user.name if hasattr(user, 'name') else user.username,
         "username": user.username,
         "email": user.email,
         "phone": normalized_phone,
@@ -61,6 +56,7 @@ def signup(user: SignupModel):
     }
 
 @router.post("/login")
+@router.post("/api/login")
 def login(user: LoginModel):
     login_identifier = (user.username or user.identifier or "").strip()
 
@@ -90,6 +86,7 @@ def login(user: LoginModel):
     }
 
 @router.post("/google-login")
+@router.post("/api/google-login")
 def google_login():
     email = "google-demo@musify.com"
     db_user = users_collection.find_one({"email": email})
@@ -118,6 +115,7 @@ def google_login():
     }
 
 @router.post("/spotify-login")
+@router.post("/api/spotify-login")
 def spotify_login():
     email = "spotify-demo@musify.com"
     db_user = users_collection.find_one({"email": email})
@@ -146,6 +144,7 @@ def spotify_login():
     }
 
 @router.post("/apple-login")
+@router.post("/api/apple-login")
 def apple_login():
     email = "apple-demo@musify.com"
     db_user = users_collection.find_one({"email": email})
@@ -173,7 +172,7 @@ def apple_login():
         "username": db_user.get("username"),
     }
 
-@router.get("/profile")
+@router.get("/api/profile")
 def get_current_user(token: str = Depends(oauth2_scheme)):
     payload = decode_token(token)
     if payload.get("error"):
@@ -195,6 +194,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     }
 
 @router.get("/check-login")
+@router.get("/api/check-login")
 def check_login(token: str = Depends(oauth2_scheme)):
     try:
         payload = verify_token(token)
@@ -205,5 +205,7 @@ def check_login(token: str = Depends(oauth2_scheme)):
         return {"is_logged_in": True, "username": "Guest User", "email": "guest@musify.com", "message": "Guest login active"}
 
 @router.post("/logout")
+@router.post("/api/logout")
 def logout():
     return {"message": "Logout successful"}
+

@@ -5,12 +5,8 @@
     align-items: center;
     background: linear-gradient(180deg, var(--bg-tertiary), transparent);
     padding: 20px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2px;
-    z-index: 100;
     gap: 16px;
+    z-index: 10000 !important;
 }
 
 .header-left {
@@ -212,6 +208,7 @@
     border: none !important;
     padding: 0 !important;
     box-shadow: none !important;
+    z-index: 10001 !important;
 }
 
 .searchInput {
@@ -301,22 +298,22 @@
     top: calc(100% + 6px) !important;
     left: 0 !important;
     width: 100% !important;  /* Same width as search bar */
-    max-height: 380px !important;
+    max-height: 420px !important;
     overflow-y: auto !important;
-    background: #282828 !important;
-    background-color: #282828 !important;
+    overflow-x: hidden !important;
+    background: #242424 !important;
+    background-color: #242424 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border-radius: 8px !important;  /* Subtle rounding matching Spotify */
+    border-radius: 12px !important;
     padding: 0 !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 0 !important;
-    border: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8) !important;
     z-index: 99999 !important;
     opacity: 1 !important;
-    overflow: hidden !important;
 }
 
 #searchContainer.searchContainer::-webkit-scrollbar {
@@ -380,26 +377,32 @@
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
-    padding: 10px 14px !important;
+    padding: 8px 12px !important;
+    margin: 2px 6px !important;
     background: transparent !important;
     cursor: pointer !important;
     transition: background-color 0.15s ease !important;
-    border-radius: 0 !important;
+    border-radius: 6px !important;
 }
 
 .search-suggestion-item:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
 }
 
 .suggestion-icon {
-    opacity: 0.55;
+    opacity: 0.75;
     flex-shrink: 0;
 }
 
 .suggestion-text {
     font-size: 14px;
-    font-weight: 500;
-    color: #fff;
+    font-weight: 400;
+    color: #b3b3b3;
+}
+
+.suggestion-text strong {
+    color: #ffffff;
+    font-weight: 700;
 }
 
 /* Track result row (artwork + title/sub + add btn) */
@@ -407,15 +410,16 @@
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 8px 14px !important;
+    padding: 8px 12px !important;
+    margin: 2px 6px !important;
     background: transparent !important;
     cursor: pointer !important;
     transition: background-color 0.15s ease !important;
-    border-radius: 0 !important;
+    border-radius: 6px !important;
 }
 
 .search-track-row:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
 }
 
 .search-track-left {

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    if (!localStorage.getItem("token") && localStorage.getItem("is_logged_in") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#121212">
+  <link rel="icon" type="image/svg+xml" href="img/musify-icon.svg" />
+  <link rel="stylesheet" href="css/profile.css">
+  <title>App Settings - musify</title>
+</head>
+<body class="profile-page-body">
+
+  <!-- TOPBAR HEADER - MUSIFY LOGO IN TOP LEFT CORNER -->
+  <header class="profile-topbar">
+    <div class="profile-topbar-left">
+      <a href="index.html" class="profile-brand">
+        <img src="img/musify-icon.svg" alt="Musify Logo">
+        <span>musify</span>
+      </a>
+    </div>
+
+    <div class="profile-topbar-right">
+      <div class="user-mini-badge">
+        <div id="miniAvatar" class="user-mini-avatar">R</div>
+        <span id="miniUsername" class="user-mini-name">User</span>
+      </div>
+      <button id="logoutBtn" class="logout-link-btn">Logout</button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="profile-main-container">
+
+    <!-- BACK TO MUSIC BUTTON (BELOW MUSIFY LOGO WITH DISTANCE) -->
+    <div class="back-button-bar">
+      <a href="index.html" class="back-to-music-btn" title="Return to Music Player">
+        ← Back to Music
+      </a>
+    </div>
+
+    <!-- PAGE TITLE BANNER -->
+    <div class="page-title-banner">
+      <h1>App Settings</h1>
+      <span class="badge-account-type">App Configuration</span>
+    </div>
+
+    <!-- 1. ACCOUNT SECTION -->
+    <div class="account-group-box">
+      <h2 class="account-group-title">Account</h2>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Edit personal info & login methods</span>
+          <span class="setting-desc">Update your display username, email address, or avatar.</span>
+        </div>
+        <a href="profile.html" class="outline-pill-btn" style="text-decoration: none; padding: 8px 16px; font-size: 13px;">
+          Edit Profile ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- 2. AUDIO & STREAMING QUALITY -->
+    <div class="account-group-box">
+      <h2 class="account-group-title">Audio Quality & Streaming</h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Streaming Audio Quality</span>
+          <span class="setting-desc">Select resolution for online streaming playback.</span>
+        </div>
+        <select id="selectAudioQuality" class="grey-select">
+          <option value="low">Low (24kbps)</option>
+          <option value="normal">Normal (96kbps)</option>
+          <option value="high">High (160kbps)</option>
+          <option value="very_high" selected>Very High (320kbps Lossless)</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Normalize Volume</span>
+          <span class="setting-desc">Set the same volume level for all tracks and podcasts.</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggleNormalize" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 3. PLAYBACK -->
+    <div class="account-group-box">
+      <h2 class="account-group-title">Playback & Transitions</h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Autoplay</span>
+          <span class="setting-desc">Enjoy non-stop audio. Plays similar songs when music ends.</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggleAutoplay" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Crossfade Songs</span>
+          <span class="setting-desc">Smooth transition overlap between tracks (<span id="valCrossfade">0s</span>).</span>
+        </div>
+        <input type="range" id="rangeCrossfade" min="0" max="12" value="0" style="accent-color: #1db954;">
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Mono Audio</span>
+          <span class="setting-desc">Merge left and right audio channels into one.</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggleMonoAudio">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 4. DISPLAY & VISUALS -->
+    <div class="account-group-box">
+      <h2 class="account-group-title">Display & Visuals</h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Looping Canvas</span>
+          <span class="setting-desc">Show short looping video visuals when playing songs.</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggleCanvas" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Desktop Notifications</span>
+          <span class="setting-desc">Show track change popups on desktop.</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggleDesktopNotify" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 5. LANGUAGE -->
+    <div class="account-group-box">
+      <h2 class="account-group-title">App Language</h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Choose Language</span>
+          <span class="setting-desc">Changes will apply across the application.</span>
+        </div>
+        <select id="selectLanguage" class="grey-select">
+          <option value="en" selected>English (English)</option>
+          <option value="hi">Hindi (हिन्दी)</option>
+          <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+          <option value="es">Spanish (Español)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="profile-footer">
+      <div>🌐 India (English)</div>
+      <div>© 2026 Musify AB</div>
+    </footer>
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="settingsToast" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #242424; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 12px 24px; border-radius: 50px; font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.5); display: none; transition: opacity 0.3s ease; z-index: 2000;"></div>
+
+  <script src="js/settings-app.js"></script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    if (!localStorage.getItem("token") && localStorage.getItem("is_logged_in") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#121212">
+  <link rel="icon" type="image/svg+xml" href="img/musify-icon.svg" />
+  <link rel="stylesheet" href="css/profile.css">
+  <title>User Profile - musify</title>
+</head>
+<body class="profile-page-body">
+
+  <!-- TOPBAR HEADER - MUSIFY LOGO IN TOP LEFT CORNER -->
+  <header class="profile-topbar">
+    <div class="profile-topbar-left">
+      <a href="index.html" class="profile-brand">
+        <img src="img/musify-icon.svg" alt="Musify Logo">
+        <span>musify</span>
+      </a>
+    </div>
+
+    <div class="profile-topbar-right">
+      <div class="user-mini-badge">
+        <div id="miniAvatar" class="user-mini-avatar">R</div>
+        <span id="miniUsername" class="user-mini-name">User</span>
+      </div>
+      <button id="logoutBtn" class="logout-link-btn">Logout</button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="profile-main-container">
+
+    <!-- BACK TO MUSIC BUTTON (BELOW MUSIFY LOGO WITH DISTANCE) -->
+    <div class="back-button-bar">
+      <a href="index.html" class="back-to-music-btn" title="Return to Music Player">
+        ← Back to Music
+      </a>
+    </div>
+
+    <!-- PAGE TITLE BANNER -->
+    <div class="page-title-banner">
+      <h1>User Profile</h1>
+      <span class="badge-account-type">Public Profile</span>
+    </div>
+
+    <!-- HERO PROFILE BANNER CARD -->
+    <section class="profile-hero-card">
+      <div class="profile-hero-left">
+        <div id="profileAvatarHero" class="profile-avatar-large">R</div>
+        <div class="profile-hero-details">
+          <h1 id="profileUsernameHero">User Name</h1>
+          <p id="profileEmailHero">user@example.com</p>
+          <span class="badge-account-type">Musify Free Member</span>
+        </div>
+      </div>
+      <button id="openEditModalBtn" class="edit-profile-action-btn">
+        Edit Personal Info ✏️
+      </button>
+    </section>
+
+    <!-- PROFILE INFORMATION BOX -->
+    <div class="account-group-box">
+      <h2 class="account-group-title">Personal Details</h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Display Name</span>
+          <span id="displayUsernameVal" class="setting-desc" style="color: #fff; font-size: 14px; font-weight: 600;">User</span>
+        </div>
+        <button class="outline-pill-btn" id="editNameBtn" style="padding: 6px 16px; font-size: 13px;">Change</button>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Email Address</span>
+          <span id="displayEmailVal" class="setting-desc" style="color: #fff; font-size: 14px; font-weight: 600;">user@example.com</span>
+        </div>
+        <button class="outline-pill-btn" id="editEmailBtn" style="padding: 6px 16px; font-size: 13px;">Change</button>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Profile Avatar Photo</span>
+          <span class="setting-desc">Upload a custom image for your profile avatar.</span>
+        </div>
+        <button class="primary-pill-btn" id="uploadPhotoBtn" style="padding: 6px 16px; font-size: 13px;">Upload Photo</button>
+      </div>
+    </div>
+
+    <!-- PREFERENCES & BIO -->
+    <div class="account-group-box">
+      <h2 class="account-group-title">Music Preferences</h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Favorite Genre</span>
+          <span class="setting-desc">Customizes your daily music recommendations.</span>
+        </div>
+        <select id="favGenreSelect" class="grey-select">
+          <option value="punjabi" selected>Punjabi Hits</option>
+          <option value="bollywood">Bollywood / Hindi</option>
+          <option value="lofi">Aesthetic Lo-Fi</option>
+          <option value="edm">EDM & Gaming</option>
+          <option value="pop">English Pop</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="profile-footer">
+      <div>🌐 India (English)</div>
+      <div>© 2026 Musify AB</div>
+    </footer>
+  </main>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div id="editProfileModal" class="profile-modal-backdrop">
+    <div class="profile-modal-card">
+      <button id="closeEditModalBtn" class="close-btn">✕</button>
+      <h2>Edit Personal Info</h2>
+
+      <form id="editProfileForm">
+        <div class="avatar-upload-wrap">
+          <div id="modalAvatarPreview" class="avatar-upload-preview">R</div>
+          <div>
+            <label for="inputAvatarFile" class="outline-pill-btn" style="padding: 6px 14px; font-size: 12px; cursor: pointer; display: inline-block;">
+              Choose Photo
+            </label>
+            <input type="file" id="inputAvatarFile" accept="image/*" style="display: none;">
+            <button type="button" id="removeAvatarBtn" style="background: transparent; border: none; color: #f87171; font-size: 12px; cursor: pointer; margin-left: 8px;">Remove</button>
+          </div>
+        </div>
+
+        <div class="form-group-field">
+          <label for="inputUsername">Username</label>
+          <input type="text" id="inputUsername" required placeholder="Enter username">
+        </div>
+
+        <div class="form-group-field">
+          <label for="inputEmail">Email Address</label>
+          <input type="email" id="inputEmail" required placeholder="Enter email">
+        </div>
+
+        <div class="modal-actions-row">
+          <button type="button" id="cancelEditBtn" class="outline-pill-btn">Cancel</button>
+          <button type="submit" class="primary-pill-btn">Save Details</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="profileToast" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #242424; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 12px 24px; border-radius: 50px; font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.5); display: none; transition: opacity 0.3s ease; z-index: 2000;"></div>
+
+  <script src="js/profile-app.js"></script>
+</body>
+</html>

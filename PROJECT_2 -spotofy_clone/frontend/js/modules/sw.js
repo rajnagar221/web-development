@@ -69,7 +69,14 @@ self.addEventListener('fetch', (e) => {
 
   // Skip caching for API requests or backend requests
   if (url.origin !== self.location.origin || url.pathname.includes('/api/') || url.pathname.includes('/login') || url.pathname.includes('/signup')) {
-    e.respondWith(fetch(e.request));
+    e.respondWith(
+      fetch(e.request).catch((err) => {
+        return new Response(JSON.stringify({ error: "Network error or API server unavailable" }), {
+          status: 503,
+          headers: { "Content-Type": "application/json" }
+        });
+      })
+    );
     return;
   }
 

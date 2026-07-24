@@ -1,4 +1,4 @@
-import { STATIC_SONGS_URL } from './config.js';
+import { STATIC_SONGS_URL, API_BASE_URL } from './config.js';
 import { state } from './state.js';
 import { fetchSongs } from './api.js';
 import {
@@ -65,7 +65,7 @@ export function togglePlayback(track, folder) {
   }
 }
 
-export function playMusic(track, folder = state.currFolder) {
+export async function playMusic(track, folder = state.currFolder) {
   if (!track || !folder) return;
 
   // nowPlayingCard display handled via user toggle
@@ -88,6 +88,36 @@ export function playMusic(track, folder = state.currFolder) {
   updateSongInfo(track, true);
   updatePlaybarLikeButton();
   updatePlayButton(true);
+
+  // Check if track URL is a 30s preview or needs full track resolution
+  const isPreviewUrl = !track.url ||
+                       (track.duration && Number(track.duration) <= 30) ||
+                       (typeof track.url === 'string' && (
+                          track.url.includes("apple.com") ||
+                          track.url.includes("itunes") ||
+                          track.url.includes("audio-ssl") ||
+                          track.url.includes("mzstatic") ||
+                          track.url.includes("preview") ||
+                          track.url.includes("dzcdn.net")
+                       ));
+
+  if (isPreviewUrl) {
+    try {
+      showToast("🔎 Resolving full song audio...");
+      const res = await fetch(`${API_BASE_URL}/api/fullsongs/resolve?title=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(track.artist || '')}`);
+      if (res.ok) {
+        const fullData = await res.json();
+        if (fullData.success && fullData.url) {
+          track.url = fullData.url;
+          track.duration = fullData.duration || track.duration || 180;
+          updateSongInfo(track, true);
+          showToast("🎵 Full song loaded");
+        }
+      }
+    } catch (resolveErr) {
+      console.warn("Full song auto-resolution attempt failed, using existing URL:", resolveErr);
+    }
+  }
 
   if (track.url) {
     state.currentSong.src = track.url;

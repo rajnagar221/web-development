@@ -123,39 +123,90 @@ export async function setupSearch() {
         return;
       }
 
-      searchResults.innerHTML = tracks.map(track => {
-        const title = track.title;
-        const artist = track.artist;
-        const coverUrl = track.cover_image || "img/music.svg";
-        const serializedTrack = encodeURIComponent(JSON.stringify(track));
-        
-        return `
-          <div class="search-result-item" data-track="${serializedTrack}" data-folder="${track.folder || 'search'}">
-            <img src="${coverUrl}" alt="${title}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
-            <div class="search-result-info">
-              <div class="search-result-title">${title}</div>
-              <div class="search-result-artist">${artist}</div>
-            </div>
-            <div class="play-btn-small">
-              <svg viewBox="0 0 24 24" fill="#1db954" width="16" height="16"><polygon points="5,3 19,12 5,21"/></svg>
-            </div>
+      // Render top 3 text suggestions matching Spotify search UI
+      const suggestions = [
+        `${query}`,
+        `${query} songs`,
+        `${query} hindi songs`,
+        `${query} remix`
+      ];
+
+      let html = '';
+
+      // 1. Text suggestions
+      suggestions.forEach(s => {
+        const rest = s.length > query.length ? s.slice(query.length) : '';
+        html += `
+          <div class="search-suggestion-item" data-suggestion="${s}">
+            <svg class="suggestion-icon" viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18">
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            <span class="suggestion-text"><strong>${query}</strong>${rest}</span>
           </div>
         `;
-      }).join('');
+      });
+
+      // 2. Track results with cover image, title, category/artist subtitle, and (+) button
+      tracks.forEach(track => {
+        const title = track.title;
+        const artist = track.artist || "Unknown Artist";
+        const coverUrl = track.cover_image || "img/music.svg";
+        const subtitle = track.album ? `Album • ${artist}` : `Song • ${artist}`;
+        const serializedTrack = encodeURIComponent(JSON.stringify(track));
+
+        html += `
+          <div class="search-track-row" data-track="${serializedTrack}" data-folder="${track.folder || 'search'}">
+            <div class="search-track-left">
+              <img src="${coverUrl}" alt="${title}" class="search-track-thumb" onerror="this.src='img/music.svg';" />
+              <div class="search-track-details">
+                <div class="search-track-title">${title}</div>
+                <div class="search-track-sub">${subtitle}</div>
+              </div>
+            </div>
+            <button class="search-add-btn" title="Add to Library" data-title="${title}">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            </button>
+          </div>
+        `;
+      });
+
+      searchResults.innerHTML = html;
+
+      // Suggestion item click -> update input search
+      searchResults.querySelectorAll('.search-suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const sugText = item.dataset.suggestion;
+          if (searchInput) {
+            searchInput.value = sugText;
+            searchInput.dispatchEvent(new Event('input'));
+          }
+        });
+      });
+
+      // Add button click
+      searchResults.querySelectorAll('.search-add-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const songTitle = btn.dataset.title || "Song";
+          showToast(`❤ Added "${songTitle}" to Liked Songs`);
+        });
+      });
 
     } catch (e) {
       searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">Error searching songs</div>`;
     }
 
-    searchResults.querySelectorAll('.search-result-item').forEach(item => {
-      item.addEventListener('click', async () => {
+    searchResults.querySelectorAll('.search-track-row').forEach(item => {
+      item.addEventListener('click', async (e) => {
+        if (e.target.closest('.search-add-btn')) return;
         try {
           const trackData = JSON.parse(decodeURIComponent(item.dataset.track));
-          const folder = item.dataset.folder; // collectionId
+          const folder = item.dataset.folder;
           
-          // Ensure we have a valid songs list in state or push this one
-          // Since it's a direct search hit, we can just play it directly
-          // We wrap it in an array to let playMusic work properly if it needs to go next/prev
           state.songs = [trackData];
           state.displaySongs = [{ folder: folder, track: trackData }];
           
@@ -164,8 +215,8 @@ export async function setupSearch() {
           if (searchContainer) searchContainer.style.display = "none";
           if (searchInput) searchInput.value = "";
           searchResults.innerHTML = "";
-        } catch (e) {
-          console.error("Failed to parse track from search result", e);
+        } catch (err) {
+          console.error("Failed to parse track from search result", err);
         }
       });
     });

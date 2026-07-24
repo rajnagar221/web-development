@@ -588,15 +588,15 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
         </thead>
         <tbody>
           ${songs.map((songItem, index) => {
-            const track = songItem.track;
-            const title = track.title;
-            const artist = track.artist;
-            const duration = track.duration ? formatTime(track.duration) : "4:15";
-            const likedClass = isTrackLiked(songItem.folder, track.id) ? "liked" : "";
-            const isPlaying = state.currentSong && !state.currentSong.paused;
-            const isCurrent = state.currentTrack && track.id === state.currentTrack.id && songItem.folder === state.currentFolder;
-            const isActive = isCurrent ? "active" : "";
-            return `
+    const track = songItem.track;
+    const title = track.title;
+    const artist = track.artist;
+    const duration = track.duration ? formatTime(track.duration) : "4:15";
+    const likedClass = isTrackLiked(songItem.folder, track.id) ? "liked" : "";
+    const isPlaying = state.currentSong && !state.currentSong.paused;
+    const isCurrent = state.currentTrack && track.id === state.currentTrack.id && songItem.folder === state.currentFolder;
+    const isActive = isCurrent ? "active" : "";
+    return `
             <tr class="track-row ${isActive}" data-index="${index}">
               <td class="col-num">
                 <span class="num">${index + 1}</span>
@@ -628,7 +628,7 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
               </td>
             </tr>
             `;
-          }).join("")}
+  }).join("")}
         </tbody>
       </table>
       <div class="tracklist-bottom-spacer" style="height: 120px; width: 100%;"></div>
@@ -1057,6 +1057,26 @@ export function setupProfileMenu() {
   // Set up Edit Profile Modal event listeners
   setupEditProfileModal();
 
+  const accountOptionBtn = getElement("#accountOptionBtn");
+  const profileOptionBtn = getElement("#profileOptionBtn");
+  const settingsOptionBtn = getElement("#settingsOptionBtn");
+
+  if (accountOptionBtn) {
+    accountOptionBtn.addEventListener("click", () => {
+      window.location.href = "account.html";
+    });
+  }
+  if (profileOptionBtn) {
+    profileOptionBtn.addEventListener("click", () => {
+      window.location.href = "profile.html";
+    });
+  }
+  if (settingsOptionBtn) {
+    settingsOptionBtn.addEventListener("click", () => {
+      window.location.href = "settings.html";
+    });
+  }
+
   if (profileIcon && profileMenu) {
     profileIcon.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -1208,8 +1228,17 @@ export function renderFollowingList() {
   };
 
   const followedKeys = Array.from(state.followedArtists);
-  const followedList = followedKeys
-    .map(k => ALL_ARTISTS_MAP[k] || { folder: k, name: k.charAt(0).toUpperCase() + k.slice(1), subtitle: "Artist • Followed", cover: "img/music.svg" });
+  const seenNames = new Set();
+  const followedList = [];
+
+  for (const k of followedKeys) {
+    const info = ALL_ARTISTS_MAP[k] || { folder: k, name: k.charAt(0).toUpperCase() + k.slice(1), subtitle: "Artist", cover: "img/music.svg" };
+    const normName = info.name.toLowerCase().trim();
+    if (!seenNames.has(normName)) {
+      seenNames.add(normName);
+      followedList.push(info);
+    }
+  }
 
   if (followedList.length === 0) {
     songListContainer.innerHTML = `<li class="empty-song-list" style="padding: 16px; color: #b3b3b3; font-size: 13px; text-align: center;">No followed artists yet. Follow artists to see them here!</li>`;
@@ -1223,31 +1252,18 @@ export function renderFollowingList() {
         <img src="${artist.cover}" alt="${artist.name}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" onerror="this.src='img/music.svg';" />
         <div style="display: flex; flex-direction: column;">
           <span style="font-weight: 700; color: #fff; font-size: 14px;">${artist.name}</span>
-          <span style="font-size: 12px; color: #1db954; font-weight: 600;">${artist.subtitle}</span>
+          <span style="font-size: 12px; color: #b3b3b3; font-weight: 500;">Artist</span>
         </div>
       </div>
-      <button class="unfollow-btn iconBtn" data-folder="${artist.folder}" data-name="${artist.name}" title="Unfollow artist" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #1db954; font-size: 12px; font-weight: 700; cursor: pointer; padding: 4px 10px; border-radius: 20px;">
-        Following
-      </button>
     </li>
   `).join("");
 
   songListContainer.querySelectorAll(".artist-following-item").forEach((item) => {
     item.addEventListener("click", async (e) => {
-      if (e.target.classList.contains("unfollow-btn")) return;
       const folder = item.getAttribute("data-folder");
       state.showFollowing = false;
       await loadFolderSongs(folder);
       renderSongList();
-    });
-  });
-
-  songListContainer.querySelectorAll(".unfollow-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const folder = btn.getAttribute("data-folder");
-      const name = btn.getAttribute("data-name");
-      toggleFollowArtist(folder, name);
     });
   });
 
@@ -1258,15 +1274,24 @@ export function renderFollowingList() {
 // ==================== HOME BUTTON ====================
 export function setupHomeButton() {
   const homeBtn = document.getElementById("homeBtn");
-  if (homeBtn) {
-    homeBtn.addEventListener("click", (e) => {
-      if (e) e.preventDefault();
-      const albumDetailView = getElement("#albumDetailView");
-      const homeSections = getElement("#homeSections");
-      if (albumDetailView) albumDetailView.style.display = "none";
-      if (homeSections) homeSections.style.display = "block";
-    });
-  }
+  const brandLogo = document.querySelector(".sidebar-brand");
+
+  const resetToHome = (e) => {
+    if (e) e.preventDefault();
+    const albumDetailView = getElement("#albumDetailView");
+    const homeSections = getElement("#homeSections");
+    const accountOverviewPage = getElement("#accountOverviewPage");
+    const settingsViewPage = getElement("#settingsViewPage");
+
+    if (accountOverviewPage) accountOverviewPage.style.display = "none";
+    if (settingsViewPage) settingsViewPage.style.display = "none";
+    if (albumDetailView) albumDetailView.style.display = "none";
+    if (homeSections) homeSections.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  if (homeBtn) homeBtn.addEventListener("click", resetToHome);
+  if (brandLogo) brandLogo.addEventListener("click", resetToHome);
 }
 
 // ==================== SCROLL ROW FUNCTION ====================

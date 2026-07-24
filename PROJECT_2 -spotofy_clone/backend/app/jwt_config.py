@@ -1,19 +1,18 @@
 from fastapi import Depends
-import jwt
 import os
 from datetime import datetime, timedelta
 from typing import Optional
+from jose import jwt, JWTError, ExpiredSignatureError
 from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordBearer , HTTPAuthorizationCredentials , HTTPBearer
+from fastapi.security import OAuth2PasswordBearer, HTTPAuthorizationCredentials, HTTPBearer
 
 # Secret Key
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")  # Change in production
+SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey123")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
     
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")    
 http_bearer = HTTPBearer()
-
 
 # Password Hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -59,7 +58,7 @@ def decode_token(credential: str):
         payload = jwt.decode(credential, SECRET_KEY, algorithms=[ALGORITHM])
         payload["error"] = None
         return payload
-    except jwt.ExpiredSignatureError:
+    except ExpiredSignatureError:
         return {"error": "Token expired"}
-    except jwt.InvalidTokenError:
-        return {"error": "Invalid token"}
+    except JWTError:
+        return {"error": "Invalid token"}

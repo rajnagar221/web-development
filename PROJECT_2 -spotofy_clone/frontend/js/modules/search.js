@@ -4,6 +4,7 @@ import { loadFolderSongs, playMusic } from './audio.js';
 import { fetchSongs } from './api.js';
 import { showToast } from './ui.js';
 import { state } from './state.js';
+import { toggleLikeState, isTrackLiked } from './storage.js';
 
 const searchIconSVG = `<svg class="suggestion-icon" viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`;
 
@@ -68,11 +69,14 @@ export async function setupSearch() {
     });
   }
 
-  searchInput.addEventListener("focus", () => {
+  const showContainerIfText = () => {
     if (searchContainer && searchInput.value.trim().length > 0) {
       searchContainer.style.display = "block";
     }
-  });
+  };
+
+  searchInput.addEventListener("focus", showContainerIfText);
+  searchInput.addEventListener("click", showContainerIfText);
 
   searchInput.addEventListener("input", async (event) => {
     const query = event.target.value.trim();
@@ -172,28 +176,60 @@ export async function setupSearch() {
         `;
       });
 
-      // 2. Track results with cover image, title, category/artist subtitle, and (+) button
+      // 2. Track results with cover image, title, subtitle, (+) button, and dynamic play/pause overlay
       tracks.forEach((track, index) => {
         const title = track.title;
         const artist = track.artist || "Unknown Artist";
         const coverUrl = track.cover_image || "img/music.svg";
         const subtitle = track.album ? `Album • ${artist}` : `Song • ${artist}`;
+        const folder = track.folder || 'search';
+        const isLiked = isTrackLiked(folder, track.id || title);
+
+        const isCurrent = state.currentTrack && 
+          ((state.currentTrack.id && state.currentTrack.id === track.id) || 
+           (state.currentTrack.title && state.currentTrack.title === title));
+        const isPlaying = isCurrent && state.currentSong && !state.currentSong.paused;
+
+        const addIcon = isLiked ? `
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="#1db954">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+        ` : `
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        `;
+
+        const playPauseInner = isPlaying ? `
+          <div class="search-equalizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+        ` : (isCurrent ? `
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="#1db954"><polygon points="5,3 19,12 5,21"/></svg>
+        ` : `
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff"><polygon points="5,3 19,12 5,21"/></svg>
+        `);
 
         html += `
-          <div class="search-track-row" data-index="${index}">
+          <div class="search-track-row ${isCurrent ? 'is-current' : ''}" data-index="${index}" data-id="${track.id || ''}" data-title="${title}">
             <div class="search-track-left">
-              <img src="${coverUrl}" alt="${title}" class="search-track-thumb" onerror="this.src='img/music.svg';" />
+              <div class="search-track-thumb-wrapper">
+                <img src="${coverUrl}" alt="${title}" class="search-track-thumb" onerror="this.src='img/music.svg';" />
+                <button class="search-play-overlay-btn ${isCurrent ? 'active' : ''}" title="${isPlaying ? 'Pause' : 'Play'}" data-index="${index}">
+                  ${playPauseInner}
+                </button>
+              </div>
               <div class="search-track-details">
-                <div class="search-track-title">${title}</div>
+                <div class="search-track-title" style="${isCurrent ? 'color: #1db954 !important;' : ''}">${title}</div>
                 <div class="search-track-sub">${subtitle}</div>
               </div>
             </div>
-            <button class="search-add-btn" title="Add to Library" data-title="${title}">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="16"/>
-                <line x1="8" y1="12" x2="16" y2="12"/>
-              </svg>
+            <button class="search-add-btn ${isLiked ? 'liked' : ''}" title="${isLiked ? 'Remove from Liked Songs' : 'Add to Library'}" data-index="${index}">
+              ${addIcon}
             </button>
           </div>
         `;
@@ -216,12 +252,29 @@ export async function setupSearch() {
       searchResults.querySelectorAll('.search-add-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          const songTitle = btn.dataset.title || "Song";
-          showToast(`❤ Added "${songTitle}" to Liked Songs`);
+          const idx = parseInt(btn.dataset.index, 10);
+          const track = tracks[idx];
+          if (!track) return;
+          const folder = track.folder || 'search';
+          const added = toggleLikeState(folder, track);
+          btn.classList.toggle('liked', added);
+          btn.title = added ? 'Remove from Liked Songs' : 'Add to Library';
+          btn.innerHTML = added ? `
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="#1db954">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          ` : `
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+          `;
+          showToast(added ? `❤ Added "${track.title}" to Liked Songs` : `Removed "${track.title}" from Liked Songs`);
         });
       });
 
-      // Track row click -> play music
+      // Track row click / Play-pause overlay click -> play or pause music
       searchResults.querySelectorAll('.search-track-row').forEach(item => {
         item.addEventListener('click', async (e) => {
           if (e.target.closest('.search-add-btn')) return;
@@ -230,16 +283,26 @@ export async function setupSearch() {
             const trackData = tracks[idx];
             if (!trackData) return;
             const folder = trackData.folder || 'search';
-            
-            // Populate queue with all search result tracks so Next song auto-plays the search list
-            state.songs = tracks;
-            state.displaySongs = tracks.map(t => ({ folder: t.folder || 'search', track: t }));
-            
-            playMusic(trackData, folder);
 
-            if (searchContainer) searchContainer.style.display = "none";
-            if (searchInput) searchInput.value = "";
-            searchResults.innerHTML = "";
+            const isCurrent = state.currentTrack && 
+              ((state.currentTrack.id && state.currentTrack.id === trackData.id) || 
+               (state.currentTrack.title && state.currentTrack.title === trackData.title));
+
+            if (isCurrent && state.currentSong.src) {
+              if (state.currentSong.paused) {
+                await state.currentSong.play();
+              } else {
+                state.currentSong.pause();
+              }
+              updateSearchPlayIcons();
+            } else {
+              // Populate queue with all search result tracks so Next song auto-plays the search list
+              state.songs = tracks;
+              state.displaySongs = tracks.map(t => ({ folder: t.folder || 'search', track: t }));
+              
+              playMusic(trackData, folder);
+              updateSearchPlayIcons();
+            }
           } catch (err) {
             console.error("Error playing track from search result:", err);
           }
@@ -251,10 +314,71 @@ export async function setupSearch() {
     }
   });
 
-  document.addEventListener("click", (e) => {
-    const bar = document.querySelector('.header-search');
-    if (bar && !bar.contains(e.target)) {
-      if (searchContainer) searchContainer.style.display = "none";
+  // Hide search container when clicking anywhere on the website outside searchInput & searchContainer
+  const handleOutsideClick = (e) => {
+    if (searchContainer && searchContainer.style.display !== "none") {
+      const isInsideInput = searchInput && searchInput.contains(e.target);
+      const isInsideContainer = searchContainer && searchContainer.contains(e.target);
+      if (!isInsideInput && !isInsideContainer) {
+        searchContainer.style.display = "none";
+      }
+    }
+  };
+
+  document.addEventListener("pointerdown", handleOutsideClick, true);
+  document.addEventListener("click", handleOutsideClick, true);
+}
+
+export function updateSearchPlayIcons() {
+  const searchResults = getElement("#searchResults");
+  if (!searchResults) return;
+
+  const rows = searchResults.querySelectorAll(".search-track-row");
+  rows.forEach(row => {
+    const rowId = row.dataset.id;
+    const rowTitle = row.dataset.title;
+
+    let isCurrent = false;
+    if (state.currentTrack) {
+      if (rowId && state.currentTrack.id && String(state.currentTrack.id) === String(rowId)) {
+        isCurrent = true;
+      } else if (rowTitle && state.currentTrack.title && state.currentTrack.title.trim().toLowerCase() === String(rowTitle).trim().toLowerCase()) {
+        isCurrent = true;
+      }
+    }
+
+    const isPlaying = isCurrent && state.currentSong && !state.currentSong.paused;
+
+    row.classList.toggle("is-current", isCurrent);
+
+    const playBtn = row.querySelector(".search-play-overlay-btn");
+    const titleEl = row.querySelector(".search-track-title");
+
+    if (titleEl) {
+      titleEl.style.color = isCurrent ? "#1db954" : "#ffffff";
+    }
+
+    if (playBtn) {
+      playBtn.classList.toggle("active", isCurrent);
+      playBtn.title = isPlaying ? "Pause" : "Play";
+
+      if (isPlaying) {
+        playBtn.innerHTML = `
+          <div class="search-equalizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+        `;
+      } else if (isCurrent) {
+        playBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="#1db954"><polygon points="5,3 19,12 5,21"/></svg>
+        `;
+      } else {
+        playBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff"><polygon points="5,3 19,12 5,21"/></svg>
+        `;
+      }
     }
   });
 }

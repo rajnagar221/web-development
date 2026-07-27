@@ -35,20 +35,32 @@ export function showToast(message, duration = 2400) {
   }, duration);
 }
 
+let searchModule = null;
+async function updateSearchPlayIconsSafe() {
+  try {
+    if (!searchModule) searchModule = await import('./search.js');
+    if (searchModule && searchModule.updateSearchPlayIcons) {
+      searchModule.updateSearchPlayIcons();
+    }
+  } catch (err) {}
+}
+
 // ==================== PLAY BUTTON SVG ====================
 export function updatePlayButton(isPlaying) {
   const playButton = document.getElementById("play");
-  if (!playButton) return;
-  if (isPlaying) {
-    playButton.innerHTML = `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18">
-      <rect x="6" y="4" width="4" height="16" rx="1"/>
-      <rect x="14" y="4" width="4" height="16" rx="1"/>
-    </svg>`;
-  } else {
-    playButton.innerHTML = `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18">
-      <polygon points="5,3 19,12 5,21"/>
-    </svg>`;
+  if (playButton) {
+    if (isPlaying) {
+      playButton.innerHTML = `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18">
+        <rect x="6" y="4" width="4" height="16" rx="1"/>
+        <rect x="14" y="4" width="4" height="16" rx="1"/>
+      </svg>`;
+    } else {
+      playButton.innerHTML = `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18">
+        <polygon points="5,3 19,12 5,21"/>
+      </svg>`;
+    }
   }
+  updateSearchPlayIconsSafe();
 }
 
 export function updatePlaybarLikeButton() {
@@ -556,16 +568,16 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
         <div class="mini-art-pill">
           <img src="${coverUrl}" alt="mini art" onerror="this.src='img/music.svg';" />
         </div>
-        <button class="action-icon-btn" title="Shuffle">
+        <button class="action-icon-btn" id="detailShuffleBtn" title="Shuffle">
           <svg viewBox="0 0 24 24" fill="#b3b3b3" width="22" height="22"><path d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
         </button>
-        <button class="action-icon-btn" title="Save to Your Library">
+        <button class="action-icon-btn" id="detailSaveBtn" title="Save to Your Library">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#b3b3b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
         </button>
-        <button class="action-icon-btn" title="Download">
+        <button class="action-icon-btn" id="detailDownloadBtn" title="Download">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#b3b3b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8m-4-4l4 4 4-4"/></svg>
         </button>
-        <button class="action-icon-btn" title="More options">
+        <button class="action-icon-btn" id="detailMoreBtn" title="More options">
           <svg viewBox="0 0 24 24" fill="#b3b3b3" width="24" height="24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
         </button>
       </div>
@@ -592,9 +604,8 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     const title = track.title;
     const artist = track.artist;
     const duration = track.duration ? formatTime(track.duration) : "4:15";
-    const likedClass = isTrackLiked(songItem.folder, track.id) ? "liked" : "";
-    const isPlaying = state.currentSong && !state.currentSong.paused;
-    const isCurrent = state.currentTrack && track.id === state.currentTrack.id && songItem.folder === state.currentFolder;
+    const likedClass = isTrackLiked(songItem.folder, track.id || title) ? "liked" : "";
+    const isCurrent = state.currentTrack && (track.id === state.currentTrack.id || track.title === state.currentTrack.title) && songItem.folder === state.currentFolder;
     const isActive = isCurrent ? "active" : "";
     return `
             <tr class="track-row ${isActive}" data-index="${index}">
@@ -612,7 +623,7 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
               <td class="col-duration" style="text-align: right; padding-right: 24px; color: #b3b3b3; font-size: 14px;">
                 <div class="col-duration-wrap">
                   <div class="row-hover-icons">
-                    <button class="action-icon-btn ${likedClass}" title="Save to Liked Songs" style="padding: 2px;">
+                    <button class="action-icon-btn favorite-btn ${likedClass}" title="Save to Liked Songs" style="padding: 2px;">
                       <svg viewBox="0 0 24 24" width="18" height="18" fill="${likedClass ? '#1db954' : 'none'}" stroke="${likedClass ? '#1db954' : '#b3b3b3'}" stroke-width="2">
                         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
                       </svg>
@@ -620,7 +631,7 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
                   </div>
                   <span class="duration-text">${duration}</span>
                   <div class="row-hover-icons">
-                    <button class="action-icon-btn" title="More options" style="padding: 2px;">
+                    <button class="action-icon-btn more-options-btn" title="More options" style="padding: 2px;">
                       <svg viewBox="0 0 24 24" fill="#b3b3b3" width="18" height="18"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
                     </button>
                   </div>
@@ -664,13 +675,69 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     });
   }
 
+  // Shuffle button for album
+  const detailShuffleBtn = getElement("#detailShuffleBtn");
+  if (detailShuffleBtn) {
+    detailShuffleBtn.addEventListener("click", () => {
+      state.isShuffle = !state.isShuffle;
+      const svg = detailShuffleBtn.querySelector("svg");
+      if (svg) svg.setAttribute("fill", state.isShuffle ? "#1db954" : "#b3b3b3");
+      showToast(state.isShuffle ? "🔀 Shuffle turned ON" : "🔀 Shuffle turned OFF");
+      if (state.isShuffle && songs.length > 0) {
+        const randIdx = Math.floor(Math.random() * songs.length);
+        playMusic(songs[randIdx].track, folder);
+      }
+    });
+  }
+
+  // Save album to library button
+  const detailSaveBtn = getElement("#detailSaveBtn");
+  if (detailSaveBtn) {
+    detailSaveBtn.addEventListener("click", () => {
+      let addedAny = false;
+      songs.forEach(s => {
+        if (!isTrackLiked(s.folder, s.track)) {
+          toggleLikeTrack(s.folder, s.track, false);
+          addedAny = true;
+        }
+      });
+      if (!addedAny) {
+        songs.forEach(s => toggleLikeTrack(s.folder, s.track, false));
+        showToast(`Removed "${albumTitle}" from Liked Songs`);
+      } else {
+        showToast(`❤ Saved "${albumTitle}" (${songs.length} songs) to Liked Songs`);
+      }
+      renderAlbumDetailView(folder, albumTitle, albumDescription, coverUrl);
+    });
+  }
+
+  // Download album button
+  const detailDownloadBtn = getElement("#detailDownloadBtn");
+  if (detailDownloadBtn) {
+    detailDownloadBtn.addEventListener("click", () => {
+      showToast(`⚡ Album "${albumTitle}" saved for offline listening!`);
+    });
+  }
+
+  // More options button for album
+  const detailMoreBtn = getElement("#detailMoreBtn");
+  if (detailMoreBtn) {
+    detailMoreBtn.addEventListener("click", () => {
+      try {
+        navigator.clipboard?.writeText(window.location.href);
+      } catch (err) {}
+      showToast(`🔗 Copied album link to clipboard!`);
+    });
+  }
+
   // Row selection events
   const rows = albumDetailView.querySelectorAll(".track-row");
   rows.forEach(row => {
     const idx = parseInt(row.getAttribute("data-index"), 10);
     const song = songs[idx];
 
-    row.addEventListener("click", () => {
+    row.addEventListener("click", (e) => {
+      if (e.target.closest('.favorite-btn') || e.target.closest('.more-options-btn')) return;
       playMusic(song.track, song.folder);
       rows.forEach(r => r.classList.remove("active"));
       row.classList.add("active");
@@ -689,6 +756,15 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
           svgEl.setAttribute("fill", isLiked ? "#1db954" : "none");
           svgEl.setAttribute("stroke", isLiked ? "#1db954" : "#b3b3b3");
         }
+      });
+    }
+
+    // More options button inside row
+    const moreRowBtn = row.querySelector(".more-options-btn");
+    if (moreRowBtn) {
+      moreRowBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        showToast(`🎵 Options for "${song.track.title}"`);
       });
     }
   });

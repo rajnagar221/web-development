@@ -8,28 +8,29 @@ import { state } from './state.js';
 const searchIconSVG = `<svg class="suggestion-icon" viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`;
 
 const ALL_TRACKS_DATABASE = [
-  { track: "tera hone laga hu.mp3", folder: "ncs", title: "Tera Hone Laga Hu", artist: "NCS / Ajab Prem Ki Ghazab" },
-  { track: "01 - Invincible.mp3", folder: "ncs", title: "Invincible", artist: "DEAF KEV" },
-  { track: "02 - Sky High.mp3", folder: "ncs", title: "Sky High", artist: "Elektronomia" },
-  { track: "03 - Mortals.mp3", folder: "ncs", title: "Mortals", artist: "Warriyo feat. Laura Brehm" },
-  { track: "01 - Softly.mp3", folder: "karan aujla", title: "Softly", artist: "Karan Aujla, Ikky" },
-  { track: "02 - Winning Speech.mp3", folder: "karan aujla", title: "Winning Speech", artist: "Karan Aujla" },
-  { track: "03 - Tauba Tauba.mp3", folder: "karan aujla", title: "Tauba Tauba", artist: "Karan Aujla" },
-  { track: "01 - Born to Shine.mp3", folder: "Diljit", title: "Born to Shine", artist: "Diljit Dosanjh" },
-  { track: "02 - G.O.A.T..mp3", folder: "Diljit", title: "G.O.A.T.", artist: "Diljit Dosanjh" },
-  { track: "03 - Lemonade.mp3", folder: "Diljit", title: "Lemonade", artist: "Diljit Dosanjh" },
-  { track: "01 - Blue Eyes.mp3", folder: "honey singh", title: "Blue Eyes", artist: "Yo Yo Honey Singh" },
-  { track: "02 - Desi Kalakaar.mp3", folder: "honey singh", title: "Desi Kalakaar", artist: "Yo Yo Honey Singh" },
-  { track: "03 - Love Dose.mp3", folder: "honey singh", title: "Love Dose", artist: "Yo Yo Honey Singh" },
-  { track: "01 - Brown Munde.mp3", folder: "Ap dillhon", title: "Brown Munde", artist: "AP Dhillon, Gurinder Gill" },
-  { track: "02 - Insane.mp3", folder: "Ap dillhon", title: "Insane", artist: "AP Dhillon" },
-  { track: "03 - With You.mp3", folder: "Ap dillhon", title: "With You", artist: "AP Dhillon" },
-  { track: "01 - Chill Beats.mp3", folder: "vibes songs", title: "Chill Beats", artist: "Lofi Vibes" },
-  { track: "02 - Midnight Lofi.mp3", folder: "vibes songs", title: "Midnight Lofi", artist: "Aesthetic Soundscapes" },
-  { track: "01 - Reel Song 1.mp3", folder: "instagram trending", title: "Reel Song 1", artist: "Instagram Trending" },
-  { track: "02 - Viral Vibe.mp3", folder: "instagram trending", title: "Viral Vibe", artist: "Trending Reels" },
-  { track: "01 - Khayaal.mp3", folder: "talwinder", title: "Khayaal", artist: "Talwiinder" },
-  { track: "02 - Dhundhala.mp3", folder: "talwinder", title: "Dhundhala", artist: "Talwiinder" }
+  { id: "iMzGQX6_", title: "Softly", artist: "Karan Aujla, IKKY", folder: "karan aujla", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/538/727114725cd7ec508b1df0a7e4515e5e_320.mp4" },
+  { id: "DF6eazs2", title: "Winning Speech", artist: "Karan Aujla, MXRCI", folder: "karan aujla", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/089/64beffa430e4c948223ec6bfcc3a13f0_320.mp4" },
+  { id: "CVeqCCYc", title: "Tauba Tauba", artist: "Karan Aujla", folder: "karan aujla", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/992/5d44da8bc1d78fb72d18b701d758fd1f_320.mp4" },
+  { id: "aAOXwvz-", title: "Born to Shine", artist: "Diljit Dosanjh", folder: "diljit", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/597/f1efd650819d3f427bd10e8b9addcd40_320.mp4" },
+  { id: "nJ6Z-ayZ", title: "G.O.A.T.", artist: "Diljit Dosanjh", folder: "diljit", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/597/ce842951d6cde3c4355046ca5e250809_320.mp4" },
+  { id: "0Cu5Kha8", title: "Lemonade", artist: "Diljit Dosanjh", folder: "diljit", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/467/c1f149509d4ee7d20c0c4474090ab5f1_320.mp4" },
+  { id: "M7k5t7vw", title: "Lover", artist: "Diljit Dosanjh", folder: "diljit", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/209/88cd9a1cc0af8768d67272876bb09851_320.mp4" },
+  { id: "DWDSMHh7", title: "Blue Eyes", artist: "Yo Yo Honey Singh", folder: "honey singh", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/144/ab475350ef2b43b75a24d3d720aaa7a4_320.mp4" },
+  { id: "GbaIdJ48", title: "Desi Kalakaar", artist: "Yo Yo Honey Singh", folder: "honey singh", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/304/f31ba5ffe986d0feb95b3059ad05f4d5_320.mp4" },
+  { id: "D6K-hfED", title: "Love Dose", artist: "Yo Yo Honey Singh", folder: "honey singh", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/304/ed6b172300cca9a418be31a511728f81_320.mp4" },
+  { id: "xzUVX40K", title: "Brown Munde", artist: "AP Dhillon, Gurinder Gill", folder: "ap dillhon", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/973/76216adb3df5ef476f948891b40efb7a_320.mp4" },
+  { id: "LuXIJGPC", title: "Insane", artist: "AP Dhillon", folder: "ap dillhon", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/851/23ba415310e4b119a8452cba3cbbf509_320.mp4" },
+  { id: "fHcI5Kka", title: "With You", artist: "AP Dhillon", folder: "ap dillhon", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/671/50b256cc8e60dc8b0243f5e0767e8467_320.mp4" },
+  { id: "1xqHQw3J", title: "Faded", artist: "Alan Walker", folder: "ncs", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/981/ddf4f57d94d268001967dc60725c52ca_320.mp4" },
+  { id: "UT7zhBDm", title: "The Spectre", artist: "Alan Walker", folder: "ncs", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/532/b84681ac81c18c5f2ec5eb9a991dd688_320.mp4" },
+  { id: "KiuA2i3W", title: "Invincible", artist: "Deaf Kev", folder: "ncs", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/701/df5e8e1e5ec446af9d91d50fb9c845dd_320.mp4" },
+  { id: "qMYlfFAc", title: "Sky High", artist: "Elektronomia", folder: "ncs", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/104/9c2d855888ed8cdb9d17e302c238a79a_320.mp4" },
+  { id: "mk0bUMgA", title: "Khayaal", artist: "Talwiinder", folder: "talwinder", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/482/c9b917787fdd221283bcb11884f4184d_320.mp4" },
+  { id: "U9amhr5-", title: "Dhundhala", artist: "Talwiinder", folder: "talwinder", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/965/212f0dd59e13c060347033940b6fc552_320.mp4" },
+  { id: "6BV_9WZ_", title: "Still Rollin", artist: "Shubh", folder: "daily mix", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/48/4f/3c/484f3c19-fdab-1fa8-fdb4-c7de79852d12/197189603969.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/704/7a1f8e1c5d1b963d3dadc711ee005d69_320.mp4" },
+  { id: "FoOWz-cQ", title: "Cheques", artist: "Shubh", folder: "daily mix", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/48/4f/3c/484f3c19-fdab-1fa8-fdb4-c7de79852d12/197189603969.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/704/1d43cfc150d1aef7c597c2a9bec1fa48_320.mp4" },
+  { id: "WarSRDtF", title: "Baller", artist: "Shubh, IKKY", folder: "daily mix", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/48/4f/3c/484f3c19-fdab-1fa8-fdb4-c7de79852d12/197189603969.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/489/c05a843e0d1f5c7bf3b29076f8322649_320.mp4" },
+  { id: "q7nvYeRF", title: "Big Dawgs", artist: "Hanumankind", folder: "instagram trending", cover_image: "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg", url: "https://aac.saavncdn.com/883/c0a119218206e3e43e2496dc0f2d8d7e_320.mp4" }
 ];
 
 export async function setupSearch() {
@@ -76,6 +77,7 @@ export async function setupSearch() {
   searchInput.addEventListener("input", async (event) => {
     const query = event.target.value.trim();
     searchResults.innerHTML = "";
+    state.currentSearchQuery = query;
 
     if (searchClearBtn) {
       searchClearBtn.style.display = query.length > 0 ? "flex" : "none";
@@ -103,18 +105,42 @@ export async function setupSearch() {
         console.warn("Backend fullsongs search unavailable, trying direct search:", backendErr);
       }
 
-      // Fallback to iTunes if backend returns empty
+      // Fallback to iTunes if online and backend returned empty
       if (tracks.length === 0) {
-        const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=10`);
-        const data = await res.json();
-        const itunesTracks = data.results.filter(item => item.wrapperType === 'track');
-        tracks = itunesTracks.map(track => ({
-          id: track.trackId.toString(),
-          title: track.trackName,
-          artist: track.artistName,
-          cover_image: track.artworkUrl100 ? track.artworkUrl100.replace("100x100bb", "150x150bb") : "img/music.svg",
-          url: track.previewUrl,
-          folder: track.collectionId
+        try {
+          const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=10`);
+          if (res.ok) {
+            const data = await res.json();
+            const itunesTracks = (data.results || []).filter(item => item.wrapperType === 'track');
+            tracks = itunesTracks.map(track => ({
+              id: track.trackId.toString(),
+              title: track.trackName,
+              artist: track.artistName,
+              cover_image: track.artworkUrl100 ? track.artworkUrl100.replace("100x100bb", "150x150bb") : "img/music.svg",
+              url: track.previewUrl,
+              folder: track.collectionId
+            }));
+          }
+        } catch (itunesErr) {
+          // Network connection error / offline
+        }
+      }
+
+      // Offline fallback: search local ALL_TRACKS_DATABASE if still empty
+      if (tracks.length === 0) {
+        const qLower = query.toLowerCase();
+        const localMatches = ALL_TRACKS_DATABASE.filter(item =>
+          (item.title && item.title.toLowerCase().includes(qLower)) ||
+          (item.artist && item.artist.toLowerCase().includes(qLower)) ||
+          (item.folder && item.folder.toLowerCase().includes(qLower))
+        );
+        tracks = localMatches.map(t => ({
+          id: t.id || `local_${t.title}`,
+          title: t.title,
+          artist: t.artist,
+          cover_image: t.cover_image || "img/music.svg",
+          url: t.url,
+          folder: t.folder
         }));
       }
 
@@ -147,15 +173,14 @@ export async function setupSearch() {
       });
 
       // 2. Track results with cover image, title, category/artist subtitle, and (+) button
-      tracks.forEach(track => {
+      tracks.forEach((track, index) => {
         const title = track.title;
         const artist = track.artist || "Unknown Artist";
         const coverUrl = track.cover_image || "img/music.svg";
         const subtitle = track.album ? `Album • ${artist}` : `Song • ${artist}`;
-        const serializedTrack = encodeURIComponent(JSON.stringify(track));
 
         html += `
-          <div class="search-track-row" data-track="${serializedTrack}" data-folder="${track.folder || 'search'}">
+          <div class="search-track-row" data-index="${index}">
             <div class="search-track-left">
               <img src="${coverUrl}" alt="${title}" class="search-track-thumb" onerror="this.src='img/music.svg';" />
               <div class="search-track-details">
@@ -196,30 +221,34 @@ export async function setupSearch() {
         });
       });
 
+      // Track row click -> play music
+      searchResults.querySelectorAll('.search-track-row').forEach(item => {
+        item.addEventListener('click', async (e) => {
+          if (e.target.closest('.search-add-btn')) return;
+          try {
+            const idx = parseInt(item.dataset.index, 10);
+            const trackData = tracks[idx];
+            if (!trackData) return;
+            const folder = trackData.folder || 'search';
+            
+            // Populate queue with all search result tracks so Next song auto-plays the search list
+            state.songs = tracks;
+            state.displaySongs = tracks.map(t => ({ folder: t.folder || 'search', track: t }));
+            
+            playMusic(trackData, folder);
+
+            if (searchContainer) searchContainer.style.display = "none";
+            if (searchInput) searchInput.value = "";
+            searchResults.innerHTML = "";
+          } catch (err) {
+            console.error("Error playing track from search result:", err);
+          }
+        });
+      });
+
     } catch (e) {
       searchResults.innerHTML = `<div style="padding: 12px; color: #b3b3b3; font-size: 13px;">Error searching songs</div>`;
     }
-
-    searchResults.querySelectorAll('.search-track-row').forEach(item => {
-      item.addEventListener('click', async (e) => {
-        if (e.target.closest('.search-add-btn')) return;
-        try {
-          const trackData = JSON.parse(decodeURIComponent(item.dataset.track));
-          const folder = item.dataset.folder;
-          
-          state.songs = [trackData];
-          state.displaySongs = [{ folder: folder, track: trackData }];
-          
-          playMusic(trackData, folder);
-
-          if (searchContainer) searchContainer.style.display = "none";
-          if (searchInput) searchInput.value = "";
-          searchResults.innerHTML = "";
-        } catch (err) {
-          console.error("Failed to parse track from search result", err);
-        }
-      });
-    });
   });
 
   document.addEventListener("click", (e) => {

@@ -21,10 +21,17 @@ export function buildSongUrl(folder, track) {
 }
 
 export function getCurrentSongIndex() {
-  if (!state.currentTrack) return -1;
-  return state.displaySongs.findIndex(
-    (item) => item.folder === state.currentFolder && item.track.id === state.currentTrack.id
-  );
+  if (!state.currentTrack || !state.displaySongs || state.displaySongs.length === 0) return -1;
+  return state.displaySongs.findIndex((item) => {
+    if (!item || !item.track) return false;
+    if (item.track.id && state.currentTrack.id && String(item.track.id) === String(state.currentTrack.id)) {
+      return true;
+    }
+    if (item.track.title && state.currentTrack.title && item.track.title.trim().toLowerCase() === state.currentTrack.title.trim().toLowerCase()) {
+      return true;
+    }
+    return false;
+  });
 }
 
 export async function loadFolderSongs(folder) {
@@ -65,8 +72,9 @@ export function togglePlayback(track, folder) {
   }
 }
 
-export async function playMusic(track, folder = state.currFolder) {
-  if (!track || !folder) return;
+export async function playMusic(track, folder = state.currFolder || "search") {
+  if (!track) return;
+  folder = folder || track.folder || state.currFolder || "search";
 
   // nowPlayingCard display handled via user toggle
 
@@ -89,9 +97,8 @@ export async function playMusic(track, folder = state.currFolder) {
   updatePlaybarLikeButton();
   updatePlayButton(true);
 
-  // Check if track URL is a 30s preview or needs full track resolution
-  const isPreviewUrl = !track.url ||
-                       (track.duration && Number(track.duration) <= 30) ||
+  // Check if track URL is missing or a 30s preview needing full track resolution
+  const isPreviewUrl = (!track.url && !track.file_path) ||
                        (typeof track.url === 'string' && (
                           track.url.includes("apple.com") ||
                           track.url.includes("itunes") ||
@@ -119,12 +126,12 @@ export async function playMusic(track, folder = state.currFolder) {
     }
   }
 
-  if (track.url) {
-    state.currentSong.src = track.url;
-  } else {
-    // fallback if missing
-    state.currentSong.src = buildSongUrl(folder, track);
+  const audioSrc = track.url || track.file_path || buildSongUrl(folder, track);
+  if (!audioSrc) {
+    showToast("⚠️ Song audio URL unavailable");
+    return;
   }
+  state.currentSong.src = audioSrc;
   
   if (state.wavesurfer) {
     state.wavesurfer.load(state.currentSong.src);
@@ -162,9 +169,10 @@ export function playPreviousSong() {
   if (item) playMusic(item.track, item.folder);
 }
 
-export function playNextSong() {
-  if (state.displaySongs.length === 0) return;
+export async function playNextSong() {
+  if (!state.displaySongs || state.displaySongs.length === 0) return;
   const index = getCurrentSongIndex();
+  
   if (state.isShuffle) {
     let randomIndex;
     do {
@@ -174,6 +182,50 @@ export function playNextSong() {
     if (item) playMusic(item.track, item.folder);
     return;
   }
+
+  // Spotify Autoplay / Radio: Fetch and append similar songs when queue reaches the end
+  if (index >= state.displaySongs.length - 1 && !state.isRepeat) {
+    const currTrack = state.currentTrack;
+    if (currTrack) {
+      try {
+        const queryParam = state.currentSearchQuery || "";
+        const titleParam = currTrack.title || "";
+        const artistParam = currTrack.artist || "";
+        
+        const res = await fetch(`${API_BASE_URL}/api/fullsongs/recommend?title=${encodeURIComponent(titleParam)}&artist=${encodeURIComponent(artistParam)}&query=${encodeURIComponent(queryParam)}`);
+        if (res.ok) {
+          const data = await res.json();
+          const recommendedTracks = data.songs || [];
+          
+          if (recommendedTracks.length > 0) {
+            const existingIds = new Set(state.displaySongs.map(item => String(item.track.id || item.track.title)));
+            const newItems = [];
+            
+            recommendedTracks.forEach(t => {
+              const tid = String(t.id || t.title);
+              if (!existingIds.has(tid)) {
+                existingIds.add(tid);
+                newItems.push({ folder: t.folder || 'radio', track: t });
+              }
+            });
+            
+            if (newItems.length > 0) {
+              state.displaySongs.push(...newItems);
+              showToast("📻 Spotify Autoplay: Playing similar songs...");
+              const nextItem = state.displaySongs[index + 1];
+              if (nextItem) {
+                playMusic(nextItem.track, nextItem.folder);
+                return;
+              }
+            }
+          }
+        }
+      } catch (recErr) {
+        console.warn("Autoplay radio fetch attempt failed, looping queue:", recErr);
+      }
+    }
+  }
+
   const nextIndex = (index >= 0 && index < state.displaySongs.length - 1) ? index + 1 : 0;
   const item = state.displaySongs[nextIndex];
   if (item) playMusic(item.track, item.folder);

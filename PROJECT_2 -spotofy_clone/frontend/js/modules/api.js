@@ -118,16 +118,22 @@ const FALLBACK_SONGS_MAP = {
   ]
 };
 
+function getAuthHeaders() {
+  const token = localStorage.getItem('token');
+  if (token && token !== 'null' && token !== 'undefined') {
+    return { 'Authorization': `Bearer ${token}` };
+  }
+  return {};
+}
+
 export async function fetchAlbums(searchTerm = "") {
   try {
     let url = `${API_BASE_URL}/api/albums`;
     if (searchTerm) {
       url += `?name=${encodeURIComponent(searchTerm)}`;
     }
-    const response = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-    });
-    if (!response.ok) throw new Error("Failed to fetch local albums");
+    const response = await fetch(url, { headers: getAuthHeaders() });
+    if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to fetch local albums`);
     const data = await response.json();
     const fetched = (data.albums || []).map(album => {
       let cover = album.cover_image || "img/music.svg";
@@ -151,11 +157,10 @@ export async function fetchAlbums(searchTerm = "") {
 export async function fetchSongs(folder) {
   try {
     const url = `${API_BASE_URL}/api/songs?folder=${encodeURIComponent(folder)}`;
-    const response = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-    });
-    if (!response.ok) throw new Error("Failed to fetch local songs");
+    const response = await fetch(url, { headers: getAuthHeaders() });
+    if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to fetch local songs`);
     const data = await response.json();
+
 
     const result = (data.songs || []).map(song => {
       let cover = song.cover_image || "img/music.svg";

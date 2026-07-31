@@ -42,7 +42,7 @@ async function updateSearchPlayIconsSafe() {
     if (searchModule && searchModule.updateSearchPlayIcons) {
       searchModule.updateSearchPlayIcons();
     }
-  } catch (err) {}
+  } catch (err) { }
 }
 
 // ==================== PLAY BUTTON SVG ====================
@@ -725,7 +725,7 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     detailMoreBtn.addEventListener("click", () => {
       try {
         navigator.clipboard?.writeText(window.location.href);
-      } catch (err) {}
+      } catch (err) { }
       showToast(`🔗 Copied album link to clipboard!`);
     });
   }
@@ -771,558 +771,559 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
 }
 
 export function attachAlbumEvents() {
-  Array.from(document.querySelectorAll(".card")).forEach((card) => {
-    if (card.dataset.listenerBound) return;
-    card.dataset.listenerBound = "true";
 
-    const playBtn = card.querySelector(".play");
-    const folder = card.dataset.folder;
-    let albumTitle = card.querySelector("h2") ? card.querySelector("h2").textContent.trim() : "";
-    let albumDescription = card.querySelector("p") ? card.querySelector("p").textContent.trim() : "";
-    let coverUrl = card.querySelector("img") ? card.querySelector("img").src : "img/music.svg";
+    Array.from(document.querySelectorAll(".card")).forEach((card) => {
+      if (card.dataset.listenerBound) return;
+      card.dataset.listenerBound = "true";
 
-    if (folder && state.allAlbums) {
-      const matchedAlbum = state.allAlbums.find(a => a.folder.toLowerCase() === folder.toLowerCase());
-      if (matchedAlbum) {
-        if (matchedAlbum.title) {
-          albumTitle = matchedAlbum.title;
-        }
-        if (matchedAlbum.description) {
-          albumDescription = matchedAlbum.description;
-        }
-        if (matchedAlbum.cover_image && matchedAlbum.cover_image !== "img/music.svg") {
-          const imgEl = card.querySelector("img");
-          if (imgEl && imgEl.src.includes("img/music.svg")) {
-            imgEl.src = matchedAlbum.cover_image;
+      const playBtn = card.querySelector(".play");
+      const folder = card.dataset.folder;
+      let albumTitle = card.querySelector("h2") ? card.querySelector("h2").textContent.trim() : "";
+      let albumDescription = card.querySelector("p") ? card.querySelector("p").textContent.trim() : "";
+      let coverUrl = card.querySelector("img") ? card.querySelector("img").src : "img/music.svg";
+
+      if (folder && state.allAlbums) {
+        const matchedAlbum = state.allAlbums.find(a => a.folder.toLowerCase() === folder.toLowerCase());
+        if (matchedAlbum) {
+          if (matchedAlbum.title) {
+            albumTitle = matchedAlbum.title;
           }
-          coverUrl = matchedAlbum.cover_image;
+          if (matchedAlbum.description) {
+            albumDescription = matchedAlbum.description;
+          }
+          if (matchedAlbum.cover_image && matchedAlbum.cover_image !== "img/music.svg") {
+            const imgEl = card.querySelector("img");
+            if (imgEl && imgEl.src.includes("img/music.svg")) {
+              imgEl.src = matchedAlbum.cover_image;
+            }
+            coverUrl = matchedAlbum.cover_image;
+          }
+        }
+      }
+
+      if (playBtn) {
+        playBtn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          if (!folder) return;
+          if (folder !== state.currFolder) {
+            const loaded = await loadFolderSongs(folder);
+            if (loaded && loaded.length > 0) playMusic(loaded[0], folder);
+          } else {
+            if (!state.currentSong.src) {
+              if (!state.songs.length) await loadFolderSongs(folder);
+              if (state.songs.length > 0) playMusic(state.songs[0], folder);
+            } else if (state.currentSong.paused) {
+              state.currentSong.play().catch(e => console.warn(e));
+              updatePlayButton(true);
+              updateAlbumPlayIcons();
+            } else {
+              state.currentSong.pause();
+              updatePlayButton(false);
+              updateAlbumPlayIcons();
+            }
+          }
+        });
+      }
+
+      card.addEventListener("click", async () => {
+        if (!folder) return;
+        renderAlbumDetailView(folder, albumTitle, albumDescription, coverUrl);
+      });
+    });
+  }
+
+  export function updateAlbumPlayIcons() {
+    Array.from(document.querySelectorAll(".card")).forEach((card) => {
+      const playBtn = card.querySelector(".play");
+      if (!playBtn) return;
+      const folder = card.dataset.folder;
+      const isThisPlaying = folder === state.currFolder && state.currentSong.src && !state.currentSong.paused;
+      playBtn.innerHTML = isThisPlaying
+        ? `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
+        : `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18"><polygon points="5,3 19,12 5,21"/></svg>`;
+    });
+
+    const detailPlayBtn = getElement("#detailPlayBtn");
+    if (detailPlayBtn) {
+      const isCurrentPlaying = state.currentSong.src && !state.currentSong.paused;
+      detailPlayBtn.innerHTML = isCurrentPlaying
+        ? `<svg viewBox="0 0 24 24" fill="#000" width="28" height="28"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
+        : `<svg viewBox="0 0 24 24" fill="#000" width="28" height="28" style="margin-left: 2px;"><polygon points="5,3 19,12 5,21"/></svg>`;
+    }
+  }
+
+  // ==================== VOLUME ICON ====================
+  export function updateVolumeIcon(vol) {
+    const queueBtn = getElement("#queueBtn");
+    if (!queueBtn) return;
+    if (vol === 0) {
+      queueBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16"><path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`;
+    } else if (vol < 0.5) {
+      queueBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16"><path d="M18.5 12A4.5 4.5 0 0 0 16 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`;
+    } else {
+      queueBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`;
+    }
+  }
+
+  // ==================== PREMIUM POPUP ====================
+  export function setupPremiumPopup() {
+    const exploreBtn = getElement("#explorePremiumBtn");
+    const premiumPopup = getElement("#premiumPopup");
+    const closePopup = getElement(".close-popup");
+    const subscribeBtn = getElement("#subscribePremiumBtn");
+
+    const openModal = () => {
+      if (!premiumPopup) return;
+      premiumPopup.classList.remove("hidden");
+      premiumPopup.setAttribute("aria-hidden", "false");
+      premiumPopup.style.display = "flex";
+    };
+
+    const closeModal = () => {
+      if (!premiumPopup) return;
+      premiumPopup.classList.add("hidden");
+      premiumPopup.setAttribute("aria-hidden", "true");
+      premiumPopup.style.display = "none";
+    };
+
+    if (exploreBtn) exploreBtn.addEventListener("click", openModal);
+    if (closePopup) closePopup.addEventListener("click", closeModal);
+
+    if (subscribeBtn) {
+      subscribeBtn.addEventListener("click", () => {
+        closeModal();
+        showToast("🎵 Subscribed to Premium for ₹99/month!");
+      });
+    }
+
+    if (premiumPopup) {
+      premiumPopup.addEventListener("click", (event) => {
+        if (event.target === premiumPopup) closeModal();
+      });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && premiumPopup && !premiumPopup.classList.contains("hidden")) {
+        closeModal();
+      }
+    });
+  }
+
+  // ==================== NOTIFICATIONS ====================
+  export function setupNotifications() {
+    const notificationsBtn = getElement("#notificationsBtn");
+    if (!notificationsBtn) return;
+    notificationsBtn.addEventListener("click", () => {
+      showToast("🔔 No new notifications", 2200);
+    });
+  }
+
+  // ==================== PROFILE MENU ====================
+  // ==================== PROFILE MENU & EDITOR ====================
+  export function refreshProfileDisplay() {
+    const profileIcon = getElement("#profileIcon");
+    const profileAvatar = getElement("#profileAvatar");
+    const profileUsername = getElement("#profileUsername");
+    const profileEmail = getElement("#profileEmail");
+
+    const username = localStorage.getItem("username") || "User";
+    const email = localStorage.getItem("email") || "email@example.com";
+    const profileImage = localStorage.getItem("profile_image");
+
+    // Get initials
+    const initials = username
+      .split(" ")
+      .filter(Boolean)
+      .map((part) => part[0].toUpperCase())
+      .slice(0, 2)
+      .join("") || "U";
+
+    // Update text values
+    if (profileUsername) profileUsername.textContent = username;
+    if (profileEmail) profileEmail.textContent = email;
+
+    // Update profile circles (with custom image or initials)
+    if (profileImage) {
+      if (profileIcon) {
+        profileIcon.innerHTML = `<img src="${profileImage}" alt="${username}" />`;
+      }
+      if (profileAvatar) {
+        profileAvatar.innerHTML = `<img src="${profileImage}" alt="${username}" />`;
+      }
+    } else {
+      if (profileIcon) {
+        profileIcon.textContent = initials;
+        profileIcon.innerHTML = initials; // Clear any old img element
+      }
+      if (profileAvatar) {
+        profileAvatar.textContent = initials;
+        profileAvatar.innerHTML = initials; // Clear any old img element
+      }
+    }
+  }
+
+  export function setupEditProfileModal() {
+    const profileOptionBtn = getElement("#profileOptionBtn");
+    const profileModal = getElement("#profileModal");
+    const closeProfileModal = getElement("#closeProfileModal");
+    const cancelProfileEditBtn = getElement("#cancelProfileEditBtn");
+    const editProfileForm = getElement("#editProfileForm");
+
+    const profileUsernameInput = getElement("#profileUsernameInput");
+    const profileEmailInput = getElement("#profileEmailInput");
+    const profileImageInput = getElement("#profileImageInput");
+
+    const modalProfilePreviewImg = getElement("#modalProfilePreviewImg");
+    const modalProfilePreviewInitials = getElement("#modalProfilePreviewInitials");
+    const removeProfileImgBtn = getElement("#removeProfileImgBtn");
+
+    let currentBase64Image = localStorage.getItem("profile_image") || "";
+
+    // Open Modal
+    if (profileOptionBtn && profileModal) {
+      profileOptionBtn.addEventListener("click", () => {
+        // Pre-fill inputs
+        if (profileUsernameInput) profileUsernameInput.value = localStorage.getItem("username") || "User";
+        if (profileEmailInput) profileEmailInput.value = localStorage.getItem("email") || "email@example.com";
+
+        // Setup preview
+        currentBase64Image = localStorage.getItem("profile_image") || "";
+        updateModalPreview();
+
+        // Show modal
+        profileModal.classList.remove("hidden");
+
+        // Close profile menu dropdown
+        const profileMenu = getElement("#profileMenu");
+        if (profileMenu) profileMenu.classList.remove("active");
+      });
+    }
+
+    function updateModalPreview() {
+      if (currentBase64Image) {
+        if (modalProfilePreviewImg) {
+          modalProfilePreviewImg.src = currentBase64Image;
+          modalProfilePreviewImg.style.display = "block";
+        }
+        if (modalProfilePreviewInitials) {
+          modalProfilePreviewInitials.style.display = "none";
+        }
+      } else {
+        if (modalProfilePreviewImg) {
+          modalProfilePreviewImg.style.display = "none";
+          modalProfilePreviewImg.src = "";
+        }
+        if (modalProfilePreviewInitials) {
+          const username = profileUsernameInput ? profileUsernameInput.value : "User";
+          const initials = username
+            .split(" ")
+            .filter(Boolean)
+            .map((part) => part[0].toUpperCase())
+            .slice(0, 2)
+            .join("") || "U";
+          modalProfilePreviewInitials.textContent = initials;
+          modalProfilePreviewInitials.style.display = "flex";
         }
       }
     }
 
-    if (playBtn) {
-      playBtn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        if (!folder) return;
-        if (folder !== state.currFolder) {
-          const loaded = await loadFolderSongs(folder);
-          if (loaded && loaded.length > 0) playMusic(loaded[0], folder);
-        } else {
-          if (!state.currentSong.src) {
-            if (!state.songs.length) await loadFolderSongs(folder);
-            if (state.songs.length > 0) playMusic(state.songs[0], folder);
-          } else if (state.currentSong.paused) {
-            state.currentSong.play().catch(e => console.warn(e));
-            updatePlayButton(true);
-            updateAlbumPlayIcons();
-          } else {
-            state.currentSong.pause();
-            updatePlayButton(false);
-            updateAlbumPlayIcons();
-          }
+    // Handle username keyup to update preview initials on the fly
+    if (profileUsernameInput) {
+      profileUsernameInput.addEventListener("input", () => {
+        if (!currentBase64Image) {
+          updateModalPreview();
         }
       });
     }
 
-    card.addEventListener("click", async () => {
-      if (!folder) return;
-      renderAlbumDetailView(folder, albumTitle, albumDescription, coverUrl);
-    });
-  });
-}
+    // Close Modal triggers
+    const hideModal = () => {
+      if (profileModal) profileModal.classList.add("hidden");
+    };
 
-export function updateAlbumPlayIcons() {
-  Array.from(document.querySelectorAll(".card")).forEach((card) => {
-    const playBtn = card.querySelector(".play");
-    if (!playBtn) return;
-    const folder = card.dataset.folder;
-    const isThisPlaying = folder === state.currFolder && state.currentSong.src && !state.currentSong.paused;
-    playBtn.innerHTML = isThisPlaying
-      ? `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
-      : `<svg viewBox="0 0 24 24" fill="#000" width="18" height="18"><polygon points="5,3 19,12 5,21"/></svg>`;
-  });
+    if (closeProfileModal) closeProfileModal.addEventListener("click", hideModal);
+    if (cancelProfileEditBtn) cancelProfileEditBtn.addEventListener("click", hideModal);
 
-  const detailPlayBtn = getElement("#detailPlayBtn");
-  if (detailPlayBtn) {
-    const isCurrentPlaying = state.currentSong.src && !state.currentSong.paused;
-    detailPlayBtn.innerHTML = isCurrentPlaying
-      ? `<svg viewBox="0 0 24 24" fill="#000" width="28" height="28"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
-      : `<svg viewBox="0 0 24 24" fill="#000" width="28" height="28" style="margin-left: 2px;"><polygon points="5,3 19,12 5,21"/></svg>`;
-  }
-}
-
-// ==================== VOLUME ICON ====================
-export function updateVolumeIcon(vol) {
-  const queueBtn = getElement("#queueBtn");
-  if (!queueBtn) return;
-  if (vol === 0) {
-    queueBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16"><path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`;
-  } else if (vol < 0.5) {
-    queueBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16"><path d="M18.5 12A4.5 4.5 0 0 0 16 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`;
-  } else {
-    queueBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="#b3b3b3" width="16" height="16"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`;
-  }
-}
-
-// ==================== PREMIUM POPUP ====================
-export function setupPremiumPopup() {
-  const exploreBtn = getElement("#explorePremiumBtn");
-  const premiumPopup = getElement("#premiumPopup");
-  const closePopup = getElement(".close-popup");
-  const subscribeBtn = getElement("#subscribePremiumBtn");
-
-  const openModal = () => {
-    if (!premiumPopup) return;
-    premiumPopup.classList.remove("hidden");
-    premiumPopup.setAttribute("aria-hidden", "false");
-    premiumPopup.style.display = "flex";
-  };
-
-  const closeModal = () => {
-    if (!premiumPopup) return;
-    premiumPopup.classList.add("hidden");
-    premiumPopup.setAttribute("aria-hidden", "true");
-    premiumPopup.style.display = "none";
-  };
-
-  if (exploreBtn) exploreBtn.addEventListener("click", openModal);
-  if (closePopup) closePopup.addEventListener("click", closeModal);
-
-  if (subscribeBtn) {
-    subscribeBtn.addEventListener("click", () => {
-      closeModal();
-      showToast("🎵 Subscribed to Premium for ₹99/month!");
-    });
-  }
-
-  if (premiumPopup) {
-    premiumPopup.addEventListener("click", (event) => {
-      if (event.target === premiumPopup) closeModal();
-    });
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && premiumPopup && !premiumPopup.classList.contains("hidden")) {
-      closeModal();
-    }
-  });
-}
-
-// ==================== NOTIFICATIONS ====================
-export function setupNotifications() {
-  const notificationsBtn = getElement("#notificationsBtn");
-  if (!notificationsBtn) return;
-  notificationsBtn.addEventListener("click", () => {
-    showToast("🔔 No new notifications", 2200);
-  });
-}
-
-// ==================== PROFILE MENU ====================
-// ==================== PROFILE MENU & EDITOR ====================
-export function refreshProfileDisplay() {
-  const profileIcon = getElement("#profileIcon");
-  const profileAvatar = getElement("#profileAvatar");
-  const profileUsername = getElement("#profileUsername");
-  const profileEmail = getElement("#profileEmail");
-
-  const username = localStorage.getItem("username") || "User";
-  const email = localStorage.getItem("email") || "email@example.com";
-  const profileImage = localStorage.getItem("profile_image");
-
-  // Get initials
-  const initials = username
-    .split(" ")
-    .filter(Boolean)
-    .map((part) => part[0].toUpperCase())
-    .slice(0, 2)
-    .join("") || "U";
-
-  // Update text values
-  if (profileUsername) profileUsername.textContent = username;
-  if (profileEmail) profileEmail.textContent = email;
-
-  // Update profile circles (with custom image or initials)
-  if (profileImage) {
-    if (profileIcon) {
-      profileIcon.innerHTML = `<img src="${profileImage}" alt="${username}" />`;
-    }
-    if (profileAvatar) {
-      profileAvatar.innerHTML = `<img src="${profileImage}" alt="${username}" />`;
-    }
-  } else {
-    if (profileIcon) {
-      profileIcon.textContent = initials;
-      profileIcon.innerHTML = initials; // Clear any old img element
-    }
-    if (profileAvatar) {
-      profileAvatar.textContent = initials;
-      profileAvatar.innerHTML = initials; // Clear any old img element
-    }
-  }
-}
-
-export function setupEditProfileModal() {
-  const profileOptionBtn = getElement("#profileOptionBtn");
-  const profileModal = getElement("#profileModal");
-  const closeProfileModal = getElement("#closeProfileModal");
-  const cancelProfileEditBtn = getElement("#cancelProfileEditBtn");
-  const editProfileForm = getElement("#editProfileForm");
-
-  const profileUsernameInput = getElement("#profileUsernameInput");
-  const profileEmailInput = getElement("#profileEmailInput");
-  const profileImageInput = getElement("#profileImageInput");
-
-  const modalProfilePreviewImg = getElement("#modalProfilePreviewImg");
-  const modalProfilePreviewInitials = getElement("#modalProfilePreviewInitials");
-  const removeProfileImgBtn = getElement("#removeProfileImgBtn");
-
-  let currentBase64Image = localStorage.getItem("profile_image") || "";
-
-  // Open Modal
-  if (profileOptionBtn && profileModal) {
-    profileOptionBtn.addEventListener("click", () => {
-      // Pre-fill inputs
-      if (profileUsernameInput) profileUsernameInput.value = localStorage.getItem("username") || "User";
-      if (profileEmailInput) profileEmailInput.value = localStorage.getItem("email") || "email@example.com";
-
-      // Setup preview
-      currentBase64Image = localStorage.getItem("profile_image") || "";
-      updateModalPreview();
-
-      // Show modal
-      profileModal.classList.remove("hidden");
-
-      // Close profile menu dropdown
-      const profileMenu = getElement("#profileMenu");
-      if (profileMenu) profileMenu.classList.remove("active");
-    });
-  }
-
-  function updateModalPreview() {
-    if (currentBase64Image) {
-      if (modalProfilePreviewImg) {
-        modalProfilePreviewImg.src = currentBase64Image;
-        modalProfilePreviewImg.style.display = "block";
-      }
-      if (modalProfilePreviewInitials) {
-        modalProfilePreviewInitials.style.display = "none";
-      }
-    } else {
-      if (modalProfilePreviewImg) {
-        modalProfilePreviewImg.style.display = "none";
-        modalProfilePreviewImg.src = "";
-      }
-      if (modalProfilePreviewInitials) {
-        const username = profileUsernameInput ? profileUsernameInput.value : "User";
-        const initials = username
-          .split(" ")
-          .filter(Boolean)
-          .map((part) => part[0].toUpperCase())
-          .slice(0, 2)
-          .join("") || "U";
-        modalProfilePreviewInitials.textContent = initials;
-        modalProfilePreviewInitials.style.display = "flex";
-      }
-    }
-  }
-
-  // Handle username keyup to update preview initials on the fly
-  if (profileUsernameInput) {
-    profileUsernameInput.addEventListener("input", () => {
-      if (!currentBase64Image) {
-        updateModalPreview();
-      }
-    });
-  }
-
-  // Close Modal triggers
-  const hideModal = () => {
-    if (profileModal) profileModal.classList.add("hidden");
-  };
-
-  if (closeProfileModal) closeProfileModal.addEventListener("click", hideModal);
-  if (cancelProfileEditBtn) cancelProfileEditBtn.addEventListener("click", hideModal);
-
-  // Close Modal when clicking outside the card
-  if (profileModal) {
-    profileModal.addEventListener("click", (e) => {
-      if (e.target === profileModal) {
-        hideModal();
-      }
-    });
-  }
-
-  // Handle Image Upload & Conversion to Base64
-  if (profileImageInput) {
-    profileImageInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      if (!file.type.startsWith("image/")) {
-        showToast("❌ Please select a valid image file.");
-        return;
-      }
-
-      // Limit file size to 2MB to keep localStorage clean and fast
-      if (file.size > 2 * 1024 * 1024) {
-        showToast("❌ Image must be smaller than 2MB.");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        currentBase64Image = event.target.result;
-        updateModalPreview();
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  // Remove Photo button
-  if (removeProfileImgBtn) {
-    removeProfileImgBtn.addEventListener("click", () => {
-      currentBase64Image = "";
-      if (profileImageInput) profileImageInput.value = "";
-      updateModalPreview();
-    });
-  }
-
-  // Form Submit
-  if (editProfileForm) {
-    editProfileForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const newUsername = profileUsernameInput ? profileUsernameInput.value.trim() : "User";
-      const newEmail = profileEmailInput ? profileEmailInput.value.trim() : "email@example.com";
-
-      if (!newUsername) {
-        showToast("❌ Username cannot be empty.");
-        return;
-      }
-
-      // Save to localStorage
-      localStorage.setItem("username", newUsername);
-      localStorage.setItem("email", newEmail);
-      if (currentBase64Image) {
-        localStorage.setItem("profile_image", currentBase64Image);
-      } else {
-        localStorage.removeItem("profile_image");
-      }
-
-      // Refresh page elements
-      refreshProfileDisplay();
-
-      // Show toast message
-      showToast("✅ Profile updated successfully!");
-
-      // Hide modal
-      hideModal();
-    });
-  }
-}
-
-export function setupProfileMenu() {
-  const profileIcon = getElement("#profileIcon");
-  const profileMenu = getElement("#profileMenu");
-  const logoutOption = getElement("#logoutOption");
-  const profileContainer = getElement(".profileContainer");
-
-  // Initial display values on load
-  refreshProfileDisplay();
-
-  // Set up Edit Profile Modal event listeners
-  setupEditProfileModal();
-
-  const accountOptionBtn = getElement("#accountOptionBtn");
-  const profileOptionBtn = getElement("#profileOptionBtn");
-  const settingsOptionBtn = getElement("#settingsOptionBtn");
-
-  if (accountOptionBtn) {
-    accountOptionBtn.addEventListener("click", () => {
-      window.location.href = "account.html";
-    });
-  }
-  if (profileOptionBtn) {
-    profileOptionBtn.addEventListener("click", () => {
-      window.location.href = "profile.html";
-    });
-  }
-  if (settingsOptionBtn) {
-    settingsOptionBtn.addEventListener("click", () => {
-      window.location.href = "settings.html";
-    });
-  }
-
-  if (profileIcon && profileMenu) {
-    profileIcon.addEventListener("click", (event) => {
-      event.stopPropagation();
-      profileMenu.classList.toggle("active");
-    });
-  }
-
-  if (logoutOption) {
-    logoutOption.addEventListener("click", (event) => {
-      event.preventDefault();
-      localStorage.removeItem("token");
-      localStorage.removeItem("is_logged_in");
-      localStorage.removeItem("username");
-      localStorage.removeItem("email");
-      localStorage.removeItem("profile_image");
-      window.location.href = "login.html";
-    });
-  }
-
-  document.addEventListener("click", (event) => {
-    if (!profileContainer || !profileMenu) return;
-    if (!profileContainer.contains(event.target)) profileMenu.classList.remove("active");
-  });
-}
-
-// ==================== SIDEBAR TOGGLE ====================
-export function setupSidebarToggle() {
-  const hamburger = getElement(".hamburger");
-  const closeBtn = getElement(".close");
-  const sidebar = getElement(".left");
-  if (hamburger && closeBtn && sidebar) {
-    hamburger.addEventListener("click", () => sidebar.classList.add("active"));
-    closeBtn.addEventListener("click", () => sidebar.classList.remove("active"));
-  }
-}
-
-// ==================== LIKED SONGS BUTTONS ====================
-export function setupLikedSongsButtons() {
-  const likedSongsBtn = getElement("#likedSongsBtn");
-  const allSongsBtn = getElement("#allSongsBtn");
-  const arijitSinghBtn = getElement("#arijitSinghBtn");
-
-  if (likedSongsBtn) {
-    likedSongsBtn.addEventListener("click", () => {
-      state.showLikedSongs = true;
-      state.displaySongs = getLikedSongObjects();
-      renderSongList();
-
-      const albumDetailView = getElement("#albumDetailView");
-      const homeSections = getElement("#homeSections");
-      if (albumDetailView) albumDetailView.style.display = "none";
-      if (homeSections) homeSections.style.display = "block";
-    });
-  }
-
-  if (allSongsBtn) {
-    allSongsBtn.addEventListener("click", async () => {
-      state.showLikedSongs = false;
-      state.showFollowing = false;
-      if (!state.currFolder) {
-        if (state.allAlbums && state.allAlbums.length > 0) {
-          await loadFolderSongs(state.allAlbums[0].folder);
-        } else {
-          await loadFolderSongs("karan aujla");
+    // Close Modal when clicking outside the card
+    if (profileModal) {
+      profileModal.addEventListener("click", (e) => {
+        if (e.target === profileModal) {
+          hideModal();
         }
-      } else {
-        state.displaySongs = state.songs.map((track) => ({ folder: state.currFolder, track }));
+      });
+    }
+
+    // Handle Image Upload & Conversion to Base64
+    if (profileImageInput) {
+      profileImageInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+          showToast("❌ Please select a valid image file.");
+          return;
+        }
+
+        // Limit file size to 2MB to keep localStorage clean and fast
+        if (file.size > 2 * 1024 * 1024) {
+          showToast("❌ Image must be smaller than 2MB.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          currentBase64Image = event.target.result;
+          updateModalPreview();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Remove Photo button
+    if (removeProfileImgBtn) {
+      removeProfileImgBtn.addEventListener("click", () => {
+        currentBase64Image = "";
+        if (profileImageInput) profileImageInput.value = "";
+        updateModalPreview();
+      });
+    }
+
+    // Form Submit
+    if (editProfileForm) {
+      editProfileForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const newUsername = profileUsernameInput ? profileUsernameInput.value.trim() : "User";
+        const newEmail = profileEmailInput ? profileEmailInput.value.trim() : "email@example.com";
+
+        if (!newUsername) {
+          showToast("❌ Username cannot be empty.");
+          return;
+        }
+
+        // Save to localStorage
+        localStorage.setItem("username", newUsername);
+        localStorage.setItem("email", newEmail);
+        if (currentBase64Image) {
+          localStorage.setItem("profile_image", currentBase64Image);
+        } else {
+          localStorage.removeItem("profile_image");
+        }
+
+        // Refresh page elements
+        refreshProfileDisplay();
+
+        // Show toast message
+        showToast("✅ Profile updated successfully!");
+
+        // Hide modal
+        hideModal();
+      });
+    }
+  }
+
+  export function setupProfileMenu() {
+    const profileIcon = getElement("#profileIcon");
+    const profileMenu = getElement("#profileMenu");
+    const logoutOption = getElement("#logoutOption");
+    const profileContainer = getElement(".profileContainer");
+
+    // Initial display values on load
+    refreshProfileDisplay();
+
+    // Set up Edit Profile Modal event listeners
+    setupEditProfileModal();
+
+    const accountOptionBtn = getElement("#accountOptionBtn");
+    const profileOptionBtn = getElement("#profileOptionBtn");
+    const settingsOptionBtn = getElement("#settingsOptionBtn");
+
+    if (accountOptionBtn) {
+      accountOptionBtn.addEventListener("click", () => {
+        window.location.href = "account.html";
+      });
+    }
+    if (profileOptionBtn) {
+      profileOptionBtn.addEventListener("click", () => {
+        window.location.href = "profile.html";
+      });
+    }
+    if (settingsOptionBtn) {
+      settingsOptionBtn.addEventListener("click", () => {
+        window.location.href = "settings.html";
+      });
+    }
+
+    if (profileIcon && profileMenu) {
+      profileIcon.addEventListener("click", (event) => {
+        event.stopPropagation();
+        profileMenu.classList.toggle("active");
+      });
+    }
+
+    if (logoutOption) {
+      logoutOption.addEventListener("click", (event) => {
+        event.preventDefault();
+        localStorage.removeItem("token");
+        localStorage.removeItem("is_logged_in");
+        localStorage.removeItem("username");
+        localStorage.removeItem("email");
+        localStorage.removeItem("profile_image");
+        window.location.href = "login.html";
+      });
+    }
+
+    document.addEventListener("click", (event) => {
+      if (!profileContainer || !profileMenu) return;
+      if (!profileContainer.contains(event.target)) profileMenu.classList.remove("active");
+    });
+  }
+
+  // ==================== SIDEBAR TOGGLE ====================
+  export function setupSidebarToggle() {
+    const hamburger = getElement(".hamburger");
+    const closeBtn = getElement(".close");
+    const sidebar = getElement(".left");
+    if (hamburger && closeBtn && sidebar) {
+      hamburger.addEventListener("click", () => sidebar.classList.add("active"));
+      closeBtn.addEventListener("click", () => sidebar.classList.remove("active"));
+    }
+  }
+
+  // ==================== LIKED SONGS BUTTONS ====================
+  export function setupLikedSongsButtons() {
+    const likedSongsBtn = getElement("#likedSongsBtn");
+    const allSongsBtn = getElement("#allSongsBtn");
+    const arijitSinghBtn = getElement("#arijitSinghBtn");
+
+    if (likedSongsBtn) {
+      likedSongsBtn.addEventListener("click", () => {
+        state.showLikedSongs = true;
+        state.displaySongs = getLikedSongObjects();
         renderSongList();
-      }
 
-      const albumDetailView = getElement("#albumDetailView");
-      const homeSections = getElement("#homeSections");
-      if (albumDetailView) albumDetailView.style.display = "none";
-      if (homeSections) homeSections.style.display = "block";
-    });
-  }
-
-  const followingBtn = getElement("#followingBtn");
-  if (followingBtn) {
-    followingBtn.addEventListener("click", () => {
-      state.showLikedSongs = false;
-      state.showFollowing = true;
-      renderFollowingList();
-
-      const albumDetailView = getElement("#albumDetailView");
-      const homeSections = getElement("#homeSections");
-      if (albumDetailView) albumDetailView.style.display = "none";
-      if (homeSections) homeSections.style.display = "block";
-    });
-  }
-}
-
-export function toggleFollowArtist(artistKey, artistName = "") {
-  if (!artistKey) return false;
-  const key = artistKey.toLowerCase().trim();
-  const isFollowing = state.followedArtists.has(key);
-
-  if (isFollowing) {
-    state.followedArtists.delete(key);
-    saveFollowedArtists();
-    showToast(`Unfollowed ${artistName || key}`);
-  } else {
-    state.followedArtists.add(key);
-    saveFollowedArtists();
-    showToast(`Following ${artistName || key}`);
-  }
-
-  // Real-time update UI buttons across the entire page (Credits box, sidebar, headers)
-  document.querySelectorAll(".follow-pill-btn").forEach((btn) => {
-    const dataArtist = (btn.getAttribute("data-artist") || "").toLowerCase().trim();
-    const parent = btn.closest(".credit-item, .artist-card, .album-header");
-    const nameText = parent ? parent.innerText.toLowerCase() : "";
-
-    if (dataArtist === key || nameText.includes(key)) {
-      if (state.followedArtists.has(key)) {
-        btn.classList.add("following");
-        btn.textContent = "Following";
-      } else {
-        btn.classList.remove("following");
-        btn.textContent = "Follow";
-      }
+        const albumDetailView = getElement("#albumDetailView");
+        const homeSections = getElement("#homeSections");
+        if (albumDetailView) albumDetailView.style.display = "none";
+        if (homeSections) homeSections.style.display = "block";
+      });
     }
-  });
 
-  // Always update Left Sidebar Following List in real-time
-  renderFollowingList();
+    if (allSongsBtn) {
+      allSongsBtn.addEventListener("click", async () => {
+        state.showLikedSongs = false;
+        state.showFollowing = false;
+        if (!state.currFolder) {
+          if (state.allAlbums && state.allAlbums.length > 0) {
+            await loadFolderSongs(state.allAlbums[0].folder);
+          } else {
+            await loadFolderSongs("karan aujla");
+          }
+        } else {
+          state.displaySongs = state.songs.map((track) => ({ folder: state.currFolder, track }));
+          renderSongList();
+        }
 
-  return !isFollowing;
-}
+        const albumDetailView = getElement("#albumDetailView");
+        const homeSections = getElement("#homeSections");
+        if (albumDetailView) albumDetailView.style.display = "none";
+        if (homeSections) homeSections.style.display = "block";
+      });
+    }
 
-export function renderFollowingList() {
-  const songListContainer = getElement(".songList ul");
-  if (!songListContainer) return;
+    const followingBtn = getElement("#followingBtn");
+    if (followingBtn) {
+      followingBtn.addEventListener("click", () => {
+        state.showLikedSongs = false;
+        state.showFollowing = true;
+        renderFollowingList();
 
-  const ALL_ARTISTS_MAP = {
-    "karan aujla": { folder: "karan aujla", name: "Karan Aujla", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg" },
-    "ikky": { folder: "karan aujla", name: "IKKY", subtitle: "Producer • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg" },
-    "diljit": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" },
-    "diljit dosanjh": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" },
-    "honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" },
-    "yo yo honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" },
-    "talwinder": { folder: "talwinder", name: "Talwiinder", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg" },
-    "ap dillhon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg" },
-    "ap dhillon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg" },
-    "pritam": { folder: "karan aujla", name: "Pritam", subtitle: "Composer • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" },
-    "ncs": { folder: "ncs", name: "NCS Music", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg" },
-    "vibes songs": { folder: "vibes songs", name: "Chill Punjabi Lo-Fi", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/3f/d2/f9/3fd2f999-c2c2-4fe6-ecc3-1d30f38904bd/859777326048_cover.jpg/500x500bb.jpg" },
-    "instagram trending": { folder: "instagram trending", name: "Reels Viral", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg" }
-  };
-
-  const followedKeys = Array.from(state.followedArtists);
-  const seenNames = new Set();
-  const followedList = [];
-
-  for (const k of followedKeys) {
-    const info = ALL_ARTISTS_MAP[k] || { folder: k, name: k.charAt(0).toUpperCase() + k.slice(1), subtitle: "Artist", cover: "img/music.svg" };
-    const normName = info.name.toLowerCase().trim();
-    if (!seenNames.has(normName)) {
-      seenNames.add(normName);
-      followedList.push(info);
+        const albumDetailView = getElement("#albumDetailView");
+        const homeSections = getElement("#homeSections");
+        if (albumDetailView) albumDetailView.style.display = "none";
+        if (homeSections) homeSections.style.display = "block";
+      });
     }
   }
 
-  if (followedList.length === 0) {
-    songListContainer.innerHTML = `<li class="empty-song-list" style="padding: 16px; color: #b3b3b3; font-size: 13px; text-align: center;">No followed artists yet. Follow artists to see them here!</li>`;
-    updateLibraryButtons();
-    return;
+  export function toggleFollowArtist(artistKey, artistName = "") {
+    if (!artistKey) return false;
+    const key = artistKey.toLowerCase().trim();
+    const isFollowing = state.followedArtists.has(key);
+
+    if (isFollowing) {
+      state.followedArtists.delete(key);
+      saveFollowedArtists();
+      showToast(`Unfollowed ${artistName || key}`);
+    } else {
+      state.followedArtists.add(key);
+      saveFollowedArtists();
+      showToast(`Following ${artistName || key}`);
+    }
+
+    // Real-time update UI buttons across the entire page (Credits box, sidebar, headers)
+    document.querySelectorAll(".follow-pill-btn").forEach((btn) => {
+      const dataArtist = (btn.getAttribute("data-artist") || "").toLowerCase().trim();
+      const parent = btn.closest(".credit-item, .artist-card, .album-header");
+      const nameText = parent ? parent.innerText.toLowerCase() : "";
+
+      if (dataArtist === key || nameText.includes(key)) {
+        if (state.followedArtists.has(key)) {
+          btn.classList.add("following");
+          btn.textContent = "Following";
+        } else {
+          btn.classList.remove("following");
+          btn.textContent = "Follow";
+        }
+      }
+    });
+
+    // Always update Left Sidebar Following List in real-time
+    renderFollowingList();
+
+    return !isFollowing;
   }
 
-  songListContainer.innerHTML = followedList.map((artist) => `
+  export function renderFollowingList() {
+    const songListContainer = getElement(".songList ul");
+    if (!songListContainer) return;
+
+    const ALL_ARTISTS_MAP = {
+      "karan aujla": { folder: "karan aujla", name: "Karan Aujla", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg" },
+      "ikky": { folder: "karan aujla", name: "IKKY", subtitle: "Producer • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/06/bd/e1/06bde161-335b-87fa-650a-f0d04bd9f55d/5021732889621.jpg/500x500bb.jpg" },
+      "diljit": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" },
+      "diljit dosanjh": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/97/86/86/97868694-9413-a543-514a-a6374469ff97/859736427250_cover.jpg/500x500bb.jpg" },
+      "honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" },
+      "yo yo honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" },
+      "talwinder": { folder: "talwinder", name: "Talwiinder", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4d/62/fd/4d62fd50-5bb8-4449-7a07-27a749dbde66/25UMGIM53708.rgb.jpg/500x500bb.jpg" },
+      "ap dillhon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg" },
+      "ap dhillon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/ac/00/5aac005f-9403-70e4-bce0-cf452017476e/197189606472.jpg/500x500bb.jpg" },
+      "pritam": { folder: "karan aujla", name: "Pritam", subtitle: "Composer • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b3/b5/d9/b3b5d986-7f6d-a860-b8aa-769e1eef1a92/8902894356299_cover.jpg/500x500bb.jpg" },
+      "ncs": { folder: "ncs", name: "NCS Music", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/46/e7/c2/46e7c2f3-19b0-8d25-971b-a8b378916a87/artwork.jpg/500x500bb.jpg" },
+      "vibes songs": { folder: "vibes songs", name: "Chill Punjabi Lo-Fi", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/3f/d2/f9/3fd2f999-c2c2-4fe6-ecc3-1d30f38904bd/859777326048_cover.jpg/500x500bb.jpg" },
+      "instagram trending": { folder: "instagram trending", name: "Reels Viral", subtitle: "Artist • Followed", cover: "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/58/1a/33581a2a-1b7d-e139-5cb8-0feb931981c9/Lohri3000.jpg/500x500bb.jpg" }
+    };
+
+    const followedKeys = Array.from(state.followedArtists);
+    const seenNames = new Set();
+    const followedList = [];
+
+    for (const k of followedKeys) {
+      const info = ALL_ARTISTS_MAP[k] || { folder: k, name: k.charAt(0).toUpperCase() + k.slice(1), subtitle: "Artist", cover: "img/music.svg" };
+      const normName = info.name.toLowerCase().trim();
+      if (!seenNames.has(normName)) {
+        seenNames.add(normName);
+        followedList.push(info);
+      }
+    }
+
+    if (followedList.length === 0) {
+      songListContainer.innerHTML = `<li class="empty-song-list" style="padding: 16px; color: #b3b3b3; font-size: 13px; text-align: center;">No followed artists yet. Follow artists to see them here!</li>`;
+      updateLibraryButtons();
+      return;
+    }
+
+    songListContainer.innerHTML = followedList.map((artist) => `
     <li class="song-item artist-following-item" data-folder="${artist.folder}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; cursor: pointer; border-radius: 8px; transition: background 0.2s ease;">
       <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
         <img src="${artist.cover}" alt="${artist.name}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" onerror="this.src='img/music.svg';" />
@@ -1334,450 +1335,450 @@ export function renderFollowingList() {
     </li>
   `).join("");
 
-  songListContainer.querySelectorAll(".artist-following-item").forEach((item) => {
-    item.addEventListener("click", async (e) => {
-      const folder = item.getAttribute("data-folder");
-      state.showFollowing = false;
-      await loadFolderSongs(folder);
-      renderSongList();
-    });
-  });
-
-  updateLibraryButtons();
-}
-
-
-// ==================== HOME BUTTON ====================
-export function setupHomeButton() {
-  const homeBtn = document.getElementById("homeBtn");
-  const brandLogo = document.querySelector(".sidebar-brand");
-
-  const resetToHome = (e) => {
-    if (e) e.preventDefault();
-    const albumDetailView = getElement("#albumDetailView");
-    const homeSections = getElement("#homeSections");
-    const accountOverviewPage = getElement("#accountOverviewPage");
-    const settingsViewPage = getElement("#settingsViewPage");
-
-    if (accountOverviewPage) accountOverviewPage.style.display = "none";
-    if (settingsViewPage) settingsViewPage.style.display = "none";
-    if (albumDetailView) albumDetailView.style.display = "none";
-    if (homeSections) homeSections.style.display = "block";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  if (homeBtn) homeBtn.addEventListener("click", resetToHome);
-  if (brandLogo) brandLogo.addEventListener("click", resetToHome);
-}
-
-// ==================== SCROLL ROW FUNCTION ====================
-window.scrollRow = function (btn, dir) {
-  const wrapper = btn.parentNode;
-  if (!wrapper) return;
-  const row = wrapper.querySelector(".horizontal-row, .cardContainer");
-  if (row) row.scrollBy({ left: dir * 420, behavior: "smooth" });
-};
-
-// ==================== RECENTLY PLAYED SYSTEM ====================
-export function getRecentlyPlayed() {
-  return [];
-}
-
-export function addRecentlyPlayed(track, folder) {
-  // Recently played feature disabled
-}
-
-export function renderRecentlyPlayedUI(items = []) {
-  // Recently played feature disabled - preserves static home layout
-}
-
-// PWA Install Prompt Listener
-let deferredPwaPrompt = null;
-if (typeof window !== "undefined") {
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferredPwaPrompt = e;
-  });
-}
-
-// ==================== INSTALL APP POPUP MODAL ====================
-export function setupInstallAppModal() {
-  const installAppBtn = getElement("#installAppBtn");
-  const installAppModal = getElement("#installAppModal");
-  const closeInstallAppModalBtn = getElement("#closeInstallAppModalBtn");
-  const modalDownloadAppBtn = getElement("#modalDownloadAppBtn");
-
-  const openModal = () => {
-    if (installAppModal) {
-      installAppModal.classList.remove("hidden");
-      installAppModal.style.display = "flex";
-      installAppModal.setAttribute("aria-hidden", "false");
-    }
-  };
-
-  const closeModal = () => {
-    if (installAppModal) {
-      installAppModal.classList.add("hidden");
-      installAppModal.style.display = "none";
-      installAppModal.setAttribute("aria-hidden", "true");
-    }
-  };
-
-  if (installAppBtn) installAppBtn.addEventListener("click", openModal);
-  if (closeInstallAppModalBtn) closeInstallAppModalBtn.addEventListener("click", closeModal);
-
-  if (modalDownloadAppBtn) {
-    modalDownloadAppBtn.addEventListener("click", async () => {
-      if (deferredPwaPrompt) {
-        deferredPwaPrompt.prompt();
-        const choice = await deferredPwaPrompt.userChoice;
-        if (choice && choice.outcome === "accepted") {
-          showToast("✅ Musify App installed successfully!");
-        } else {
-          showToast("✅ Musify App is ready for Web & PWA!");
-        }
-        deferredPwaPrompt = null;
-      } else {
-        showToast("✅ Musify Web App is ready for installation!");
-      }
-      closeModal();
-    });
-  }
-
-  if (installAppModal) {
-    installAppModal.addEventListener("click", (e) => {
-      if (e.target === installAppModal) closeModal();
-    });
-  }
-}
-
-export function triggerDesktopAppDownload() {
-  showToast("✅ Musify Web App is ready to use!");
-}
-
-// ==================== SPOTIFY ACCOUNT OVERVIEW PAGE (Screenshots 2, 3, 4, 5) ====================
-export function setupAccountOverviewPage() {
-  const accountOptionBtn = getElement("#accountOptionBtn");
-  const accountOverviewPage = getElement("#accountOverviewPage");
-  const homeSections = getElement("#homeSections");
-  const albumDetailView = getElement("#albumDetailView");
-  const accountBackBtn = getElement("#accountBackBtn");
-
-  const openAccountPage = () => {
-    if (homeSections) homeSections.style.display = "none";
-    if (albumDetailView) albumDetailView.style.display = "none";
-    if (accountOverviewPage) accountOverviewPage.style.display = "block";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const closeAccountPage = () => {
-    if (accountOverviewPage) accountOverviewPage.style.display = "none";
-    if (homeSections) homeSections.style.display = "block";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  if (accountOptionBtn) accountOptionBtn.addEventListener("click", openAccountPage);
-  if (accountBackBtn) accountBackBtn.addEventListener("click", closeAccountPage);
-
-  if (accountOverviewPage) {
-    accountOverviewPage.querySelectorAll(".box-menu-item").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const action = btn.dataset.action;
-        handleAccountAction(action);
+    songListContainer.querySelectorAll(".artist-following-item").forEach((item) => {
+      item.addEventListener("click", async (e) => {
+        const folder = item.getAttribute("data-folder");
+        state.showFollowing = false;
+        await loadFolderSongs(folder);
+        renderSongList();
       });
     });
 
-    const accExplorePlansBtn = getElement("#accExplorePlansBtn");
-    const accJoinPremiumBtn = getElement("#accJoinPremiumBtn");
-    const premiumPopup = getElement("#premiumPopup");
+    updateLibraryButtons();
+  }
 
-    const openPremium = () => {
-      if (premiumPopup) {
-        premiumPopup.classList.remove("hidden");
-        premiumPopup.style.display = "flex";
+
+  // ==================== HOME BUTTON ====================
+  export function setupHomeButton() {
+    const homeBtn = document.getElementById("homeBtn");
+    const brandLogo = document.querySelector(".sidebar-brand");
+
+    const resetToHome = (e) => {
+      if (e) e.preventDefault();
+      const albumDetailView = getElement("#albumDetailView");
+      const homeSections = getElement("#homeSections");
+      const accountOverviewPage = getElement("#accountOverviewPage");
+      const settingsViewPage = getElement("#settingsViewPage");
+
+      if (accountOverviewPage) accountOverviewPage.style.display = "none";
+      if (settingsViewPage) settingsViewPage.style.display = "none";
+      if (albumDetailView) albumDetailView.style.display = "none";
+      if (homeSections) homeSections.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    if (homeBtn) homeBtn.addEventListener("click", resetToHome);
+    if (brandLogo) brandLogo.addEventListener("click", resetToHome);
+  }
+
+  // ==================== SCROLL ROW FUNCTION ====================
+  window.scrollRow = function (btn, dir) {
+    const wrapper = btn.parentNode;
+    if (!wrapper) return;
+    const row = wrapper.querySelector(".horizontal-row, .cardContainer");
+    if (row) row.scrollBy({ left: dir * 420, behavior: "smooth" });
+  };
+
+  // ==================== RECENTLY PLAYED SYSTEM ====================
+  export function getRecentlyPlayed() {
+    return [];
+  }
+
+  export function addRecentlyPlayed(track, folder) {
+    // Recently played feature disabled
+  }
+
+  export function renderRecentlyPlayedUI(items = []) {
+    // Recently played feature disabled - preserves static home layout
+  }
+
+  // PWA Install Prompt Listener
+  let deferredPwaPrompt = null;
+  if (typeof window !== "undefined") {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPwaPrompt = e;
+    });
+  }
+
+  // ==================== INSTALL APP POPUP MODAL ====================
+  export function setupInstallAppModal() {
+    const installAppBtn = getElement("#installAppBtn");
+    const installAppModal = getElement("#installAppModal");
+    const closeInstallAppModalBtn = getElement("#closeInstallAppModalBtn");
+    const modalDownloadAppBtn = getElement("#modalDownloadAppBtn");
+
+    const openModal = () => {
+      if (installAppModal) {
+        installAppModal.classList.remove("hidden");
+        installAppModal.style.display = "flex";
+        installAppModal.setAttribute("aria-hidden", "false");
       }
     };
 
-    if (accExplorePlansBtn) accExplorePlansBtn.addEventListener("click", openPremium);
-    if (accJoinPremiumBtn) accJoinPremiumBtn.addEventListener("click", openPremium);
-  }
-}
+    const closeModal = () => {
+      if (installAppModal) {
+        installAppModal.classList.add("hidden");
+        installAppModal.style.display = "none";
+        installAppModal.setAttribute("aria-hidden", "true");
+      }
+    };
 
-export function handleAccountAction(action) {
-  switch (action) {
-    case "subscription":
-    case "explore-plans":
+    if (installAppBtn) installAppBtn.addEventListener("click", openModal);
+    if (closeInstallAppModalBtn) closeInstallAppModalBtn.addEventListener("click", closeModal);
+
+    if (modalDownloadAppBtn) {
+      modalDownloadAppBtn.addEventListener("click", async () => {
+        if (deferredPwaPrompt) {
+          deferredPwaPrompt.prompt();
+          const choice = await deferredPwaPrompt.userChoice;
+          if (choice && choice.outcome === "accepted") {
+            showToast("✅ Musify App installed successfully!");
+          } else {
+            showToast("✅ Musify App is ready for Web & PWA!");
+          }
+          deferredPwaPrompt = null;
+        } else {
+          showToast("✅ Musify Web App is ready for installation!");
+        }
+        closeModal();
+      });
+    }
+
+    if (installAppModal) {
+      installAppModal.addEventListener("click", (e) => {
+        if (e.target === installAppModal) closeModal();
+      });
+    }
+  }
+
+  export function triggerDesktopAppDownload() {
+    showToast("✅ Musify Web App is ready to use!");
+  }
+
+  // ==================== SPOTIFY ACCOUNT OVERVIEW PAGE (Screenshots 2, 3, 4, 5) ====================
+  export function setupAccountOverviewPage() {
+    const accountOptionBtn = getElement("#accountOptionBtn");
+    const accountOverviewPage = getElement("#accountOverviewPage");
+    const homeSections = getElement("#homeSections");
+    const albumDetailView = getElement("#albumDetailView");
+    const accountBackBtn = getElement("#accountBackBtn");
+
+    const openAccountPage = () => {
+      if (homeSections) homeSections.style.display = "none";
+      if (albumDetailView) albumDetailView.style.display = "none";
+      if (accountOverviewPage) accountOverviewPage.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const closeAccountPage = () => {
+      if (accountOverviewPage) accountOverviewPage.style.display = "none";
+      if (homeSections) homeSections.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    if (accountOptionBtn) accountOptionBtn.addEventListener("click", openAccountPage);
+    if (accountBackBtn) accountBackBtn.addEventListener("click", closeAccountPage);
+
+    if (accountOverviewPage) {
+      accountOverviewPage.querySelectorAll(".box-menu-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const action = btn.dataset.action;
+          handleAccountAction(action);
+        });
+      });
+
+      const accExplorePlansBtn = getElement("#accExplorePlansBtn");
+      const accJoinPremiumBtn = getElement("#accJoinPremiumBtn");
       const premiumPopup = getElement("#premiumPopup");
-      if (premiumPopup) {
-        premiumPopup.classList.remove("hidden");
-        premiumPopup.style.display = "flex";
-      }
-      break;
 
-    case "edit-profile":
-      const profileModal = getElement("#profileModal");
-      if (profileModal) {
-        profileModal.classList.remove("hidden");
-        profileModal.style.display = "flex";
-      }
-      break;
+      const openPremium = () => {
+        if (premiumPopup) {
+          premiumPopup.classList.remove("hidden");
+          premiumPopup.style.display = "flex";
+        }
+      };
 
-    case "recover-playlists":
-      showToast("🔄 Restored 3 deleted playlists to your library!");
-      break;
-
-    case "address":
-      const currentAddress = localStorage.getItem("user_address") || "New Delhi, India";
-      const newAddress = prompt("Enter your account address:", currentAddress);
-      if (newAddress !== null) {
-        localStorage.setItem("user_address", newAddress.trim());
-        showToast("🏠 Address updated successfully!");
-      }
-      break;
-
-    case "payment-history":
-      showToast("📑 Payment History: Free Tier Plan (₹0 billed)");
-      break;
-
-    case "saved-cards":
-      showToast("💳 No saved payment cards. Click Explore Plans to add one.");
-      break;
-
-    case "redeem":
-      const code = prompt("Enter your 12-digit Musify Gift Code:");
-      if (code) {
-        showToast("✨ Gift Code applied! 1 Month Premium activated!");
-      }
-      break;
-
-    case "manage-apps":
-      showToast("🔲 0 third-party apps connected to your account.");
-      break;
-
-    case "notifications":
-      const isMuted = localStorage.getItem("notifications_muted") === "true";
-      localStorage.setItem("notifications_muted", (!isMuted).toString());
-      showToast(isMuted ? "🔔 Notifications enabled!" : "🔕 Notifications muted.");
-      break;
-
-    case "privacy":
-      showToast("👁️ Account Privacy: Listening activity is set to Private.");
-      break;
-
-    case "edit-login":
-      showToast("🪪 Login Methods: Passkey, Email & Google SSO active.");
-      break;
-
-    case "device-password":
-      const pass = prompt("Set a new device PIN / Password:");
-      if (pass) {
-        showToast("📱 Device password updated successfully!");
-      }
-      break;
-
-    case "delete-account":
-      if (confirm("⚠️ Are you sure you want to delete your account? This action cannot be undone.")) {
-        localStorage.clear();
-        showToast("🗑️ Account deleted.");
-        setTimeout(() => window.location.href = "signup.html", 1200);
-      }
-      break;
-
-    case "sign-out-everywhere":
-      if (confirm("➔ Sign out of all devices? You will be logged out here as well.")) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("is_logged_in");
-        showToast("➔ Signed out of all devices.");
-        setTimeout(() => window.location.href = "login.html", 1000);
-      }
-      break;
-
-    case "support":
-      showToast("❓ Opening Musify Support Center...");
-      break;
-
-    default:
-      showToast("⚙️ Action processed.");
-      break;
-  }
-}
-
-// ==================== SETTINGS PAGE LOGIC (Screenshots 1 & 2) ====================
-export function setupSettingsPage() {
-  const settingsOptionBtn = getElement("#settingsOptionBtn");
-  const settingsViewPage = getElement("#settingsViewPage");
-  const homeSections = getElement("#homeSections");
-  const albumDetailView = getElement("#albumDetailView");
-  const accountOverviewPage = getElement("#accountOverviewPage");
-  const settingsBackBtn = getElement("#settingsBackBtn");
-
-  const openSettings = () => {
-    if (homeSections) homeSections.style.display = "none";
-    if (albumDetailView) albumDetailView.style.display = "none";
-    if (accountOverviewPage) accountOverviewPage.style.display = "none";
-    if (settingsViewPage) settingsViewPage.style.display = "block";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const closeSettings = () => {
-    if (settingsViewPage) settingsViewPage.style.display = "none";
-    if (homeSections) homeSections.style.display = "block";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  if (settingsOptionBtn) settingsOptionBtn.addEventListener("click", openSettings);
-  if (settingsBackBtn) settingsBackBtn.addEventListener("click", closeSettings);
-
-  // 1. Edit Login Methods
-  const editLoginMethodsBtn = getElement("#editLoginMethodsBtn");
-  if (editLoginMethodsBtn) {
-    editLoginMethodsBtn.addEventListener("click", () => {
-      const profileModal = getElement("#profileModal");
-      if (profileModal) {
-        profileModal.classList.remove("hidden");
-        profileModal.style.display = "flex";
-      }
-    });
+      if (accExplorePlansBtn) accExplorePlansBtn.addEventListener("click", openPremium);
+      if (accJoinPremiumBtn) accJoinPremiumBtn.addEventListener("click", openPremium);
+    }
   }
 
-  // 2. Language Dropdown
-  const appLanguageSelect = getElement("#appLanguageSelect");
-  if (appLanguageSelect) {
-    const savedLang = localStorage.getItem("app_language") || "en";
-    appLanguageSelect.value = savedLang;
-    appLanguageSelect.addEventListener("change", (e) => {
-      localStorage.setItem("app_language", e.target.value);
-      const selectedText = e.target.options[e.target.selectedIndex].text;
-      showToast(`🌐 Language set to ${selectedText}. Changes applied!`);
-    });
+  export function handleAccountAction(action) {
+    switch (action) {
+      case "subscription":
+      case "explore-plans":
+        const premiumPopup = getElement("#premiumPopup");
+        if (premiumPopup) {
+          premiumPopup.classList.remove("hidden");
+          premiumPopup.style.display = "flex";
+        }
+        break;
+
+      case "edit-profile":
+        const profileModal = getElement("#profileModal");
+        if (profileModal) {
+          profileModal.classList.remove("hidden");
+          profileModal.style.display = "flex";
+        }
+        break;
+
+      case "recover-playlists":
+        showToast("🔄 Restored 3 deleted playlists to your library!");
+        break;
+
+      case "address":
+        const currentAddress = localStorage.getItem("user_address") || "New Delhi, India";
+        const newAddress = prompt("Enter your account address:", currentAddress);
+        if (newAddress !== null) {
+          localStorage.setItem("user_address", newAddress.trim());
+          showToast("🏠 Address updated successfully!");
+        }
+        break;
+
+      case "payment-history":
+        showToast("📑 Payment History: Free Tier Plan (₹0 billed)");
+        break;
+
+      case "saved-cards":
+        showToast("💳 No saved payment cards. Click Explore Plans to add one.");
+        break;
+
+      case "redeem":
+        const code = prompt("Enter your 12-digit Musify Gift Code:");
+        if (code) {
+          showToast("✨ Gift Code applied! 1 Month Premium activated!");
+        }
+        break;
+
+      case "manage-apps":
+        showToast("🔲 0 third-party apps connected to your account.");
+        break;
+
+      case "notifications":
+        const isMuted = localStorage.getItem("notifications_muted") === "true";
+        localStorage.setItem("notifications_muted", (!isMuted).toString());
+        showToast(isMuted ? "🔔 Notifications enabled!" : "🔕 Notifications muted.");
+        break;
+
+      case "privacy":
+        showToast("👁️ Account Privacy: Listening activity is set to Private.");
+        break;
+
+      case "edit-login":
+        showToast("🪪 Login Methods: Passkey, Email & Google SSO active.");
+        break;
+
+      case "device-password":
+        const pass = prompt("Set a new device PIN / Password:");
+        if (pass) {
+          showToast("📱 Device password updated successfully!");
+        }
+        break;
+
+      case "delete-account":
+        if (confirm("⚠️ Are you sure you want to delete your account? This action cannot be undone.")) {
+          localStorage.clear();
+          showToast("🗑️ Account deleted.");
+          setTimeout(() => window.location.href = "signup.html", 1200);
+        }
+        break;
+
+      case "sign-out-everywhere":
+        if (confirm("➔ Sign out of all devices? You will be logged out here as well.")) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("is_logged_in");
+          showToast("➔ Signed out of all devices.");
+          setTimeout(() => window.location.href = "login.html", 1000);
+        }
+        break;
+
+      case "support":
+        showToast("❓ Opening Musify Support Center...");
+        break;
+
+      default:
+        showToast("⚙️ Action processed.");
+        break;
+    }
   }
 
-  // 3. Audio Quality Select
-  const audioQualitySelect = getElement("#audioQualitySelect");
-  if (audioQualitySelect) {
-    const savedQuality = localStorage.getItem("audio_quality") || "very_high";
-    audioQualitySelect.value = savedQuality;
-    audioQualitySelect.addEventListener("change", (e) => {
-      localStorage.setItem("audio_quality", e.target.value);
-      const label = e.target.options[e.target.selectedIndex].text;
-      showToast(`🔊 Streaming Quality set to ${label}!`);
-    });
-  }
+  // ==================== SETTINGS PAGE LOGIC (Screenshots 1 & 2) ====================
+  export function setupSettingsPage() {
+    const settingsOptionBtn = getElement("#settingsOptionBtn");
+    const settingsViewPage = getElement("#settingsViewPage");
+    const homeSections = getElement("#homeSections");
+    const albumDetailView = getElement("#albumDetailView");
+    const accountOverviewPage = getElement("#accountOverviewPage");
+    const settingsBackBtn = getElement("#settingsBackBtn");
 
-  // 4. Normalize Volume Toggle
-  const normalizeVolumeToggle = getElement("#normalizeVolumeToggle");
-  if (normalizeVolumeToggle) {
-    normalizeVolumeToggle.checked = localStorage.getItem("normalize_volume") !== "false";
-    normalizeVolumeToggle.addEventListener("change", (e) => {
-      localStorage.setItem("normalize_volume", e.target.checked);
-      showToast(e.target.checked ? "🎚️ Volume Normalization enabled." : "🎚️ Volume Normalization disabled.");
-    });
-  }
-
-  // 5. Compact Library Layout Toggle
-  const compactLibraryToggle = getElement("#compactLibraryToggle");
-  if (compactLibraryToggle) {
-    compactLibraryToggle.checked = localStorage.getItem("compact_library") === "true";
-    compactLibraryToggle.addEventListener("change", (e) => {
-      localStorage.setItem("compact_library", e.target.checked);
-      const sidebar = getElement(".rightSidebar");
-      if (sidebar) {
-        if (e.target.checked) sidebar.classList.add("compact-mode");
-        else sidebar.classList.remove("compact-mode");
-      }
-      showToast(e.target.checked ? "📐 Compact library layout enabled." : "📐 Standard library layout enabled.");
-    });
-  }
-
-  // 6. Import Library Button & File Input
-  const importLibraryBtn = getElement("#importLibraryBtn");
-  const importLibraryInput = getElement("#importLibraryInput");
-  if (importLibraryBtn && importLibraryInput) {
-    importLibraryBtn.addEventListener("click", () => importLibraryInput.click());
-    importLibraryInput.addEventListener("change", (e) => {
-      if (e.target.files && e.target.files.length > 0) {
-        showToast(`📁 Successfully imported ${e.target.files.length} audio tracks into Your Library!`);
-      }
-    });
-  }
-
-  // 7. Desktop Notifications Toggle
-  const desktopNotifyToggle = getElement("#desktopNotifyToggle");
-  if (desktopNotifyToggle) {
-    desktopNotifyToggle.checked = localStorage.getItem("desktop_notify") !== "false";
-    desktopNotifyToggle.addEventListener("change", (e) => {
-      localStorage.setItem("desktop_notify", e.target.checked);
-      showToast(e.target.checked ? "🔔 Desktop notifications enabled." : "🔕 Desktop notifications disabled.");
-    });
-  }
-
-  // 8. Auto Now Playing Toggle
-  const autoNowPlayingToggle = getElement("#autoNowPlayingToggle");
-  if (autoNowPlayingToggle) {
-    autoNowPlayingToggle.checked = localStorage.getItem("auto_now_playing") !== "false";
-    autoNowPlayingToggle.addEventListener("change", (e) => {
-      localStorage.setItem("auto_now_playing", e.target.checked);
-      showToast(e.target.checked ? "🖼️ Now Playing sidebar panel set to auto-show." : "🖼️ Now Playing panel auto-show disabled.");
-    });
-  }
-
-  // 9. Canvas Toggle (Screenshot 2)
-  const canvasToggle = getElement("#canvasToggle");
-  if (canvasToggle) {
-    canvasToggle.checked = localStorage.getItem("canvas_enabled") !== "false";
-    canvasToggle.addEventListener("change", (e) => {
-      localStorage.setItem("canvas_enabled", e.target.checked);
-      showToast(e.target.checked ? "🎬 Looping visual Canvas enabled." : "🎬 Canvas visuals disabled.");
-    });
-  }
-
-  // 10. Other Videos Toggle (Screenshot 2)
-  const otherVideosToggle = getElement("#otherVideosToggle");
-  if (otherVideosToggle) {
-    otherVideosToggle.checked = localStorage.getItem("other_videos_enabled") !== "false";
-    otherVideosToggle.addEventListener("change", (e) => {
-      localStorage.setItem("other_videos_enabled", e.target.checked);
-      showToast(e.target.checked ? "📹 Video podcasts & videos enabled." : "🎧 Video podcasts set to audio-only.");
-    });
-  }
-
-  // 11. Autoplay Toggle (Screenshot 2)
-  const autoplayToggle = getElement("#autoplayToggle");
-  if (autoplayToggle) {
-    autoplayToggle.checked = localStorage.getItem("autoplay_enabled") !== "false";
-    autoplayToggle.addEventListener("change", (e) => {
-      localStorage.setItem("autoplay_enabled", e.target.checked);
-      showToast(e.target.checked ? "🔁 Non-stop Autoplay enabled." : "⏹️ Autoplay disabled.");
-    });
-  }
-
-  // 12. Crossfade Songs Range Slider (Screenshot 2)
-  const crossfadeRange = getElement("#crossfadeRange");
-  const crossfadeVal = getElement("#crossfadeVal");
-  if (crossfadeRange && crossfadeVal) {
-    const savedCrossfade = localStorage.getItem("crossfade_sec") || "0";
-    crossfadeRange.value = savedCrossfade;
-    crossfadeVal.textContent = `${savedCrossfade}s`;
-
-    const updateCrossfade = (val) => {
-      crossfadeVal.textContent = `${val}s`;
-      localStorage.setItem("crossfade_sec", val);
+    const openSettings = () => {
+      if (homeSections) homeSections.style.display = "none";
+      if (albumDetailView) albumDetailView.style.display = "none";
+      if (accountOverviewPage) accountOverviewPage.style.display = "none";
+      if (settingsViewPage) settingsViewPage.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    crossfadeRange.addEventListener("input", (e) => updateCrossfade(e.target.value));
-    crossfadeRange.addEventListener("change", (e) => {
-      updateCrossfade(e.target.value);
-      showToast(`🎚️ Track Crossfade set to ${e.target.value}s.`);
-    });
-  }
+    const closeSettings = () => {
+      if (settingsViewPage) settingsViewPage.style.display = "none";
+      if (homeSections) homeSections.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
-  // 13. Mono Audio Toggle (Screenshot 2)
-  const monoAudioToggle = getElement("#monoAudioToggle");
-  if (monoAudioToggle) {
-    monoAudioToggle.checked = localStorage.getItem("mono_audio") === "true";
-    monoAudioToggle.addEventListener("change", (e) => {
-      localStorage.setItem("mono_audio", e.target.checked);
-      showToast(e.target.checked ? "🎧 Mono Audio enabled (Left + Right merged)." : "🎧 Stereo Audio active.");
-    });
+    if (settingsOptionBtn) settingsOptionBtn.addEventListener("click", openSettings);
+    if (settingsBackBtn) settingsBackBtn.addEventListener("click", closeSettings);
+
+    // 1. Edit Login Methods
+    const editLoginMethodsBtn = getElement("#editLoginMethodsBtn");
+    if (editLoginMethodsBtn) {
+      editLoginMethodsBtn.addEventListener("click", () => {
+        const profileModal = getElement("#profileModal");
+        if (profileModal) {
+          profileModal.classList.remove("hidden");
+          profileModal.style.display = "flex";
+        }
+      });
+    }
+
+    // 2. Language Dropdown
+    const appLanguageSelect = getElement("#appLanguageSelect");
+    if (appLanguageSelect) {
+      const savedLang = localStorage.getItem("app_language") || "en";
+      appLanguageSelect.value = savedLang;
+      appLanguageSelect.addEventListener("change", (e) => {
+        localStorage.setItem("app_language", e.target.value);
+        const selectedText = e.target.options[e.target.selectedIndex].text;
+        showToast(`🌐 Language set to ${selectedText}. Changes applied!`);
+      });
+    }
+
+    // 3. Audio Quality Select
+    const audioQualitySelect = getElement("#audioQualitySelect");
+    if (audioQualitySelect) {
+      const savedQuality = localStorage.getItem("audio_quality") || "very_high";
+      audioQualitySelect.value = savedQuality;
+      audioQualitySelect.addEventListener("change", (e) => {
+        localStorage.setItem("audio_quality", e.target.value);
+        const label = e.target.options[e.target.selectedIndex].text;
+        showToast(`🔊 Streaming Quality set to ${label}!`);
+      });
+    }
+
+    // 4. Normalize Volume Toggle
+    const normalizeVolumeToggle = getElement("#normalizeVolumeToggle");
+    if (normalizeVolumeToggle) {
+      normalizeVolumeToggle.checked = localStorage.getItem("normalize_volume") !== "false";
+      normalizeVolumeToggle.addEventListener("change", (e) => {
+        localStorage.setItem("normalize_volume", e.target.checked);
+        showToast(e.target.checked ? "🎚️ Volume Normalization enabled." : "🎚️ Volume Normalization disabled.");
+      });
+    }
+
+    // 5. Compact Library Layout Toggle
+    const compactLibraryToggle = getElement("#compactLibraryToggle");
+    if (compactLibraryToggle) {
+      compactLibraryToggle.checked = localStorage.getItem("compact_library") === "true";
+      compactLibraryToggle.addEventListener("change", (e) => {
+        localStorage.setItem("compact_library", e.target.checked);
+        const sidebar = getElement(".rightSidebar");
+        if (sidebar) {
+          if (e.target.checked) sidebar.classList.add("compact-mode");
+          else sidebar.classList.remove("compact-mode");
+        }
+        showToast(e.target.checked ? "📐 Compact library layout enabled." : "📐 Standard library layout enabled.");
+      });
+    }
+
+    // 6. Import Library Button & File Input
+    const importLibraryBtn = getElement("#importLibraryBtn");
+    const importLibraryInput = getElement("#importLibraryInput");
+    if (importLibraryBtn && importLibraryInput) {
+      importLibraryBtn.addEventListener("click", () => importLibraryInput.click());
+      importLibraryInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          showToast(`📁 Successfully imported ${e.target.files.length} audio tracks into Your Library!`);
+        }
+      });
+    }
+
+    // 7. Desktop Notifications Toggle
+    const desktopNotifyToggle = getElement("#desktopNotifyToggle");
+    if (desktopNotifyToggle) {
+      desktopNotifyToggle.checked = localStorage.getItem("desktop_notify") !== "false";
+      desktopNotifyToggle.addEventListener("change", (e) => {
+        localStorage.setItem("desktop_notify", e.target.checked);
+        showToast(e.target.checked ? "🔔 Desktop notifications enabled." : "🔕 Desktop notifications disabled.");
+      });
+    }
+
+    // 8. Auto Now Playing Toggle
+    const autoNowPlayingToggle = getElement("#autoNowPlayingToggle");
+    if (autoNowPlayingToggle) {
+      autoNowPlayingToggle.checked = localStorage.getItem("auto_now_playing") !== "false";
+      autoNowPlayingToggle.addEventListener("change", (e) => {
+        localStorage.setItem("auto_now_playing", e.target.checked);
+        showToast(e.target.checked ? "🖼️ Now Playing sidebar panel set to auto-show." : "🖼️ Now Playing panel auto-show disabled.");
+      });
+    }
+
+    // 9. Canvas Toggle (Screenshot 2)
+    const canvasToggle = getElement("#canvasToggle");
+    if (canvasToggle) {
+      canvasToggle.checked = localStorage.getItem("canvas_enabled") !== "false";
+      canvasToggle.addEventListener("change", (e) => {
+        localStorage.setItem("canvas_enabled", e.target.checked);
+        showToast(e.target.checked ? "🎬 Looping visual Canvas enabled." : "🎬 Canvas visuals disabled.");
+      });
+    }
+
+    // 10. Other Videos Toggle (Screenshot 2)
+    const otherVideosToggle = getElement("#otherVideosToggle");
+    if (otherVideosToggle) {
+      otherVideosToggle.checked = localStorage.getItem("other_videos_enabled") !== "false";
+      otherVideosToggle.addEventListener("change", (e) => {
+        localStorage.setItem("other_videos_enabled", e.target.checked);
+        showToast(e.target.checked ? "📹 Video podcasts & videos enabled." : "🎧 Video podcasts set to audio-only.");
+      });
+    }
+
+    // 11. Autoplay Toggle (Screenshot 2)
+    const autoplayToggle = getElement("#autoplayToggle");
+    if (autoplayToggle) {
+      autoplayToggle.checked = localStorage.getItem("autoplay_enabled") !== "false";
+      autoplayToggle.addEventListener("change", (e) => {
+        localStorage.setItem("autoplay_enabled", e.target.checked);
+        showToast(e.target.checked ? "🔁 Non-stop Autoplay enabled." : "⏹️ Autoplay disabled.");
+      });
+    }
+
+    // 12. Crossfade Songs Range Slider (Screenshot 2)
+    const crossfadeRange = getElement("#crossfadeRange");
+    const crossfadeVal = getElement("#crossfadeVal");
+    if (crossfadeRange && crossfadeVal) {
+      const savedCrossfade = localStorage.getItem("crossfade_sec") || "0";
+      crossfadeRange.value = savedCrossfade;
+      crossfadeVal.textContent = `${savedCrossfade}s`;
+
+      const updateCrossfade = (val) => {
+        crossfadeVal.textContent = `${val}s`;
+        localStorage.setItem("crossfade_sec", val);
+      };
+
+      crossfadeRange.addEventListener("input", (e) => updateCrossfade(e.target.value));
+      crossfadeRange.addEventListener("change", (e) => {
+        updateCrossfade(e.target.value);
+        showToast(`🎚️ Track Crossfade set to ${e.target.value}s.`);
+      });
+    }
+
+    // 13. Mono Audio Toggle (Screenshot 2)
+    const monoAudioToggle = getElement("#monoAudioToggle");
+    if (monoAudioToggle) {
+      monoAudioToggle.checked = localStorage.getItem("mono_audio") === "true";
+      monoAudioToggle.addEventListener("change", (e) => {
+        localStorage.setItem("mono_audio", e.target.checked);
+        showToast(e.target.checked ? "🎧 Mono Audio enabled (Left + Right merged)." : "🎧 Stereo Audio active.");
+      });
+    }
   }
-}

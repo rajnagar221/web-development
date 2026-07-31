@@ -66,18 +66,19 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
-  // Skip caching for API requests or backend auth endpoints
-  if (url.origin !== self.location.origin || url.pathname.includes('/api/') || url.pathname.includes('/login') || url.pathname.includes('/signup')) {
-    e.respondWith(
-      fetch(e.request).catch((err) => {
-        return new Response(JSON.stringify({ error: "Network error or API server unavailable" }), {
-          status: 503,
-          headers: { "Content-Type": "application/json" }
-        });
-      })
-    );
+  // Bypass Service Worker interceptor for API endpoints, CDN audio/images, and auth calls
+  if (
+    url.origin !== self.location.origin ||
+    url.pathname.includes('/api/') ||
+    url.pathname.includes('/login') ||
+    url.pathname.includes('/signup') ||
+    url.hostname.includes('saavn') ||
+    url.hostname.includes('mzstatic')
+  ) {
+    e.respondWith(fetch(e.request));
     return;
   }
+
 
   // Network-first for static local assets (ensures normal F5 loads updated scripts/styles)
   e.respondWith(

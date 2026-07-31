@@ -1,13 +1,49 @@
 import urllib.parse
 import requests
+import base64
 from fastapi import APIRouter, HTTPException
-from jiosaavnpy import JioSaavn
-from jiosaavnpy.functions import Functions
 from app.database import songs_collection
 
+# Safe optional import of jiosaavnpy
+try:
+    from jiosaavnpy import JioSaavn
+    from jiosaavnpy.functions import Functions
+    jiosaavn_client = JioSaavn()
+    fn_decrypter = Functions()
+except Exception as _import_err:
+    jiosaavn_client = None
+    fn_decrypter = None
+    print(f"[Warning] jiosaavnpy package not active ({_import_err}). Using direct API fallbacks.")
+
 router = APIRouter()
-jiosaavn_client = JioSaavn()
-fn_decrypter = Functions()
+
+def _decrypt_stream_url(enc_url: str) -> dict:
+    if fn_decrypter:
+        try:
+            return fn_decrypter.decrypt_stream_url(enc_url, True)
+        except Exception:
+            pass
+    try:
+        from Crypto.Cipher import DES
+        cipher = DES.new(b"38586bea", DES.MODE_ECB)
+        enc_bytes = base64.b64decode(enc_url.strip())
+        dec_bytes = cipher.decrypt(enc_bytes)
+        padding_len = dec_bytes[-1]
+        if isinstance(padding_len, int) and 1 <= padding_len <= 8:
+            dec_bytes = dec_bytes[:-padding_len]
+        dec_str = dec_bytes.decode('utf-8', errors='ignore').strip()
+        high_url = dec_str.replace("_96.mp3", "_320.mp3").replace("_160.mp3", "_320.mp3")
+        med_url = dec_str.replace("_96.mp3", "_160.mp3")
+        return {
+            "very_high_quality": high_url,
+            "high_quality": dec_str,
+            "medium_quality": med_url,
+            "low_quality": dec_str
+        }
+    except Exception as e:
+        print(f"Fallback decryption error: {e}")
+        return {}
+
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -52,13 +88,14 @@ def _get_direct_saavn_songs(query: str):
                 if not enc_url:
                     continue
                 try:
-                    streams = fn_decrypter.decrypt_stream_url(enc_url, True)
+                    streams = _decrypt_stream_url(enc_url)
                     audio_url = (
                         streams.get("very_high_quality") or
                         streams.get("high_quality") or
                         streams.get("medium_quality") or
                         streams.get("low_quality") or ""
                     )
+
                     if not audio_url:
                         continue
                     
@@ -143,7 +180,7 @@ def search_full_songs(query: str):
                 formatted_songs.append(song)
 
         # Step 2: jiosaavnpy client fallback if online and direct API returned low results
-        if not is_offline and len(formatted_songs) < 3:
+        if not is_offline and len(formatted_songs) < 3 and jiosaavn_client:
             try:
                 results = jiosaavn_client.search_songs(query)
                 for song in results:
@@ -244,7 +281,7 @@ def resolve_full_song(title: str, artist: str = ""):
             }
 
         # Step 2: jiosaavn_client fallback if online
-        if not is_offline:
+        if not is_offline and jiosaavn_client:
             try:
                 results = jiosaavn_client.search_songs(query_str)
                 if results:
@@ -333,7 +370,7 @@ def recommend_full_songs(title: str = "", artist: str = "", query: str = ""):
         # Execute online queries across JioSaavn
         for q in search_queries:
             online_results, is_offline = _get_direct_saavn_songs(q)
-            if not online_results and not is_offline:
+            if not online_results and not is_offline and jiosaavn_client:
                 # Client fallback
                 try:
                     res = jiosaavn_client.search_songs(q)

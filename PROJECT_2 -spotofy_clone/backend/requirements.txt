@@ -26,3 +26,8 @@ python-dotenv==1.0.0
 
 # Static File Serving (needed by FastAPI StaticFiles)
 aiofiles==23.2.1
+
+# JioSaavn API & Decryption
+jiosaavnpy>=1.0.0
+pycryptodome>=3.18.0
+

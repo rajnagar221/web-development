@@ -1,11 +1,11 @@
 import re
 import os
-from fastapi import APIRouter, HTTPException
+from typing import Optional
+from fastapi import APIRouter, HTTPException, Depends
 from bson import ObjectId
 from app.database import songs_collection
 from app.models import SongModel
 from app.jwt_config import verify_token
-from fastapi import Depends, HTTPException
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ def add_song(song: SongModel, token=Depends(verify_token)):
     result = songs_collection.insert_one(song_data)
     return {"message": "Song added successfully", "song_id": str(result.inserted_id)}
 
-from typing import Optional
+
 
 @router.get("/api/songs")
 def get_all_songs(

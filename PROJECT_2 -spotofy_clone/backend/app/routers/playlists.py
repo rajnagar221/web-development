@@ -1,12 +1,11 @@
-from fastapi import HTTPException
-from app.jwt_config import verify_token
-from fastapi import Depends
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 from bson import ObjectId
 from app.database import playlists_collection, songs_collection
 from app.models import PlaylistModel
+from app.jwt_config import verify_token
 
 router = APIRouter()
+
 
 @router.get("/api/playlists")
 def get_playlists(token=Depends(verify_token)):

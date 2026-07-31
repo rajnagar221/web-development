@@ -1,12 +1,11 @@
-from app.jwt_config import verify_token
-from fastapi import APIRouter
+import re
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException
 from app.database import albums_collection
-from fastapi import Depends, HTTPException
+from app.jwt_config import verify_token
 
 router = APIRouter()
 
-import re
-from typing import Optional
 
 @router.get("/api/albums")
 def get_albums(

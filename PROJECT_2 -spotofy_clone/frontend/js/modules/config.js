@@ -27,14 +27,15 @@ export const API_BASE_URL = isBackendServing
 export const SONGS_API_URL = `${API_BASE_URL}/api/songs`;
 export const STATIC_SONGS_URL = `${API_BASE_URL}/songs`;
 export const FOLDERS = [
-  "ncs",
   "karan aujla",
-  "daily mix",
   "diljit",
   "honey singh",
-  "instagram trending",
-  "vibes songs",
   "ap dillhon",
-  "talwinder"
+  "talwinder",
+  "sidhu moose wala",
+  "arijit singh",
+  "daily mix",
+  "instagram trending",
+  "vibes songs"
 ];
 

@@ -117,6 +117,9 @@ export async function playMusic(track, folder = state.currFolder || "search") {
         if (fullData.success && fullData.url) {
           track.url = fullData.url;
           track.duration = fullData.duration || track.duration || 180;
+          if (fullData.cover_image && (!track.cover_image || track.cover_image === "img/music.svg")) {
+            track.cover_image = fullData.cover_image;
+          }
           updateSongInfo(track, true);
           showToast("🎵 Full song loaded");
         }

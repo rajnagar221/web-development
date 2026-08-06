@@ -277,7 +277,8 @@ def resolve_full_song(title: str, artist: str = ""):
                 "url": direct[0]["url"],
                 "duration": direct[0]["duration"],
                 "title": direct[0]["title"],
-                "artist": direct[0]["artist"]
+                "artist": direct[0]["artist"],
+                "cover_image": direct[0].get("cover_image")
             }
 
         # Step 2: jiosaavn_client fallback if online
@@ -292,7 +293,8 @@ def resolve_full_song(title: str, artist: str = ""):
                             "url": formatted["url"],
                             "duration": formatted["duration"],
                             "title": formatted["title"],
-                            "artist": formatted["artist"]
+                            "artist": formatted["artist"],
+                            "cover_image": formatted.get("cover_image")
                         }
             except Exception as exc:
                 if not _is_network_error(exc):

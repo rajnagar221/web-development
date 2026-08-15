@@ -85,8 +85,6 @@ export function updateCredits(folder, artist) {
       parsedCredits.push({ name: "Lil Golu", role: "Lyricist • Producer", isFollowing: false });
     } else if (fKey.includes("ap dhillon") || fKey.includes("ap dillhon")) {
       parsedCredits.push({ name: "Gurinder Gill", role: "Featured Artist", isFollowing: false });
-    } else if (fKey.includes("ncs")) {
-      parsedCredits.push({ name: "Alan Walker", role: "Producer • Remix", isFollowing: false });
     } else {
       parsedCredits.push({ name: "Musify Producer", role: "Composer • Producer", isFollowing: false });
     }
@@ -171,20 +169,20 @@ const ARTIST_BIOS = {
 };
 
 export const ALL_ARTISTS_MAP = {
-  "karan aujla": { folder: "karan aujla", name: "Karan Aujla", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg" },
-  "ikky": { folder: "karan aujla", name: "IKKY", subtitle: "Producer • Followed", cover: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg" },
-  "diljit": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/245/Hass-Hass-English-2023-20231026170517-500x500.jpg" },
-  "diljit dosanjh": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/245/Hass-Hass-English-2023-20231026170517-500x500.jpg" },
-  "honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/173/GLORY-Hindi-2024-20250117161048-500x500.jpg" },
-  "yo yo honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/173/GLORY-Hindi-2024-20250117161048-500x500.jpg" },
+  "karan aujla": { folder: "karan aujla", name: "Karan Aujla", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/538/Making-Memories-English-2023-20230818075015-500x500.jpg" },
+  "ikky": { folder: "karan aujla", name: "IKKY", subtitle: "Producer • Followed", cover: "https://c.saavncdn.com/538/Making-Memories-English-2023-20230818075015-500x500.jpg" },
+  "diljit": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/209/MoonChild-Era-Punjabi-2021-20210822030801-500x500.jpg" },
+  "diljit dosanjh": { folder: "diljit", name: "Diljit Dosanjh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/209/MoonChild-Era-Punjabi-2021-20210822030801-500x500.jpg" },
+  "honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/304/Desi-Kalakaar-Hindi-2014-500x500.jpg" },
+  "yo yo honey singh": { folder: "honey singh", name: "Yo Yo Honey Singh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/304/Desi-Kalakaar-Hindi-2014-500x500.jpg" },
   "talwinder": { folder: "talwinder", name: "Talwiinder", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/065/Haseen-Punjabi-2025-20250217081851-500x500.jpg" },
-  "ap dillhon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/587/Thodi-Si-Daaru-Punjabi-2025-20250717063530-500x500.jpg" },
-  "ap dhillon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/587/Thodi-Si-Daaru-Punjabi-2025-20250717063530-500x500.jpg" },
-  "pritam": { folder: "karan aujla", name: "Pritam", subtitle: "Composer • Followed", cover: "https://c.saavncdn.com/450/Gehra-Hua-From-Dhurandhar-Hindi-2025-20251205154217-500x500.jpg" },
+  "ap dillhon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/671/First-of-a-Kind-From-the-Amazon-Original-Series-Punjabi-2023-20230816174154-500x500.jpg" },
+  "ap dhillon": { folder: "ap dillhon", name: "AP Dhillon", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/671/First-of-a-Kind-From-the-Amazon-Original-Series-Punjabi-2023-20230816174154-500x500.jpg" },
+  "pritam": { folder: "arijit singh", name: "Pritam", subtitle: "Composer • Followed", cover: "https://c.saavncdn.com/179/World-Music-Day-Best-Of-Arijit-Singh-Hindi-2024-20240620150937-500x500.jpg" },
   "sidhu moose wala": { folder: "sidhu moose wala", name: "Sidhu Moose Wala", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/609/Moosetape-Punjabi-2021-20260626155141-500x500.jpg" },
-  "arijit singh": { folder: "arijit singh", name: "Arijit Singh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/450/Gehra-Hua-From-Dhurandhar-Hindi-2025-20251205154217-500x500.jpg" },
+  "arijit singh": { folder: "arijit singh", name: "Arijit Singh", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/179/World-Music-Day-Best-Of-Arijit-Singh-Hindi-2024-20240620150937-500x500.jpg" },
   "vibes songs": { folder: "vibes songs", name: "Chill Punjabi Lo-Fi", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/682/Punjabi-Chill-Vibes-Punjabi-2024-20240726152838-500x500.jpg" },
-  "instagram trending": { folder: "instagram trending", name: "Reels Viral", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/713/Sicario-Punjabi-2025-20250327070227-500x500.jpg" }
+  "instagram trending": { folder: "instagram trending", name: "Reels Viral", subtitle: "Artist • Followed", cover: "https://c.saavncdn.com/992/Bad-Newz-Hindi-2024-20240717163046-500x500.jpg" }
 };
 
 export function getArtistBio(folder) {

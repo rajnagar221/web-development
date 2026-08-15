@@ -9,7 +9,7 @@ folders_queries = {
     'diljit': ['Lover Diljit Dosanjh', 'GOAT Diljit Dosanjh', 'Lemonade Diljit Dosanjh', 'Born to Shine Diljit Dosanjh'],
     'honey singh': ['Blue Eyes Yo Yo Honey Singh', 'Desi Kalakaar Yo Yo Honey Singh', 'Love Dose Yo Yo Honey Singh'],
     'ap dillhon': ['Brown Munde AP Dhillon', 'Insane AP Dhillon', 'With You AP Dhillon'],
-    'ncs': ['Faded Alan Walker', 'Spectre Alan Walker', 'Invincible DEAF KEV', 'Sky High Elektronomia'],
+    'arijit singh': ['Chaleya Arijit Singh', 'Tum Hi Ho Arijit Singh', 'Kesariya Arijit Singh', 'Apna Bana Le Arijit Singh', 'O Maahi Arijit Singh'],
     'talwinder': ['Khayaal Talwiinder', 'Dhundhala Talwiinder'],
     'vibes songs': ['Softly Lofi', 'Brown Munde Lofi', 'Pasoori Lofi'],
     'instagram trending': ['Tauba Tauba Karan Aujla', 'Big Dawgs Hanumankind', 'Winning Speech Karan Aujla']

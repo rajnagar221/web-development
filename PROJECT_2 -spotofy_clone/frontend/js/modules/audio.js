@@ -269,8 +269,38 @@ export function setupPlayerEvents() {
     }
   });
 
-  state.currentSong.addEventListener("error", () => {
+  state.currentSong.addEventListener("error", async () => {
     console.error("Audio error encountered:", state.currentSong.error);
+    
+    // Auto-recovery attempt: try to resolve full song stream dynamically
+    const track = state.currentTrack;
+    if (track && !track._retryResolved) {
+      track._retryResolved = true;
+      try {
+        showToast("🔄 Re-connecting audio stream...");
+        const res = await fetch(`${API_BASE_URL}/api/fullsongs/resolve?title=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(track.artist || '')}`);
+        if (res.ok) {
+          const fullData = await res.json();
+          if (fullData.success && fullData.url && fullData.url !== state.currentSong.src) {
+            track.url = fullData.url;
+            state.currentSong.src = fullData.url;
+            state.currentSong.load();
+            const p = state.currentSong.play();
+            if (p) {
+              p.then(() => {
+                updatePlayButton(true);
+                updateAlbumPlayIcons();
+                showToast("🎵 Playing audio");
+              }).catch(() => {});
+            }
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Stream auto-recovery failed:", err);
+      }
+    }
+
     showToast("⚠️ Error: Failed to play song");
     updatePlayButton(false);
     updateAlbumPlayIcons();

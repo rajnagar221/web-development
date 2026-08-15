@@ -39,84 +39,135 @@ export async function fetchDeezerArtistAlbums(artistId) {
 }
 
 const FALLBACK_ALBUMS = [
-  { folder: "karan aujla", title: "Karan Aujla Hits", description: "Best of Karan Aujla, Ikky & Deep Jandu", cover_image: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg" },
-  { folder: "diljit", title: "Diljit Dosanjh Essentials", description: "Lover, GOAT & Punjabi Blockbusters", cover_image: "https://c.saavncdn.com/245/Hass-Hass-English-2023-20231026170517-500x500.jpg" },
-  { folder: "honey singh", title: "Yo Yo Honey Singh", description: "Desi Kalakaar, Blue Eyes & Classic Hits", cover_image: "https://c.saavncdn.com/173/GLORY-Hindi-2024-20250117161048-500x500.jpg" },
-  { folder: "ap dillhon", title: "AP Dhillon & Gurinder Gill", description: "Brown Munde, Excuses & Insane Hits", cover_image: "https://c.saavncdn.com/587/Thodi-Si-Daaru-Punjabi-2025-20250717063530-500x500.jpg" },
-  { folder: "talwinder", title: "Talwinder Melodies", description: "Deep Vibe, Dhundhala & Aesthetic Hits", cover_image: "https://c.saavncdn.com/065/Haseen-Punjabi-2025-20250217081851-500x500.jpg" },
-  { folder: "sidhu moose wala", title: "Sidhu Moose Wala Legends", description: "295, The Last Ride & Punjabi Hip-Hop", cover_image: "https://c.saavncdn.com/609/Moosetape-Punjabi-2021-20260626155141-500x500.jpg" },
-  { folder: "arijit singh", title: "Arijit Singh Essentials", description: "Chaleya, Tum Hi Ho & Romantic Blockbusters", cover_image: "https://c.saavncdn.com/450/Gehra-Hua-From-Dhurandhar-Hindi-2025-20251205154217-500x500.jpg" },
-  { folder: "vibes songs", title: "Chill Punjabi Lo-Fi", description: "Relaxing Beats, Late Night Punjabi Vibes", cover_image: "https://c.saavncdn.com/682/Punjabi-Chill-Vibes-Punjabi-2024-20240726152838-500x500.jpg" },
-  { folder: "instagram trending", title: "Reels Viral Hits", description: "Soundtracks trending on Reels & TikTok", cover_image: "https://c.saavncdn.com/713/Sicario-Punjabi-2025-20250327070227-500x500.jpg" }
+  {
+    "folder": "karan aujla",
+    "title": "Karan Aujla Hits",
+    "description": "Best of Karan Aujla, Ikky & Deep Jandu",
+    "cover_image": "https://c.saavncdn.com/538/Making-Memories-English-2023-20230818075015-500x500.jpg"
+  },
+  {
+    "folder": "diljit",
+    "title": "Diljit Dosanjh Essentials",
+    "description": "Lover, GOAT & Punjabi Blockbusters",
+    "cover_image": "https://c.saavncdn.com/209/MoonChild-Era-Punjabi-2021-20240715073449-500x500.jpg"
+  },
+  {
+    "folder": "honey singh",
+    "title": "Yo Yo Honey Singh",
+    "description": "Desi Kalakaar, Blue Eyes & Classic Hits",
+    "cover_image": "https://c.saavncdn.com/304/Desi-Kalakaar-Hindi-2014-500x500.jpg"
+  },
+  {
+    "folder": "ap dillhon",
+    "title": "AP Dhillon & Gurinder Gill",
+    "description": "Brown Munde, Excuses & Insane Hits",
+    "cover_image": "https://c.saavncdn.com/973/Brown-Munde-English-2020-20260520131422-500x500.jpg"
+  },
+  {
+    "folder": "talwinder",
+    "title": "Talwinder Melodies",
+    "description": "Deep Vibe, Dhundhala & Aesthetic Hits",
+    "cover_image": "https://c.saavncdn.com/482/Khayaal-Punjabi-2023-20230316171209-500x500.jpg"
+  },
+  {
+    "folder": "sidhu moose wala",
+    "title": "Sidhu Moose Wala Legends",
+    "description": "295, The Last Ride & Punjabi Hip-Hop",
+    "cover_image": "https://c.saavncdn.com/609/Moosetape-Punjabi-2021-20260626155141-500x500.jpg"
+  },
+  {
+    "folder": "arijit singh",
+    "title": "Arijit Singh Essentials",
+    "description": "Chaleya, Tum Hi Ho & Romantic Blockbusters",
+    "cover_image": "https://c.saavncdn.com/179/World-Music-Day-Best-Of-Bollywood-Hits-Hindi-2026-20260622111029-500x500.jpg"
+  },
+  {
+    "folder": "vibes songs",
+    "title": "Chill Punjabi Lo-Fi",
+    "description": "Relaxing Beats, Late Night Punjabi Vibes",
+    "cover_image": "https://c.saavncdn.com/287/Get-Your-Game-On-Unknown-2025-20250327022555-500x500.jpg"
+  },
+  {
+    "folder": "instagram trending",
+    "title": "Reels Viral Hits",
+    "description": "Soundtracks trending on Reels & TikTok",
+    "cover_image": "https://c.saavncdn.com/992/Bad-Newz-Hindi-2024-20250730113701-500x500.jpg"
+  },
+  {
+    "folder": "daily mix",
+    "title": "Shubh & Top Hits",
+    "description": "Top class Punjabi rap, trap and melody",
+    "cover_image": "https://c.saavncdn.com/704/Still-Rollin-Punjabi-2023-20230512121542-500x500.jpg"
+  }
 ];
 
 const FALLBACK_SONGS_MAP = {
   "karan aujla": [
-    { id: "iMzGQX6_", title: "Softly", artist: "Karan Aujla, IKKY", cover_image: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg", url: "https://aac.saavncdn.com/538/727114725cd7ec508b1df0a7e4515e5e_320.mp4", folder: "karan aujla" },
-    { id: "DF6eazs2", title: "Winning Speech", artist: "Karan Aujla, MXRCI, Seshnolan", cover_image: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg", url: "https://aac.saavncdn.com/089/64beffa430e4c948223ec6bfcc3a13f0_320.mp4", folder: "karan aujla" },
-    { id: "CVeqCCYc", title: "Tauba Tauba", artist: "Karan Aujla", cover_image: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg", url: "https://aac.saavncdn.com/992/5d44da8bc1d78fb72d18b701d758fd1f_320.mp4", folder: "karan aujla" },
-    { id: "vLSaC03b", title: "For A Reason", artist: "Karan Aujla, IKKY", cover_image: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg", url: "https://aac.saavncdn.com/621/59d7b22aeaa69bd8158c1852e0b556d3_320.mp4", folder: "karan aujla" },
-    { id: "gwX71Dmc", title: "Wavy", artist: "Karan Aujla, Jay Trak", cover_image: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg", url: "https://aac.saavncdn.com/178/9af31095a56a0a124dee89ef89ffee5a_320.mp4", folder: "karan aujla" },
-    { id: "X1qxz-Cc", title: "Boyfriend", artist: "Karan Aujla, IKKY", cover_image: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg", url: "https://aac.saavncdn.com/621/895e14c38bf774a0122eef2528b39272_320.mp4", folder: "karan aujla" }
-  ],
-  "arijit singh": [
-    {
-      "id": "arijit1",
-      "title": "Chaleya",
-      "artist": "Arijit Singh, Shilpa Rao",
-      "album": "Jawan",
-      "duration": 200,
-      "cover_image": "https://c.saavncdn.com/450/Gehra-Hua-From-Dhurandhar-Hindi-2025-20251205154217-500x500.jpg",
-      "url": "https://aac.saavncdn.com/348/182e01df0ecb4b39b56317bc2d2e1967_320.mp4",
-      "file_path": "https://aac.saavncdn.com/348/182e01df0ecb4b39b56317bc2d2e1967_320.mp4",
-      "folder": "arijit singh"
-    },
-    {
-      "id": "arijit2",
-      "title": "Tum Hi Ho",
-      "artist": "Arijit Singh",
-      "album": "Aashiqui 2",
-      "duration": 262,
-      "cover_image": "https://c.saavncdn.com/450/Gehra-Hua-From-Dhurandhar-Hindi-2025-20251205154217-500x500.jpg",
-      "url": "https://aac.saavncdn.com/152/e0e0a5ccfb83e58c9735d6480b0051ec_320.mp4",
-      "file_path": "https://aac.saavncdn.com/152/e0e0a5ccfb83e58c9735d6480b0051ec_320.mp4",
-      "folder": "arijit singh"
-    }
+    { id: "iMzGQX6_", title: "Softly", artist: "Karan Aujla, IKKY", cover_image: "https://c.saavncdn.com/538/Making-Memories-English-2023-20230818075015-500x500.jpg", url: "https://aac.saavncdn.com/538/727114725cd7ec508b1df0a7e4515e5e_320.mp4", folder: "karan aujla" },
+    { id: "DF6eazs2", title: "Winning Speech", artist: "Karan Aujla, MXRCI, Seshnolan", cover_image: "https://c.saavncdn.com/089/Winning-Speech-Punjabi-2024-20260626013220-500x500.jpg", url: "https://aac.saavncdn.com/089/64beffa430e4c948223ec6bfcc3a13f0_320.mp4", folder: "karan aujla" },
+    { id: "CVeqCCYc", title: "Tauba Tauba", artist: "Karan Aujla", cover_image: "https://c.saavncdn.com/992/Bad-Newz-Hindi-2024-20250730113701-500x500.jpg", url: "https://aac.saavncdn.com/992/5d44da8bc1d78fb72d18b701d758fd1f_320.mp4", folder: "karan aujla" },
+    { id: "vLSaC03b", title: "For A Reason", artist: "Karan Aujla, IKKY, Ikwinder Sahota, Milan D'Agostini", cover_image: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg", url: "https://aac.saavncdn.com/621/59d7b22aeaa69bd8158c1852e0b556d3_320.mp4", folder: "karan aujla" },
+    { id: "gwX71Dmc", title: "Wavy", artist: "Karan Aujla, Jay Trak", cover_image: "https://c.saavncdn.com/178/Wavy-Punjabi-2024-20250523044332-500x500.jpg", url: "https://aac.saavncdn.com/178/9af31095a56a0a124dee89ef89ffee5a_320.mp4", folder: "karan aujla" },
+    { id: "X1qxz-Cc", title: "Boyfriend", artist: "Karan Aujla, IKKY, Ikwinder Sahota, Milan D'Agostini", cover_image: "https://c.saavncdn.com/621/P-POP-CULTURE-Punjabi-2025-20250820043757-500x500.jpg", url: "https://aac.saavncdn.com/621/895e14c38bf774a0122eef2528b39272_320.mp4", folder: "karan aujla" },
   ],
   "diljit": [
-    { id: "M7k5t7vw", title: "Lover", artist: "Diljit Dosanjh", cover_image: "https://c.saavncdn.com/245/Hass-Hass-English-2023-20231026170517-500x500.jpg", url: "https://aac.saavncdn.com/209/88cd9a1cc0af8768d67272876bb09851_320.mp4", folder: "diljit" },
-    { id: "nJ6Z-ayZ", title: "G.O.A.T.", artist: "Diljit Dosanjh", cover_image: "https://c.saavncdn.com/245/Hass-Hass-English-2023-20231026170517-500x500.jpg", url: "https://aac.saavncdn.com/597/ce842951d6cde3c4355046ca5e250809_320.mp4", folder: "diljit" },
-    { id: "0Cu5Kha8", title: "Lemonade", artist: "Diljit Dosanjh", cover_image: "https://c.saavncdn.com/245/Hass-Hass-English-2023-20231026170517-500x500.jpg", url: "https://aac.saavncdn.com/467/c1f149509d4ee7d20c0c4474090ab5f1_320.mp4", folder: "diljit" },
-    { id: "aAOXwvz-", title: "Born to Shine", artist: "Diljit Dosanjh", cover_image: "https://c.saavncdn.com/245/Hass-Hass-English-2023-20231026170517-500x500.jpg", url: "https://aac.saavncdn.com/597/f1efd650819d3f427bd10e8b9addcd40_320.mp4", folder: "diljit" }
+    { id: "M7k5t7vw", title: "Lover", artist: "Diljit Dosanjh", cover_image: "https://c.saavncdn.com/209/MoonChild-Era-Punjabi-2021-20240715073449-500x500.jpg", url: "https://aac.saavncdn.com/209/88cd9a1cc0af8768d67272876bb09851_320.mp4", folder: "diljit" },
+    { id: "nJ6Z-ayZ", title: "G.O.A.T.", artist: "Diljit Dosanjh", cover_image: "https://c.saavncdn.com/597/G-O-A-T-Punjabi-2020-20240708055140-500x500.jpg", url: "https://aac.saavncdn.com/597/ce842951d6cde3c4355046ca5e250809_320.mp4", folder: "diljit" },
+    { id: "0Cu5Kha8", title: "Lemonade", artist: "Diljit Dosanjh", cover_image: "https://c.saavncdn.com/467/Drive-Thru-Punjabi-2022-20240708054744-500x500.jpg", url: "https://aac.saavncdn.com/467/c1f149509d4ee7d20c0c4474090ab5f1_320.mp4", folder: "diljit" },
+    { id: "aAOXwvz-", title: "Born to Shine", artist: "Diljit Dosanjh", cover_image: "https://c.saavncdn.com/597/G-O-A-T-Punjabi-2020-20240708055140-500x500.jpg", url: "https://aac.saavncdn.com/597/f1efd650819d3f427bd10e8b9addcd40_320.mp4", folder: "diljit" },
+    { id: "dmP9KfvQ", title: "Hass Hass", artist: "Diljit Dosanjh, Sia, Greg Kurstin", cover_image: "https://c.saavncdn.com/245/Hass-Hass-English-2023-20231026170517-500x500.jpg", url: "https://aac.saavncdn.com/245/fd196de0f557e19e2e8d42150d34cf5b_320.mp4", folder: "diljit" },
+    { id: "pUbI1wdi", title: "Naina (From \"Crew\")", artist: "Diljit Dosanjh, Raj Ranjodh, Badshah", cover_image: "https://c.saavncdn.com/689/Crew-Hindi-2024-20260404103117-500x500.jpg", url: "https://aac.saavncdn.com/689/8d3652ec569abd891db7782f2c7164fd_320.mp4", folder: "diljit" },
   ],
   "honey singh": [
-    { id: "DWDSMHh7", title: "YoYo", artist: "R.S. Chauhan", cover_image: "https://c.saavncdn.com/173/GLORY-Hindi-2024-20250117161048-500x500.jpg", url: "https://aac.saavncdn.com/144/ab475350ef2b43b75a24d3d720aaa7a4_320.mp4", folder: "honey singh" },
-    { id: "GbaIdJ48", title: "Desi Kalakaar", artist: "Yo Yo Honey Singh", cover_image: "https://c.saavncdn.com/173/GLORY-Hindi-2024-20250117161048-500x500.jpg", url: "https://aac.saavncdn.com/304/f31ba5ffe986d0feb95b3059ad05f4d5_320.mp4", folder: "honey singh" },
-    { id: "D6K-hfED", title: "Love Dose", artist: "Yo Yo Honey Singh", cover_image: "https://c.saavncdn.com/173/GLORY-Hindi-2024-20250117161048-500x500.jpg", url: "https://aac.saavncdn.com/304/ed6b172300cca9a418be31a511728f81_320.mp4", folder: "honey singh" }
+    { id: "GbaIdJ48", title: "Desi Kalakaar", artist: "Yo Yo Honey Singh", cover_image: "https://c.saavncdn.com/304/Desi-Kalakaar-Hindi-2014-500x500.jpg", url: "https://aac.saavncdn.com/304/f31ba5ffe986d0feb95b3059ad05f4d5_320.mp4", folder: "honey singh" },
+    { id: "D6K-hfED", title: "Love Dose", artist: "Yo Yo Honey Singh", cover_image: "https://c.saavncdn.com/304/Desi-Kalakaar-Hindi-2014-500x500.jpg", url: "https://aac.saavncdn.com/304/ed6b172300cca9a418be31a511728f81_320.mp4", folder: "honey singh" },
+    { id: "DWDSMHh7", title: "YoYo", artist: "R.S. Chauhan", cover_image: "https://c.saavncdn.com/144/YoYo-Punjabi-2019-20190924060934-500x500.jpg", url: "https://aac.saavncdn.com/144/ab475350ef2b43b75a24d3d720aaa7a4_320.mp4", folder: "honey singh" },
+    { id: "vj2tW1iy", title: "Brown Rang", artist: "Yo Yo Honey Singh", cover_image: "https://c.saavncdn.com/blob/924/International-Villager-Punjabi-2011-20220722144441-500x500.jpg", url: "https://aac.saavncdn.com/924/3cc1b3208e4661a2bcd85ec5f51ea2eb_320.mp4", folder: "honey singh" },
+    { id: "IdC8W52f", title: "High Heels Te Nachche", artist: "Jaz Dhami, Aditi Singh Sharma, Meet Bros Anjjan", cover_image: "https://c.saavncdn.com/973/Ki-Ka-Hindi-2016-500x500.jpg", url: "https://aac.saavncdn.com/973/055092f943676fad575f41d6eea800e5_320.mp4", folder: "honey singh" },
   ],
   "ap dillhon": [
-    { id: "xzUVX40K", title: "Brown Munde", artist: "AP Dhillon, Gurinder Gill", cover_image: "https://c.saavncdn.com/587/Thodi-Si-Daaru-Punjabi-2025-20250717063530-500x500.jpg", url: "https://aac.saavncdn.com/973/76216adb3df5ef476f948891b40efb7a_320.mp4", folder: "ap dillhon" },
-    { id: "LuXIJGPC", title: "Insane", artist: "AP Dhillon", cover_image: "https://c.saavncdn.com/587/Thodi-Si-Daaru-Punjabi-2025-20250717063530-500x500.jpg", url: "https://aac.saavncdn.com/851/23ba415310e4b119a8452cba3cbbf509_320.mp4", folder: "ap dillhon" },
-    { id: "fHcI5Kka", title: "With You", artist: "AP Dhillon", cover_image: "https://c.saavncdn.com/587/Thodi-Si-Daaru-Punjabi-2025-20250717063530-500x500.jpg", url: "https://aac.saavncdn.com/671/50b256cc8e60dc8b0243f5e0767e8467_320.mp4", folder: "ap dillhon" }
-  ],
-  "sidhu moose wala": [
-    { id: "295_sidhu", title: "295", artist: "Sidhu Moose Wala", cover_image: "https://c.saavncdn.com/609/Moosetape-Punjabi-2021-20260626155141-500x500.jpg", url: "https://aac.saavncdn.com/181/bbfd55734e73fce850122941aa0c1eeb_320.mp4", folder: "sidhu moose wala" },
-    { id: "last_ride_sidhu", title: "The Last Ride", artist: "Sidhu Moose Wala, Wazir Patar", cover_image: "https://c.saavncdn.com/609/Moosetape-Punjabi-2021-20260626155141-500x500.jpg", url: "https://aac.saavncdn.com/027/3f0447fa4ff5f04b200b3e64d04826b5_320.mp4", folder: "sidhu moose wala" },
-    { id: "so_high_sidhu", title: "So High", artist: "Sidhu Moose Wala, BYG BYRD", cover_image: "https://c.saavncdn.com/609/Moosetape-Punjabi-2021-20260626155141-500x500.jpg", url: "https://aac.saavncdn.com/838/0879c3a37fc68ff9caeb2405ed746816_320.mp4", folder: "sidhu moose wala" }
+    { id: "xzUVX40K", title: "Brown Munde", artist: "AP Dhillon, Gminxr, Gurinder Gill, Shinda Kahlon", cover_image: "https://c.saavncdn.com/973/Brown-Munde-English-2020-20260520131422-500x500.jpg", url: "https://aac.saavncdn.com/973/76216adb3df5ef476f948891b40efb7a_320.mp4", folder: "ap dillhon" },
+    { id: "LuXIJGPC", title: "Insane", artist: "AP Dhillon, Shinda Kahlon, Gurinder Gill, Gminxr", cover_image: "https://c.saavncdn.com/851/Insane-Punjabi-2021-20240705060902-500x500.jpg", url: "https://aac.saavncdn.com/851/23ba415310e4b119a8452cba3cbbf509_320.mp4", folder: "ap dillhon" },
+    { id: "fHcI5Kka", title: "With You", artist: "AP Dhillon", cover_image: "https://c.saavncdn.com/671/First-of-a-Kind-From-the-Amazon-Original-Series-Punjabi-2023-20230904091351-500x500.jpg", url: "https://aac.saavncdn.com/671/50b256cc8e60dc8b0243f5e0767e8467_320.mp4", folder: "ap dillhon" },
+    { id: "PfcG4gJU", title: "Excuses", artist: "AP Dhillon, Gurinder Gill, Intense", cover_image: "https://c.saavncdn.com/890/Excuses-English-2021-20210930112054-500x500.jpg", url: "https://aac.saavncdn.com/890/a18aabc4681dc6c334d5d29b67e84a0f_320.mp4", folder: "ap dillhon" },
+    { id: "IDmrzLcd", title: "Summer High", artist: "AP Dhillon", cover_image: "https://c.saavncdn.com/018/Summer-High-English-2022-20220802184652-500x500.jpg", url: "https://aac.saavncdn.com/018/d1b68be5defb0c324bf7659119297918_320.mp4", folder: "ap dillhon" },
   ],
   "talwinder": [
-    { id: "mk0bUMgA", title: "Khayaal", artist: "Talwiinder", cover_image: "https://c.saavncdn.com/065/Haseen-Punjabi-2025-20250217081851-500x500.jpg", url: "https://aac.saavncdn.com/482/c9b917787fdd221283bcb11884f4184d_320.mp4", folder: "talwinder" },
-    { id: "U9amhr5-", title: "Dhundhala", artist: "Talwiinder", cover_image: "https://c.saavncdn.com/065/Haseen-Punjabi-2025-20250217081851-500x500.jpg", url: "https://aac.saavncdn.com/965/212f0dd59e13c060347033940b6fc552_320.mp4", folder: "talwinder" }
+    { id: "mk0bUMgA", title: "Khayaal", artist: "Talwiinder, Nds", cover_image: "https://c.saavncdn.com/482/Khayaal-Punjabi-2023-20230316171209-500x500.jpg", url: "https://aac.saavncdn.com/482/c9b917787fdd221283bcb11884f4184d_320.mp4", folder: "talwinder" },
+    { id: "U9amhr5-", title: "Dhundhala", artist: "Yashraj, Dropped Out, Talwiinder", cover_image: "https://c.saavncdn.com/965/Dhundhala-Hindi-2023-20231014132506-500x500.jpg", url: "https://aac.saavncdn.com/965/212f0dd59e13c060347033940b6fc552_320.mp4", folder: "talwinder" },
+    { id: "pyLXn3-O", title: "Haseen", artist: "Talwiinder, Nds, Rippy Grewal", cover_image: "https://c.saavncdn.com/065/Haseen-Punjabi-2025-20250217081851-500x500.jpg", url: "https://aac.saavncdn.com/065/d9f897b9f568eb20dac579bb917af064_320.mp4", folder: "talwinder" },
+  ],
+  "sidhu moose wala": [
+    { id: "H2r9PnvA", title: "295", artist: "Sidhu Moose Wala", cover_image: "https://c.saavncdn.com/609/Moosetape-Punjabi-2021-20260626155141-500x500.jpg", url: "https://aac.saavncdn.com/609/852628435c98083dfe217c1cfa731bb5_320.mp4", folder: "sidhu moose wala" },
+    { id: "Xh5BINhG", title: "The Last Ride", artist: "Sidhu Moose Wala", cover_image: "https://c.saavncdn.com/582/The-Last-Ride-Punjabi-2022-20260626154442-500x500.jpg", url: "https://aac.saavncdn.com/582/98963d97964984873d3aaa89dd4496b5_320.mp4", folder: "sidhu moose wala" },
+    { id: "SXVUpHM9", title: "So High", artist: "Sidhu Moose Wala", cover_image: "https://c.saavncdn.com/544/So-High-Punjabi-2017-20220811172517-500x500.jpg", url: "https://aac.saavncdn.com/544/fa128b5b00df068d78bc50bf19bf137f_320.mp4", folder: "sidhu moose wala" },
+    { id: "6f2Ypd56", title: "Legend", artist: "Sidhu Moose Wala", cover_image: "https://c.saavncdn.com/225/Legend-Punjabi-2019-20190226163936-500x500.jpg", url: "https://aac.saavncdn.com/225/d3e0bddccf171c3b1c95c940b2c70ad3_320.mp4", folder: "sidhu moose wala" },
+  ],
+  "arijit singh": [
+    { id: "yDnFw7my", title: "Chaleya (From \"Jawan\")", artist: "Kumaar, Anirudh Ravichander, Arijit Singh, Shilpa Rao", cover_image: "https://c.saavncdn.com/179/World-Music-Day-Best-Of-Bollywood-Hits-Hindi-2026-20260622111029-500x500.jpg", url: "https://aac.saavncdn.com/179/1be373323edc90024d93873d85f644ec_320.mp4", folder: "arijit singh" },
+    { id: "aRZbUYD7", title: "Tum Hi Ho", artist: "Mithoon, Arijit Singh", cover_image: "https://c.saavncdn.com/430/Aashiqui-2-Hindi-2013-500x500.jpg", url: "https://aac.saavncdn.com/430/5c5ea5cc00e3bff45616013226f376fe_320.mp4", folder: "arijit singh" },
+    { id: "rjkrTnma", title: "Kesariya", artist: "Pritam, Arijit Singh, Amitabh Bhattacharya", cover_image: "https://c.saavncdn.com/871/Brahmastra-Original-Motion-Picture-Soundtrack-Hindi-2022-20221006155213-500x500.jpg", url: "https://aac.saavncdn.com/871/c2febd353f3a076a406fa37510f31f9f_320.mp4", folder: "arijit singh" },
+    { id: "ZAwUB9Jy", title: "Apna Bana Le", artist: "Amitabh Bhattacharya, Sachin-Jigar, Arijit Singh", cover_image: "https://c.saavncdn.com/238/Romantic-Classics-Hits-Hindi-2026-20260529163838-500x500.jpg", url: "https://aac.saavncdn.com/238/5583fbab6328b12f467f01ee335e496d_320.mp4", folder: "arijit singh" },
+    { id: "wcsDiSsA", title: "O Maahi", artist: "Pritam, Arijit Singh, Irshad Kamil", cover_image: "https://c.saavncdn.com/139/Dunki-Hindi-2023-20231220211003-500x500.jpg", url: "https://aac.saavncdn.com/139/61036495c7ba45adf72a856b60f054fd_320.mp4", folder: "arijit singh" },
+    { id: "8MyWq0_r", title: "atif aslam", artist: "Ambient Aura", cover_image: "https://c.saavncdn.com/953/club-ambition-Unknown-2024-20240628202752-500x500.jpg", url: "https://aac.saavncdn.com/953/9b1581a4c5948df2b42e16132e02ed51_320.mp4", folder: "arijit singh" },
   ],
   "vibes songs": [
-    { id: "B4NcKCxa", title: "softly lofi", artist: "Aiden Yoo", cover_image: "https://c.saavncdn.com/682/Punjabi-Chill-Vibes-Punjabi-2024-20240726152838-500x500.jpg", url: "https://aac.saavncdn.com/621/50001be791999fcce90dcb3449494985_320.mp4", folder: "vibes songs" },
-    { id: "y4MGaPi7", title: "Pasoori (Lofi Mix)", artist: "Unico Vibe A1", cover_image: "https://c.saavncdn.com/682/Punjabi-Chill-Vibes-Punjabi-2024-20240726152838-500x500.jpg", url: "https://aac.saavncdn.com/534/75e8cece32fe2949149c721b86a201a7_320.mp4", folder: "vibes songs" }
+    { id: "ih-lyveJ", title: "Softly Lofi", artist: "Neon Vibes, Lofi for Gaming, Minecraft Gaming Music", cover_image: "https://c.saavncdn.com/287/Get-Your-Game-On-Unknown-2025-20250327022555-500x500.jpg", url: "https://aac.saavncdn.com/287/ad7332ea049a7dbabeca76cc5353a17e_320.mp4", folder: "vibes songs" },
+    { id: "Z99SSBU7", title: "Nanpan No Nedlo (Lo-Fi Mix) - R Square", artist: "Mahesh Vanzara, Gracy Chauhan", cover_image: "https://c.saavncdn.com/383/Nanpan-No-Nedlo-Lo-Fi-Mix-R-Square-Gujarati-2022-20220728203712-500x500.jpg", url: "https://aac.saavncdn.com/383/885e6eb401e465269dd624f61eb98b5d_320.mp4", folder: "vibes songs" },
+    { id: "35-Rpxzk", title: "Excuses Lofi", artist: "Papa Pandey", cover_image: "https://c.saavncdn.com/779/Excuses-Lofi-Punjabi-2022-20220114124536-500x500.jpg", url: "https://aac.saavncdn.com/779/059c49e6eba96e377e937934b44e6c3e_320.mp4", folder: "vibes songs" },
   ],
   "instagram trending": [
-    { id: "CVeqCCYc", title: "Tauba Tauba", artist: "Karan Aujla", cover_image: "https://c.saavncdn.com/713/Sicario-Punjabi-2025-20250327070227-500x500.jpg", url: "https://aac.saavncdn.com/992/5d44da8bc1d78fb72d18b701d758fd1f_320.mp4", folder: "instagram trending" },
-    { id: "q7nvYeRF", title: "Big Dawgs", artist: "Hanumankind, Kalmi", cover_image: "https://c.saavncdn.com/713/Sicario-Punjabi-2025-20250327070227-500x500.jpg", url: "https://aac.saavncdn.com/883/c0a119218206e3e43e2496dc0f2d8d7e_320.mp4", folder: "instagram trending" },
-    { id: "DF6eazs2", title: "Winning Speech", artist: "Karan Aujla, MXRCI, Seshnolan", cover_image: "https://c.saavncdn.com/713/Sicario-Punjabi-2025-20250327070227-500x500.jpg", url: "https://aac.saavncdn.com/089/64beffa430e4c948223ec6bfcc3a13f0_320.mp4", folder: "instagram trending" }
-  ]
+    { id: "CVeqCCYc", title: "Tauba Tauba", artist: "Karan Aujla", cover_image: "https://c.saavncdn.com/992/Bad-Newz-Hindi-2024-20250730113701-500x500.jpg", url: "https://aac.saavncdn.com/992/5d44da8bc1d78fb72d18b701d758fd1f_320.mp4", folder: "instagram trending" },
+    { id: "q7nvYeRF", title: "Big Dawgs", artist: "Hanumankind, Kalmi", cover_image: "https://c.saavncdn.com/883/Big-Dawgs-English-2024-20240707053259-500x500.jpg", url: "https://aac.saavncdn.com/883/c0a119218206e3e43e2496dc0f2d8d7e_320.mp4", folder: "instagram trending" },
+    { id: "DF6eazs2", title: "Winning Speech", artist: "Karan Aujla, MXRCI, Seshnolan", cover_image: "https://c.saavncdn.com/089/Winning-Speech-Punjabi-2024-20260626013220-500x500.jpg", url: "https://aac.saavncdn.com/089/64beffa430e4c948223ec6bfcc3a13f0_320.mp4", folder: "instagram trending" },
+    { id: "S0U546YS", title: "Millionaire", artist: "Yo Yo Honey Singh", cover_image: "https://c.saavncdn.com/173/GLORY-Hindi-2024-20250117161048-500x500.jpg", url: "https://aac.saavncdn.com/173/af61d1cf779677cd767692c0a7f3301f_320.mp4", folder: "instagram trending" },
+  ],
+  "daily mix": [
+    { id: "6BV_9WZ_", title: "Still Rollin", artist: "Shubh", cover_image: "https://c.saavncdn.com/704/Still-Rollin-Punjabi-2023-20230512121542-500x500.jpg", url: "https://aac.saavncdn.com/704/7a1f8e1c5d1b963d3dadc711ee005d69_320.mp4", folder: "daily mix" },
+    { id: "FoOWz-cQ", title: "Cheques", artist: "Shubh", cover_image: "https://c.saavncdn.com/704/Still-Rollin-Punjabi-2023-20230512121542-500x500.jpg", url: "https://aac.saavncdn.com/704/1d43cfc150d1aef7c597c2a9bec1fa48_320.mp4", folder: "daily mix" },
+    { id: "WarSRDtF", title: "Baller", artist: "Shubh, IKKY", cover_image: "https://c.saavncdn.com/489/Baller-Punjabi-2022-20230428075337-500x500.jpg", url: "https://aac.saavncdn.com/489/c05a843e0d1f5c7bf3b29076f8322649_320.mp4", folder: "daily mix" },
+    { id: "T6HEwHnO", title: "NO LOVE", artist: "Shubh", cover_image: "https://c.saavncdn.com/972/NO-LOVE-Punjabi-2022-20220621214632-500x500.jpg", url: "https://aac.saavncdn.com/972/d6b77308db70f7d63f16ddeff68c9a2c_320.mp4", folder: "daily mix" },
+  ],
 };
 
 function getAuthHeaders() {

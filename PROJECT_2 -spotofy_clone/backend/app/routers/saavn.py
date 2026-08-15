@@ -352,7 +352,7 @@ def recommend_full_songs(title: str = "", artist: str = "", query: str = ""):
         elif any(k in combined for k in ["sad", "love", "romantic", "dil"]):
             search_queries = random.sample(ONLINE_VIBE_POOLS["romantic"], min(3, len(ONLINE_VIBE_POOLS["romantic"])))
 
-        elif artist and artist.lower() not in ["unknown artist", "artist", "ncs"]:
+        elif artist and artist.lower() not in ["unknown artist", "artist"]:
             primary_artist = artist.split(",")[0].strip()
             search_queries = [
                 f"{primary_artist} top songs",

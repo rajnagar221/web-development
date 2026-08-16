@@ -1,5 +1,5 @@
 import { FOLDERS, API_BASE_URL } from './config.js';
-import { getElement } from './utils.js';
+import { getElement, isSameTrack } from './utils.js';
 import { loadFolderSongs, playMusic } from './audio.js';
 import { fetchSongs } from './api.js';
 import { showToast } from './ui.js';
@@ -177,6 +177,9 @@ export async function setupSearch() {
 
       // 2. Track results with cover image, title, subtitle, (+) button, and dynamic play/pause overlay
       tracks.forEach((track, index) => {
+        if (!track.id) {
+          track.id = `search_${index}_${encodeURIComponent(track.title || 'track')}`;
+        }
         const title = track.title;
         const artist = track.artist || "Unknown Artist";
         const coverUrl = track.cover_image || "img/music.svg";
@@ -184,9 +187,7 @@ export async function setupSearch() {
         const folder = track.folder || 'search';
         const isLiked = isTrackLiked(folder, track.id || title);
 
-        const isCurrent = state.currentTrack && 
-          ((state.currentTrack.id && state.currentTrack.id === track.id) || 
-           (state.currentTrack.title && state.currentTrack.title === title));
+        const isCurrent = state.currentTrack && isSameTrack(track, state.currentTrack);
         const isPlaying = isCurrent && state.currentSong && !state.currentSong.paused;
 
         const addIcon = isLiked ? `
@@ -214,7 +215,7 @@ export async function setupSearch() {
         `);
 
         html += `
-          <div class="search-track-row ${isCurrent ? 'is-current' : ''}" data-index="${index}" data-id="${track.id || ''}" data-title="${title}">
+          <div class="search-track-row ${isCurrent ? 'is-current' : ''}" data-index="${index}" data-id="${track.id || ''}" data-title="${title}" data-artist="${artist}">
             <div class="search-track-left">
               <div class="search-track-thumb-wrapper">
                 <img src="${coverUrl}" alt="${title}" class="search-track-thumb" onerror="this.src='img/music.svg';" />
@@ -283,9 +284,7 @@ export async function setupSearch() {
             if (!trackData) return;
             const folder = trackData.folder || 'search';
 
-            const isCurrent = state.currentTrack && 
-              ((state.currentTrack.id && state.currentTrack.id === trackData.id) || 
-               (state.currentTrack.title && state.currentTrack.title === trackData.title));
+            const isCurrent = state.currentTrack && isSameTrack(trackData, state.currentTrack);
 
             if (isCurrent && state.currentSong.src) {
               if (state.currentSong.paused) {
@@ -336,15 +335,10 @@ export function updateSearchPlayIcons() {
   rows.forEach(row => {
     const rowId = row.dataset.id;
     const rowTitle = row.dataset.title;
+    const rowArtist = row.dataset.artist;
 
-    let isCurrent = false;
-    if (state.currentTrack) {
-      if (rowId && state.currentTrack.id && String(state.currentTrack.id) === String(rowId)) {
-        isCurrent = true;
-      } else if (rowTitle && state.currentTrack.title && state.currentTrack.title.trim().toLowerCase() === String(rowTitle).trim().toLowerCase()) {
-        isCurrent = true;
-      }
-    }
+    const rowTrackObj = { id: rowId, title: rowTitle, artist: rowArtist };
+    const isCurrent = state.currentTrack && isSameTrack(rowTrackObj, state.currentTrack);
 
     const isPlaying = isCurrent && state.currentSong && !state.currentSong.paused;
 

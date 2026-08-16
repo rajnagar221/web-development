@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { formatTime, getElement } from '../utils.js';
+import { formatTime, getElement, isSameTrack } from '../utils.js';
 import { isTrackLiked } from '../storage.js';
 import { fetchAlbums } from '../api.js';
 import { showToast } from './toast-ui.js';
@@ -177,7 +177,7 @@ export async function renderAlbumDetailView(folder, albumTitle, albumDescription
     const artist = track.artist;
     const duration = track.duration ? formatTime(track.duration) : "4:15";
     const likedClass = isTrackLiked(songItem.folder, track.id || title) ? "liked" : "";
-    const isCurrent = state.currentTrack && (track.id === state.currentTrack.id || track.title === state.currentTrack.title) && songItem.folder === state.currentFolder;
+    const isCurrent = state.currentTrack && isSameTrack(track, state.currentTrack) && songItem.folder === state.currentFolder;
     const isActive = isCurrent ? "active" : "";
     return `
             <tr class="track-row ${isActive}" data-index="${index}">

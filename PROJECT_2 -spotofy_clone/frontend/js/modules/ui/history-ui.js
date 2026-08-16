@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { getElement } from '../utils.js';
+import { getElement, isSameTrack } from '../utils.js';
 import { isTrackLiked, getLikedSongObjects, toggleLikeState } from '../storage.js';
 import { showToast } from './toast-ui.js';
 import { updatePlaybarLikeButton, updateSidebarLikeButton, updateLibraryButtons } from './player-ui.js';
@@ -42,7 +42,7 @@ export function renderSongList() {
     .map(({ folder, track }) => {
       const title = track.title || "Unknown Title";
       const artist = track.artist || "Unknown Artist";
-      const isActive = state.currentTrack && track.id === state.currentTrack.id && folder === state.currentFolder ? "playing" : "";
+      const isActive = state.currentTrack && isSameTrack(track, state.currentTrack) && folder === state.currentFolder ? "playing" : "";
       return `
         <li data-folder="${folder}" data-file="${track.id}" class="${isActive}">
           <div class="info">

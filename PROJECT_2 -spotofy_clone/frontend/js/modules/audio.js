@@ -12,7 +12,7 @@ import {
   showToast,
   toggleLikeTrack
 } from './ui.js';
-import { getElement } from './utils.js';
+import { getElement, isSameTrack } from './utils.js';
 
 
 export function buildSongUrl(folder, track) {
@@ -22,16 +22,7 @@ export function buildSongUrl(folder, track) {
 
 export function getCurrentSongIndex() {
   if (!state.currentTrack || !state.displaySongs || state.displaySongs.length === 0) return -1;
-  return state.displaySongs.findIndex((item) => {
-    if (!item || !item.track) return false;
-    if (item.track.id && state.currentTrack.id && String(item.track.id) === String(state.currentTrack.id)) {
-      return true;
-    }
-    if (item.track.title && state.currentTrack.title && item.track.title.trim().toLowerCase() === state.currentTrack.title.trim().toLowerCase()) {
-      return true;
-    }
-    return false;
-  });
+  return state.displaySongs.findIndex((item) => isSameTrack(item, state.currentTrack));
 }
 
 export async function loadFolderSongs(folder) {
@@ -49,7 +40,7 @@ export async function loadFolderSongs(folder) {
 }
 
 export function togglePlayback(track, folder) {
-  if (track && (!state.currentTrack || track.id !== state.currentTrack.id || folder !== state.currentFolder)) {
+  if (track && (!state.currentTrack || !isSameTrack(track, state.currentTrack) || folder !== state.currentFolder)) {
     playMusic(track, folder);
     return;
   }
@@ -79,7 +70,7 @@ export async function playMusic(track, folder = state.currFolder || "search") {
   // nowPlayingCard display handled via user toggle
 
   // If same track already playing, just resume
-  if (state.currentTrack && track.id === state.currentTrack.id && folder === state.currentFolder && state.currentSong.src) {
+  if (state.currentTrack && isSameTrack(track, state.currentTrack) && folder === state.currentFolder && state.currentSong.src) {
     if (state.currentSong.paused) {
       state.currentSong.play().catch((err) => console.warn("Playback failed:", err));
       updatePlayButton(true);
@@ -134,6 +125,13 @@ export async function playMusic(track, folder = state.currFolder || "search") {
     showToast("⚠️ Song audio URL unavailable");
     return;
   }
+
+  // Stop any currently playing audio stream completely before starting new song
+  try {
+    state.currentSong.pause();
+    state.currentSong.currentTime = 0;
+  } catch (e) {}
+
   state.currentSong.src = audioSrc;
   
   if (state.wavesurfer) {
@@ -165,7 +163,12 @@ export async function playMusic(track, folder = state.currFolder || "search") {
 }
 
 export function playPreviousSong() {
-  if (state.displaySongs.length === 0) return;
+  if (!state.displaySongs || state.displaySongs.length === 0) return;
+  if (state.currentSong && state.currentSong.currentTime > 3) {
+    state.currentSong.currentTime = 0;
+    updateTimeDisplay();
+    return;
+  }
   const index = getCurrentSongIndex();
   const prevIndex = index > 0 ? index - 1 : state.displaySongs.length - 1;
   const item = state.displaySongs[prevIndex];
@@ -186,8 +189,8 @@ export async function playNextSong() {
     return;
   }
 
-  // Spotify Autoplay / Radio: Fetch and append similar songs when queue reaches the end
-  if (index >= state.displaySongs.length - 1 && !state.isRepeat) {
+  // Autoplay / Radio: Fetch and append similar songs when queue reaches the end
+  if ((index < 0 || index >= state.displaySongs.length - 1) && !state.isRepeat) {
     const currTrack = state.currentTrack;
     if (currTrack) {
       try {
@@ -195,36 +198,45 @@ export async function playNextSong() {
         const titleParam = currTrack.title || "";
         const artistParam = currTrack.artist || "";
         
-        const res = await fetch(`${API_BASE_URL}/api/fullsongs/recommend?title=${encodeURIComponent(titleParam)}&artist=${encodeURIComponent(artistParam)}&query=${encodeURIComponent(queryParam)}`);
-        if (res.ok) {
-          const data = await res.json();
-          const recommendedTracks = data.songs || [];
+        let recommendedTracks = [];
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/fullsongs/recommend?title=${encodeURIComponent(titleParam)}&artist=${encodeURIComponent(artistParam)}&query=${encodeURIComponent(queryParam)}`);
+          if (res.ok) {
+            const data = await res.json();
+            recommendedTracks = data.songs || [];
+          }
+        } catch (e) {}
+
+        if (recommendedTracks.length === 0) {
+          const extraSongs = await fetchSongs("karan aujla");
+          recommendedTracks = extraSongs || [];
+        }
+        
+        if (recommendedTracks.length > 0) {
+          const existingIds = new Set(state.displaySongs.map(item => String(item.track ? (item.track.id || item.track.title) : '')));
+          const newItems = [];
           
-          if (recommendedTracks.length > 0) {
-            const existingIds = new Set(state.displaySongs.map(item => String(item.track.id || item.track.title)));
-            const newItems = [];
-            
-            recommendedTracks.forEach(t => {
-              const tid = String(t.id || t.title);
-              if (!existingIds.has(tid)) {
-                existingIds.add(tid);
-                newItems.push({ folder: t.folder || 'radio', track: t });
-              }
-            });
-            
-            if (newItems.length > 0) {
-              state.displaySongs.push(...newItems);
-              showToast("📻 Spotify Autoplay: Playing similar songs...");
-              const nextItem = state.displaySongs[index + 1];
-              if (nextItem) {
-                playMusic(nextItem.track, nextItem.folder);
-                return;
-              }
+          recommendedTracks.forEach(t => {
+            const tid = String(t.id || t.title);
+            if (!existingIds.has(tid)) {
+              existingIds.add(tid);
+              newItems.push({ folder: t.folder || 'radio', track: t });
+            }
+          });
+          
+          if (newItems.length > 0) {
+            state.displaySongs.push(...newItems);
+            showToast("📻 Musify Autoplay: Playing next similar songs...");
+            const targetIdx = index >= 0 ? index + 1 : 0;
+            const nextItem = state.displaySongs[targetIdx] || state.displaySongs[0];
+            if (nextItem) {
+              playMusic(nextItem.track, nextItem.folder);
+              return;
             }
           }
         }
       } catch (recErr) {
-        console.warn("Autoplay radio fetch attempt failed, looping queue:", recErr);
+        console.warn("Autoplay radio fetch attempt failed:", recErr);
       }
     }
   }
@@ -396,24 +408,33 @@ export function setupControlButtons() {
     volumeRange.addEventListener("change", (e) => updateVol(e.target.value));
   }
 
-  // Volume icon mute toggle
-  const queueBtn = getElement("#queueBtn");
-  if (queueBtn) {
-    queueBtn.addEventListener("click", () => {
+  // Volume icon mute toggle button (#volumeMuteBtn)
+  const volumeMuteBtn = getElement("#volumeMuteBtn");
+  if (volumeMuteBtn) {
+    volumeMuteBtn.addEventListener("click", () => {
       if (volumeRange) {
         const vol = state.currentSong.volume;
         if (vol > 0) {
-          queueBtn.dataset.lastVol = vol;
+          volumeMuteBtn.dataset.lastVol = vol;
           state.currentSong.volume = 0;
           volumeRange.value = 0;
           updateVolumeIcon(0);
         } else {
-          const lastVol = parseFloat(queueBtn.dataset.lastVol || "1.0");
+          const lastVol = parseFloat(volumeMuteBtn.dataset.lastVol || "1.0");
           state.currentSong.volume = lastVol;
           volumeRange.value = lastVol * 100;
           updateVolumeIcon(lastVol);
         }
       }
+    });
+  }
+
+  // Queue button (#queueBtn) opens Now Playing sidebar / queue view
+  const queueBtn = getElement("#queueBtn");
+  if (queueBtn) {
+    queueBtn.addEventListener("click", () => {
+      const nowPlayingBtn = getElement("#nowPlayingToggleBtn");
+      if (nowPlayingBtn) nowPlayingBtn.click();
     });
   }
 }

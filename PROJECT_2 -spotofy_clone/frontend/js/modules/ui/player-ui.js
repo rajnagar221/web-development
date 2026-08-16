@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { formatTime, getElement } from '../utils.js';
+import { formatTime, getElement, isSameTrack } from '../utils.js';
 import { isTrackLiked } from '../storage.js';
 
 let searchModule = null;
@@ -131,7 +131,7 @@ export function updateNextInQueue() {
   let currentIndex = -1;
   if (state.currentTrack) {
     currentIndex = state.displaySongs.findIndex(
-      (item) => item.track.id === state.currentTrack.id
+      (item) => isSameTrack(item.track, state.currentTrack)
     );
   }
 
